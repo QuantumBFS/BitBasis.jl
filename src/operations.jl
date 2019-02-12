@@ -1,6 +1,6 @@
 export bitarray, basis, packbits, bfloat, bfloat_r, bint, bint_r, flip
 export anymasked, allmasked, bmask, baddrs, getbit, setbit, controller
-export swapbits, unsafe_swapbits, ismasked_equal, neg, breflect
+export swapbits, ismasked_equal, neg, breflect
 
 """
     bitarray(v::Vector, [num_bits::Int]) -> BitArray
@@ -185,11 +185,13 @@ neg(index::T, num_bits::Int) where T<:Integer = bmask(T, 1:num_bits) ⊻ index
     swapbits(n::Integer, mask_ij::Integer) -> Integer
 
 Return an integer with bits at `i` and `j` in given mask flipped.
+
+!!! warning
+
+    `mask_ij` should only contain two `1`, `swapbits` will not check it, use at
+    your own risk.
 """
-@inline Base.@propagate_inbounds function swapbits(b::T, mask_ij::T) where T <: Integer
-    @boundscheck count_ones(mask_ij) == 2 || throw(ArgumentError("swapbits only accepts mask with 2 positions marked"))
-    unsafe_swapbits(b, mask_ij)
-end
+Base.@propagate_inbounds swapbits(b::T, mask_ij::T) where T <: Integer = unsafe_swapbits(b, mask_ij)
 
 """
     swapbits(n::Integer, i::Int, j::Int) -> Integer
