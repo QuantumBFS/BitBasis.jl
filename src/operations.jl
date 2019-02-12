@@ -1,5 +1,6 @@
-export bitarray, basis, packbits, bfloat, bfloat_r, bint, bint_r
+export bitarray, basis, packbits, bfloat, bfloat_r, bint, bint_r, flip
 export anymasked, allmasked, bmask, baddrs, getbit, setbit, controller
+export swapbits, unsafe_swapbits, ismasked_equal, neg, breflect
 
 """
     bitarray(v::Vector, [num_bits::Int]) -> BitArray

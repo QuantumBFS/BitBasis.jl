@@ -1,4 +1,4 @@
-export ReorderedBasis, reorder
+export ReorderedBasis, reorder, invorder
 
 using LuxurySparse, LinearAlgebra
 
@@ -125,3 +125,10 @@ function reorder end
 reorder(v::AbstractArray, itr) = _reorder(v, Tuple(itr))
 reorder(v::AbstractArray, orders::Tuple) = _reorder(v, promote(orders...))
 reorder(v::AbstractArray, orders::NTuple{N, <:Integer}) where N = _reorder(v, orders)
+
+"""
+    invorder(X::AbstractVecOrMat)
+
+Inverse the order of given vector/matrix `X`.
+"""
+invorder(X::AbstractVecOrMat) = reorder(X, Tuple(log2i(size(X, 1)):-1:1))

@@ -1,4 +1,4 @@
-export bsizeof, bnorm, bit_length, onehot, log2i
+export bsizeof, bnorm, bit_length, onehot, log2i, hypercubic
 # NOTE: all binary specified operations begin with b
 
 """
@@ -72,6 +72,15 @@ for N in [8, 16, 32, 64, 128]
         log2i(x::$UT) = $(N - 1) - leading_zeros(x)
     end
 end
+
+
+
+"""
+    hypercubic(A::Array) -> Array
+
+get the hypercubic representation for an array.
+"""
+hypercubic(A::Array) = reshape(A, fill(2, size(A) |> prod |> log2i)...)
 
 # NOTE: this is not exported
 function int(n::Int)

@@ -1,6 +1,14 @@
 using BitBasis
 using Test
 
-@testset "BitBasis.jl" begin
-    # Write your own tests here.
+@testset "test bit literal" begin
+    include("bit_str.jl")
+end
+
+@testset "test operations" begin
+    include("operations.jl")
+end
+
+@testset "test reorder" begin
+    include("reorder.jl")
 end

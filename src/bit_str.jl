@@ -143,8 +143,16 @@ Base.@propagate_inbounds function Base.getindex(bit::BitStr, index::Int)
     return Int((bit.val >> (index - 1)) & 1)
 end
 
-Base.@propagate_inbounds function Base.getindex(bit::BitStr, mask::Union{Vector{Bool}, BitArray})
-    len = length(mask)
+Base.@propagate_inbounds function Base.getindex(bit::BitStr{T}, mask::Union{Vector{Bool}, BitArray}) where T
+    @boundscheck length(bit) == length(mask) || error("length of bits and mask does not match.")
+
+    out = T[]
+    for k in eachindex(mask)
+        if mask[k]
+            push!(out, bit[k])
+        end
+    end
+    return out
 end
 
 Base.@propagate_inbounds function Base.:(<<)(bit::BitStr, n::Int)
