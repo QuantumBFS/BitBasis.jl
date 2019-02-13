@@ -1,4 +1,4 @@
-export bsizeof, bnorm, bit_length, onehot, log2i, hypercubic
+export bsizeof, bnorm, bit_length, onehot, log2i, hypercubic, logdim1
 # NOTE: all binary specified operations begin with b
 
 """
@@ -73,7 +73,12 @@ for N in [8, 16, 32, 64, 128]
     end
 end
 
+"""
+    logdim1(X)
 
+Returns the `log2` of the first dimension's size.
+"""
+logdim1(X) = log2i(size(X, 1))
 
 """
     hypercubic(A::Array) -> Array

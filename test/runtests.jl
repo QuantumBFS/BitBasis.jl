@@ -12,3 +12,7 @@ end
 @testset "test reorder" begin
     include("reorder.jl")
 end
+
+@testset "test utils" begin
+    include("utils.jl")
+end
