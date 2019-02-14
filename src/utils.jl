@@ -1,4 +1,4 @@
-export bsizeof, bnorm, bit_length, onehot, log2i, hypercubic, logdim1
+export bsizeof, bdistance, bit_length, onehot, log2i, hypercubic, logdim1
 # NOTE: all binary specified operations begin with b
 
 """
@@ -10,11 +10,11 @@ bsizeof(::Type{T}) where T = sizeof(T) << 3
 bsizeof(::T) where T = bsizeof(T)
 
 """
-    bnorm(i::Integer, j::Integer) -> Int
+    bdistance(i::Integer, j::Integer) -> Int
 
 Return number of different bits.
 """
-bnorm(i::Ti, j::Ti) where Ti<:Integer = count_ones(i ⊻ j)
+bdistance(i::Ti, j::Ti) where Ti<:Integer = count_ones(i ⊻ j)
 
 """
     onehot([T=Float64], nbits, x::Integer)
