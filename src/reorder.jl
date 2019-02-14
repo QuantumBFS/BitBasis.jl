@@ -106,7 +106,7 @@ function unsafe_reorder(A::Diagonal, orders::NTuple{N, <:Integer}) where N
 end
 
 function _reorder(v::AbstractArray, orders::NTuple{N, <:Integer}) where N
-    length(orders) == logdim1(v) || throw(DimensionMismatch("size of array not match length of order"))
+    length(orders) == log2dim1(v) || throw(DimensionMismatch("size of array not match length of order"))
     return unsafe_reorder(v, orders)
 end
 
@@ -131,4 +131,4 @@ reorder(v::AbstractArray, orders::NTuple{N, <:Integer}) where N = _reorder(v, or
 
 Inverse the order of given vector/matrix `X`.
 """
-invorder(X::AbstractVecOrMat) = reorder(X, Tuple(logdim1(X):-1:1))
+invorder(X::AbstractVecOrMat) = reorder(X, Tuple(log2dim1(X):-1:1))
