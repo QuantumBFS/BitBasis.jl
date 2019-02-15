@@ -1,4 +1,4 @@
-export @bit_str, bcat
+export BitStr, @bit_str, bcat, to_address
 
 """
     BitStr{T}
@@ -48,9 +48,51 @@ function BitStr(str::String)
     return parse_bit(promote_type(Int, int(required_nbits)), str)
 end
 
+"""
+    to_address(x)
+
+Convert `x` to address.
+
+# Example
+
+```julia
+julia> to_address(1)
+1
+
+julia> to_address(-1)
+ERROR: address should be >= 1
+
+julia> to_address(bit"1011")
+12
+```
+"""
+function to_address end
+to_address(x::Nothing) = x
+to_address(x::Integer) = x > 0 ? x : error("address should be >= 1")
+to_address(x::BitStr) = Int(x.val) + 1
+
+
+
+"""
+    to_address(locs...)
+
+Maps locations to indices.
+
+# Example
+
+```julia
+julia> to_address(bit"1010", 2, bit"1111")
+(11, 2, 16)
+```
+"""
+to_address(locs...) = to_address(locs)
+to_address(locs::Tuple) = map(to_address, locs)
+
 # use system interface
-Base.to_index(::AbstractArray, bits::BitStr) = Int(bits.val + 1)
+Base.to_index(::Tuple, bits::BitStr) = to_address(bits)
+Base.to_index(::AbstractArray, bits::BitStr) = to_address(bits)
 Base.length(bits::BitStr{<:Integer, N}) where N = N
+
 
 """
     @bit_str -> BitStr
