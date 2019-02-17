@@ -42,5 +42,3 @@ end
     mask = Bool[1, 0, 0, 0, 1, 1]
     @test bit"110101"[mask] == [1, 1, 1]
 end
-
-string(bit"10101")
