@@ -70,6 +70,9 @@ function to_address end
 to_address(x::Nothing) = x
 to_address(x::Integer) = x > 0 ? x : error("address should be >= 1")
 to_address(x::BitStr) = Int(x.val) + 1
+# better error msg
+to_address(x::T) where T = error("$T is not an address type, maybe you want to overload to_address(::$T)")
+to_address(x::Type{T}) where T = error("$T is not an address type, maybe you want to overload to_address(::$T)")
 
 
 
