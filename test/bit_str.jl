@@ -27,7 +27,7 @@ end
     @test to_address(1) == 1
     @test_throws ErrorException to_address(-1)
     @test to_address(bit"1011") == 12
-    @test to_address(bit"1010", 2, bit"1111") == (11, 2, 16)
+    @test to_locations(bit"1010", 2, bit"1111") == (11, 2, 16)
 end
 
 @testset "conversions" begin

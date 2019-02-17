@@ -1,4 +1,4 @@
-export BitStr, @bit_str, bcat, to_address
+export BitStr, @bit_str, bcat, to_address, to_locations
 
 """
     BitStr{T}
@@ -51,7 +51,7 @@ end
 """
     to_address(x)
 
-Convert `x` to address.
+Convert `x` to address. See also [`to_locations`](@ref).
 
 # Example
 
@@ -77,19 +77,19 @@ to_address(x::Type{T}) where T = error("$T is not an address type, maybe you wan
 
 
 """
-    to_address(locs...)
+    to_locations(locs...)
 
-Maps locations to indices.
+Maps bit configurations to locations.
 
 # Example
 
 ```julia
-julia> to_address(bit"1010", 2, bit"1111")
+julia> to_locations(bit"1010", 2, bit"1111")
 (11, 2, 16)
 ```
 """
-to_address(locs...) = to_address(locs)
-to_address(locs::Tuple) = map(to_address, locs)
+to_locations(locs...) = to_locations(locs)
+to_locations(locs::Tuple) = map(to_address, locs)
 
 # use system interface
 Base.to_index(::Tuple, bits::BitStr) = to_address(bits)
