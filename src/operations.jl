@@ -94,7 +94,7 @@ function bmask end
 bmask(args...) = bmask(Int, args...)
 bmask(::Type{T}) where T <: Integer = zero(T)
 bmask(::Type{T}, positions::Int...) where T <: Integer = bmask(T, positions)
-bmask(::Type{T}, itr) where T <: Integer = reduce(+, one(T) << (b - 1) for b in itr)
+bmask(::Type{T}, itr) where T <: Integer = isempty(itr) ? 0 : reduce(+, one(T) << (b - 1) for b in itr)
 
 function bmask(::Type{T}, range::UnitRange{Int})::T where T<:Integer
     ((one(T) << (range.stop - range.start + 1)) - one(T)) << (range.start - 1)
