@@ -50,6 +50,8 @@ end
 
 # use system interface
 Base.to_index(x::BitStr) = Int(x.val) + 1
+Base.checkindex(::Type{Bool}, inds::AbstractUnitRange, i::BitStr) =
+    checkindex(Bool, inds, Base.to_index(i))
 Base.length(bits::BitStr{<:Integer, N}) where N = N
 
 
