@@ -1,6 +1,5 @@
 name = "BitBasis"
 uuid = "50ba71b6-fa0f-514d-ae9a-0916efc90dcf"
-authors = ["Roger-luo <hiroger@qq.com>", "GiggleLiu <cacate0129@gmail.com>"]
 version = "0.2.0-DEV"
 
 [deps]
