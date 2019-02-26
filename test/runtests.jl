@@ -16,3 +16,7 @@ end
 @testset "test utils" begin
     include("utils.jl")
 end
+
+@testset "test iterate control" begin
+    include("iterate_control.jl")
+end
