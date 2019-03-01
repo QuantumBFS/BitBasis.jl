@@ -1,4 +1,4 @@
-export BitStr, @bit_str, bcat
+export BitStr, @bit_str, bcat, bit_literal
 
 """
     BitStr{T}
@@ -46,6 +46,30 @@ function BitStr(str::String)
     # NOTE: since in most cases this is used as basis and used for indexing
     #       we use Int as much as possible.
     return parse_bit(promote_type(Int, int(required_nbits)), str)
+end
+
+BitStr(x::BitStr{T, N}) where {T, N} = BitStr(x.val, N)
+
+"""
+    bit_literal(xs...)
+
+Create a [`BitStr`](@ref) by input bits `xs`.
+
+# Example
+
+```jldoctest
+julia> bit_literal(1, 0, 1, 0, 1, 1)
+110101 (53)
+```
+"""
+bit_literal(xs...) = bit_literal(xs)
+function bit_literal(xs::NTuple{N, Int}) where N
+    val = zero(int(N))
+    for k in 1:N
+        xs[k] == 0 || xs[k] == 1 || error("expect 0 or 1, got $(xs[k])")
+        val += xs[k] << (k - 1)
+    end
+    return BitStr(val, N)
 end
 
 # use system interface
@@ -141,9 +165,9 @@ end
 # expand iterator to tuple
 bcat(bits) = bcat(bits...)
 
-Base.@propagate_inbounds function Base.getindex(bit::BitStr, index::Int)
+Base.@propagate_inbounds function Base.getindex(bit::BitStr{T}, index::Int) where T
     @boundscheck 1 <= index <= length(bit) || throw(BoundsError(bit, index))
-    return Int((bit.val >> (index - 1)) & 1)
+    return getbit(bit.val, index)
 end
 
 Base.@propagate_inbounds function Base.getindex(bit::BitStr{T}, mask::Union{Vector{Bool}, BitArray}) where T
