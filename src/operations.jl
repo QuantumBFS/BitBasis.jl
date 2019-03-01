@@ -50,6 +50,10 @@ packbits(arr::AbstractVector) = _packbits(arr)[]
 packbits(arr::AbstractArray) = _packbits(arr)
 _packbits(arr) = selectdim(sum(mapslices(x -> x .* (1 .<< (0:size(arr, 1)-1)), arr, dims=1), dims=1), 1, 1)
 
+function truncate(b::Integer, n)
+    
+end
+
 """
     bfloat(b::Integer; nbit::Int=bit_length(b)) -> Float64
 

@@ -1,4 +1,4 @@
-export BitStr, @bit_str, bcat, bit_literal
+export BitStr, @bit_str, bcat, bit_literal, bit
 
 """
     BitStr{T}
@@ -49,6 +49,8 @@ function BitStr(str::String)
 end
 
 BitStr(x::BitStr{T, N}) where {T, N} = BitStr(x.val, N)
+
+bit(x) = BitStr(x)
 
 """
     bit_literal(xs...)
