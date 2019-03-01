@@ -1,6 +1,6 @@
 export bitarray, basis, packbits, bfloat, bfloat_r, bint, bint_r, flip
 export anymasked, allmasked, bmask, baddrs, getbit, setbit, controller
-export swapbits, ismasked_equal, neg, breflect, truncate
+export swapbits, ismasked_equal, neg, breflect, btruncate
 
 """
     bitarray(v::Vector, [num_bits::Int]) -> BitArray
@@ -55,7 +55,7 @@ _packbits(arr) = selectdim(sum(mapslices(x -> x .* (1 .<< (0:size(arr, 1)-1)), a
 
 Truncate bits `b` to given length `n`.
 """
-truncate(b::Integer, n) = b & (1 << n - 1)
+btruncate(b::Integer, n) = b & (1 << n - 1)
 
 """
     bfloat(b::Integer; nbit::Int=bit_length(b)) -> Float64

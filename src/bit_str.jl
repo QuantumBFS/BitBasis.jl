@@ -243,7 +243,7 @@ for IntType in [:Int8, :Int16, :Int32, :Int64, :Int128, :BigInt]
     @eval Base.$IntType(x::BitStr) = $IntType(x.val)
 end
 
-truncate(b::BitStr, n) = BitStr(truncate(b.val, n), n)
+btruncate(b::BitStr, n) = BitStr(btruncate(b.val, n), n)
 
 # TODO: support operations defined in operations.jl for BitStr
 #    - bmask
