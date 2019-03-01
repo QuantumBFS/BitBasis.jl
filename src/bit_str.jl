@@ -208,6 +208,8 @@ for op in [:+, :-, :*, :÷]
 
 end
 
+Base.mod1(x::BitStr{T, N}, y) where {T, N} = BitStr(mod1(x.val, y), N)
+
 Base.:(==)(lhs::BitStr, rhs::Integer) = lhs.val == rhs
 Base.:(==)(lhs::Integer, rhs::BitStr) = lhs == rhs.val
 Base.:(==)(lhs::BitStr{<:Integer, N}, rhs::BitStr{<:Integer, N}) where N = lhs.val == rhs.val
