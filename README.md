@@ -14,9 +14,13 @@ In Julia **v1.0+**, please type `]` in the REPL to use the package mode, then ty
 pkg> add BitBasis
 ```
 
-## Usage
+## Documentation
 
-Please read the [documentation]() for more info.
+| stable | latest |
+|:-------|:-------|
+|[![doc-stable](https://img.shields.io/badge/docs-stable-blue.svg)](http://quantumbfs.github.io/BitBasis.jl/stable)|
+[![doc-latest](https://img.shields.io/badge/docs-latest-blue.svg)](http://quantumbfs.github.io/BitBasis.jl/latest)|
+
 
 ## License
 
