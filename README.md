@@ -18,8 +18,7 @@ pkg> add BitBasis
 
 | stable | latest |
 |:-------|:-------|
-|[![doc-stable](https://img.shields.io/badge/docs-stable-blue.svg)](http://quantumbfs.github.io/BitBasis.jl/stable)|
-[![doc-latest](https://img.shields.io/badge/docs-latest-blue.svg)](http://quantumbfs.github.io/BitBasis.jl/latest)|
+|[![doc-stable](https://img.shields.io/badge/docs-stable-blue.svg)](http://quantumbfs.github.io/BitBasis.jl/stable)|[![doc-latest](https://img.shields.io/badge/docs-latest-blue.svg)](http://quantumbfs.github.io/BitBasis.jl/latest)|
 
 
 ## License
