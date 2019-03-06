@@ -1,0 +1,25 @@
+using Documenter, BitBasis
+
+const PAGES = [
+    "Home" => "index.md",
+]
+
+makedocs(
+    modules = [BitBasis],
+    format = Documenter.HTML(
+        # Use clean URLs, unless built as a "local" build
+        prettyurls = !("local" in ARGS),
+        canonical = "https://quantumbfs.github.io/BitBasis.jl/latest/",
+        analytics = "UA-89508993-1",
+        assets = ["assets/favicon.ico"]
+    ),
+    clean = false,
+    sitename = "BitBasis.jl",
+    linkcheck = !("skiplinks" in ARGS),
+    pages = PAGES
+)
+
+deploydocs(
+    repo = "github.com/QuantumBFS/BitBasis.jl.git",
+    target = "build",
+)
