@@ -7,12 +7,10 @@ const PAGES = [
 makedocs(
     modules = [BitBasis],
     format = Documenter.HTML(
-        # Use clean URLs, unless built as a "local" build
-        prettyurls = !("local" in ARGS),
-        canonical = "https://quantumbfs.github.io/BitBasis.jl/latest/",
-        analytics = "UA-89508993-1",
-        assets = ["assets/favicon.ico"]
+        prettyurls = ("deploy" in ARGS),
+        canonical = ("deploy" in ARGS) ? "https://quantumbfs.github.io/BitBasis.jl/latest/" : nothing,
     ),
+    assets = ["assets/favicon.ico"],
     clean = false,
     sitename = "BitBasis.jl",
     linkcheck = !("skiplinks" in ARGS),
