@@ -25,19 +25,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "#BitBasis.allmasked-Union{Tuple{T}, Tuple{T,T}} where T<:Integer",
+    "location": "#BitBasis.allone-Union{Tuple{T}, Tuple{T,T}} where T<:Integer",
     "page": "Home",
-    "title": "BitBasis.allmasked",
+    "title": "BitBasis.allone",
     "category": "method",
-    "text": "allmasked(index::Integer, mask::Integer) -> Bool\n\nReturn true if all masked position of index is 1.\n\n\n\n\n\n"
+    "text": "allone(index::Integer, mask::Integer) -> Bool\n\nReturn true if all masked position of index is 1.\n\n\n\n\n\n"
 },
 
 {
-    "location": "#BitBasis.anymasked-Union{Tuple{T}, Tuple{T,T}} where T<:Integer",
+    "location": "#BitBasis.anyone-Union{Tuple{T}, Tuple{T,T}} where T<:Integer",
     "page": "Home",
-    "title": "BitBasis.anymasked",
+    "title": "BitBasis.anyone",
     "category": "method",
-    "text": "anymasked(index::Integer, mask::Integer) -> Bool\n\nReturn true if any masked position of index is 1.\n\n\n\n\n\n"
+    "text": "anyone(index::Integer, mask::Integer) -> Bool\n\nReturn true if any masked position of index is 1.\n\n\n\n\n\n"
 },
 
 {
@@ -201,11 +201,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "#BitBasis.ismasked_equal-Union{Tuple{T}, Tuple{T,T,T}} where T<:Integer",
+    "location": "#BitBasis.ismatch-Union{Tuple{T}, Tuple{T,T,T}} where T<:Integer",
     "page": "Home",
-    "title": "BitBasis.ismasked_equal",
+    "title": "BitBasis.ismatch",
     "category": "method",
-    "text": "ismasked_equal(index::Integer, mask::Integer, onemask::Integer) -> Bool\n\nReturn true if bits at positions masked by mask equal to 1 are equal to onemask.\n\nExample\n\njulia> n = 0b11001; mask = 0b10100; onemask = 0b10000;\n\njulia> ismasked_equal(n, mask, onemask)\ntrue\n\n\n\n\n\n"
+    "text": "ismatch(index::Integer, mask::Integer, onemask::Integer) -> Bool\n\nReturn true if bits at positions masked by mask equal to 1 are equal to onemask.\n\nExample\n\njulia> n = 0b11001; mask = 0b10100; onemask = 0b10000;\n\njulia> ismatch(n, mask, onemask)\ntrue\n\n\n\n\n\n"
 },
 
 {
