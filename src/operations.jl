@@ -126,14 +126,19 @@ function baddrs(b::Integer)
     return locs
 end
 
-readbit(index::T, ibit::Int) where T <: Integer = (index >> (ibit - 1)) & one(T)
+"""
+    readbit(x, loc...)
 
-@inline function readbit(index::T, bits::Int...) where T <: Integer
+Read the bit config at given location.
+"""
+readbit(x::T, loc::Int) where T <: Integer = (x >> (loc - 1)) & one(T)
+
+@inline function readbit(x::T, bits::Int...) where T <: Integer
     res = zero(T)
-    for (i, ibit) in enumerate(bits)
-        res += readbit(index, ibit) << (i-1)
+    for (i, loc) in enumerate(bits)
+        res += readbit(x, loc) << (i-1)
     end
-    res
+    return res
 end
 
 """
