@@ -156,20 +156,20 @@ Return `true` if all masked position of index is 1.
 allone(index::T, mask::T) where T <: Integer = (index & mask) == mask
 
 """
-    ismatch(index::Integer, mask::Integer, onemask::Integer) -> Bool
+    ismatch(index::Integer, mask::Integer, target::Integer) -> Bool
 
-Return `true` if bits at positions masked by `mask` equal to `1` are equal to `onemask`.
+Return `true` if bits at positions masked by `mask` equal to `1` are equal to `target`.
 
 ## Example
 
 ```julia
-julia> n = 0b11001; mask = 0b10100; onemask = 0b10000;
+julia> n = 0b11001; mask = 0b10100; target = 0b10000;
 
-julia> ismatch(n, mask, onemask)
+julia> ismatch(n, mask, target)
 true
 ```
 """
-ismatch(index::T, mask::T, onemask::T) where T<:Integer = (index & mask) == onemask
+ismatch(index::T, mask::T, target::T) where T<:Integer = (index & mask) == target
 
 """
     setbit(index::Integer, mask::Integer) -> Integer
@@ -250,6 +250,6 @@ Return a function that checks whether a basis at `cbits` takes specific value `c
 """
 function controller(cbits::IntIterator{Int}, cvals::IntIterator{Int})
     do_mask = bmask(cbits)
-    onemask = length(cvals) == 0 ? 0 : mapreduce(xy -> (xy[2]==1 ? 1<<(xy[1]-1) : 0), |, zip(cbits, cvals))
-    return b->ismatch(b, do_mask, onemask)
+    target = length(cvals) == 0 ? 0 : mapreduce(xy -> (xy[2]==1 ? 1<<(xy[1]-1) : 0), |, zip(cbits, cvals))
+    return b->ismatch(b, do_mask, target)
 end
