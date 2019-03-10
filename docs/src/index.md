@@ -21,8 +21,10 @@ This package provides tools for manipulating such basis in an elegant efficient 
 
 
 ## Documentation
-
-```@autodocs
-Modules = [BitBasis]
-Order   = [:function, :macro, :type]
+```@contents
+Pages = [
+    "tutorial.md",
+    "man.md",
+]
+Depth = 1
 ```
