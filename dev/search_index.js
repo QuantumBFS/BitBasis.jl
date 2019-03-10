@@ -205,7 +205,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "BitBasis.ismatch",
     "category": "method",
-    "text": "ismatch(index::Integer, mask::Integer, onemask::Integer) -> Bool\n\nReturn true if bits at positions masked by mask equal to 1 are equal to onemask.\n\nExample\n\njulia> n = 0b11001; mask = 0b10100; onemask = 0b10000;\n\njulia> ismatch(n, mask, onemask)\ntrue\n\n\n\n\n\n"
+    "text": "ismatch(index::Integer, mask::Integer, target::Integer) -> Bool\n\nReturn true if bits at positions masked by mask equal to 1 are equal to target.\n\nExample\n\njulia> n = 0b11001; mask = 0b10100; target = 0b10000;\n\njulia> ismatch(n, mask, target)\ntrue\n\n\n\n\n\n"
 },
 
 {
