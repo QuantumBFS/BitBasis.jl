@@ -1,5 +1,5 @@
 export bitarray, basis, packbits, bfloat, bfloat_r, bint, bint_r, flip
-export anymasked, allmasked, bmask, baddrs, getbit, setbit, controller
+export anymasked, allmasked, bmask, baddrs, readbit, setbit, controller
 export swapbits, ismasked_equal, neg, breflect, btruncate
 
 """
@@ -118,7 +118,7 @@ function baddrs(b::Integer)
     locs = Vector{Int}(undef, count_ones(b))
     k = 1
     for i = 1:bit_length(b)
-        if getbit(b, i) == 1
+        if readbit(b, i) == 1
             locs[k] = i
             k += 1
         end
@@ -126,12 +126,12 @@ function baddrs(b::Integer)
     return locs
 end
 
-getbit(index::T, ibit::Int) where T <: Integer = (index >> (ibit - 1)) & one(T)
+readbit(index::T, ibit::Int) where T <: Integer = (index >> (ibit - 1)) & one(T)
 
-@inline function getbit(index::T, bits::Int...) where T <: Integer
+@inline function readbit(index::T, bits::Int...) where T <: Integer
     res = zero(T)
     for (i, ibit) in enumerate(bits)
-        res += getbit(index, ibit) << (i-1)
+        res += readbit(index, ibit) << (i-1)
     end
     res
 end

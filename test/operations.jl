@@ -3,10 +3,10 @@ using Test, BitBasis
 ind = 12
 inds = Int[12, 2]
 
-@test getbit(12, 2) == 0
-@test getbit.([12, 2], 2) == [0,1]
-@test getbit.(12, [3,2]) == [1,0]
-@test getbit.(12, [3,2], [2,3]) == [1, 2]
+@test readbit(12, 2) == 0
+@test readbit.([12, 2], 2) == [0,1]
+@test readbit.(12, [3,2]) == [1,0]
+@test readbit.(12, [3,2], [2,3]) == [1, 2]
 @test bmask(baddrs(13)...) == 13
 
 @test flip(12, bmask(1)) == 13
@@ -32,9 +32,9 @@ ba2 = bitarray(inds, 4)
 @test ind |> bitarray(4) == ba1
 @test inds |> bitarray(4) == ba2
 
-@test ba1[2, 1] == getbit(ind, 2)
-@test ba1[[3, 2], 1] == getbit.(ind, [3, 2])
-@test ba2[2,:] == getbit.([ind, 2], 2)
+@test ba1[2, 1] == readbit(ind, 2)
+@test ba1[[3, 2], 1] == readbit.(ind, [3, 2])
+@test ba2[2,:] == readbit.([ind, 2], 2)
 
 msk = bmask(2,5)
 @test swapbits(7, msk) == 21

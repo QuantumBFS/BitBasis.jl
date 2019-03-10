@@ -169,7 +169,7 @@ bcat(bits) = bcat(bits...)
 
 Base.@propagate_inbounds function Base.getindex(bit::BitStr{T}, index::Int) where T
     @boundscheck 1 <= index <= length(bit) || throw(BoundsError(bit, index))
-    return getbit(bit.val, index)
+    return readbit(bit.val, index)
 end
 
 Base.@propagate_inbounds function Base.getindex(bit::BitStr{T}, mask::Union{Vector{Bool}, BitArray}) where T
