@@ -265,6 +265,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "#BitBasis.readbit-Union{Tuple{T}, Tuple{T,Int64}} where T<:Integer",
+    "page": "Home",
+    "title": "BitBasis.readbit",
+    "category": "method",
+    "text": "readbit(x, loc...)\n\nRead the bit config at given location.\n\n\n\n\n\n"
+},
+
+{
     "location": "#BitBasis.reorder",
     "page": "Home",
     "title": "BitBasis.reorder",
