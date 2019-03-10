@@ -1,6 +1,6 @@
 export bitarray, basis, packbits, bfloat, bfloat_r, bint, bint_r, flip
-export anymasked, allmasked, bmask, baddrs, readbit, setbit, controller
-export swapbits, ismasked_equal, neg, breflect, btruncate
+export anyone, allone, bmask, baddrs, readbit, setbit, controller
+export swapbits, ismatch, neg, breflect, btruncate
 
 """
     bitarray(v::Vector, [num_bits::Int]) -> BitArray
@@ -137,21 +137,21 @@ readbit(index::T, ibit::Int) where T <: Integer = (index >> (ibit - 1)) & one(T)
 end
 
 """
-    anymasked(index::Integer, mask::Integer) -> Bool
+    anyone(index::Integer, mask::Integer) -> Bool
 
 Return `true` if any masked position of index is 1.
 """
-anymasked(index::T, mask::T) where T <: Integer = (index & mask) != zero(T)
+anyone(index::T, mask::T) where T <: Integer = (index & mask) != zero(T)
 
 """
-    allmasked(index::Integer, mask::Integer) -> Bool
+    allone(index::Integer, mask::Integer) -> Bool
 
 Return `true` if all masked position of index is 1.
 """
-allmasked(index::T, mask::T) where T <: Integer = (index & mask) == mask
+allone(index::T, mask::T) where T <: Integer = (index & mask) == mask
 
 """
-    ismasked_equal(index::Integer, mask::Integer, onemask::Integer) -> Bool
+    ismatch(index::Integer, mask::Integer, onemask::Integer) -> Bool
 
 Return `true` if bits at positions masked by `mask` equal to `1` are equal to `onemask`.
 
@@ -160,11 +160,11 @@ Return `true` if bits at positions masked by `mask` equal to `1` are equal to `o
 ```julia
 julia> n = 0b11001; mask = 0b10100; onemask = 0b10000;
 
-julia> ismasked_equal(n, mask, onemask)
+julia> ismatch(n, mask, onemask)
 true
 ```
 """
-ismasked_equal(index::T, mask::T, onemask::T) where T<:Integer = (index & mask) == onemask
+ismatch(index::T, mask::T, onemask::T) where T<:Integer = (index & mask) == onemask
 
 """
     setbit(index::Integer, mask::Integer) -> Integer
@@ -246,5 +246,5 @@ Return a function that checks whether a basis at `cbits` takes specific value `c
 function controller(cbits::IntIterator{Int}, cvals::IntIterator{Int})
     do_mask = bmask(cbits)
     onemask = length(cvals) == 0 ? 0 : mapreduce(xy -> (xy[2]==1 ? 1<<(xy[1]-1) : 0), |, zip(cbits, cvals))
-    return b->ismasked_equal(b, do_mask, onemask)
+    return b->ismatch(b, do_mask, onemask)
 end
