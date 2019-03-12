@@ -1,4 +1,5 @@
 using Documenter, BitBasis
+import BitBasis
 
 # preprocess tutorial scripts
 using Literate, Pkg
@@ -7,11 +8,10 @@ for jlfile in ["tutorial.jl"]
     Literate.markdown(joinpath(tutorialpath, jlfile), tutorialpath)
 end
 
-
 const PAGES = [
     "Home" => "index.md",
-    "Manual" => "man.md",
     "Tutorial" => "tutorial.md",
+    "Manual" => "man.md",
 ]
 
 makedocs(

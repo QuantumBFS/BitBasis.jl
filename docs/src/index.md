@@ -20,11 +20,10 @@ The basis of linear spaces can be marked by a set of symbols, for concrete physi
 This package provides tools for manipulating such basis in an elegant efficient way in Julia.
 
 
-## Documentation
+## Contents
 ```@contents
 Pages = [
     "tutorial.md",
     "man.md",
 ]
-Depth = 1
 ```

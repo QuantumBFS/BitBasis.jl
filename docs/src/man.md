@@ -1,4 +1,10 @@
-# [BitBasis](@id BitBasis_man)
+```@meta
+DocTestSetup = quote
+    using BitBasis, Dates
+end
+```
+
+# Manual
 
 ```@autodocs
 Modules = [BitBasis]
