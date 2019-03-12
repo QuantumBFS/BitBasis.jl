@@ -1,6 +1,6 @@
 ```@meta
 DocTestSetup = quote
-    using BitBasis, Dates
+    using BitBasis
 end
 ```
 

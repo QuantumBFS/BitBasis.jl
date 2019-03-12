@@ -100,7 +100,7 @@ end
 function unsafe_reorder(A::Diagonal, orders::NTuple{N, <:Integer}) where N
     diag = similar(A.diag)
     for (i, b) in enumerate(ReorderedBasis(orders))
-        diag[b+1] = A.diag[i]
+        @inbounds diag[b+1] = A.diag[i]
     end
     return Diagonal(diag)
 end
