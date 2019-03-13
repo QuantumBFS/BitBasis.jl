@@ -165,7 +165,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "breflect",
     "category": "section",
-    "text": "(Image: breflect)breflect(4, 0b1011) == 0b1101  # reflect little end and big endFor more interesting bitwise operations, see manual page BitBasis."
+    "text": "(Image: breflect)breflect(4, 0b1011) == 0b1101  # reflect little end and big endFor more detailed bitwise operations, see manual page BitBasis."
 },
 
 {
@@ -173,7 +173,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "Number Readouts",
     "category": "section",
-    "text": "In phase estimation and HHL algorithms, one need to read out qubits as integer or float point numbers. A register can be read out in different ways, likebint, the integer itself\nbint_r, the integer with bits small-big end reflected.\nbfloat, the float point number 0.σ₁σ₂...σₙ.\nbfloat_r, the float point number 0.σₙ...σ₂σ₁.(Image: 010101)bint(0b010101)\nbint_r(0b010101, nbits=6)\nbfloat(0b010101)\nbfloat_r(0b010101, nbits=6);Notice the functions with _r as postfix always require nbits as an additional input parameter to help reading, which is regarded as less natural way of expressing numbers."
+    "text": "In phase estimation and HHL algorithms, one need to read out qubits as integer or float point numbers. A register can be read out in different ways, likebint, the integer itself\nbint_r, the integer with bits small-big end reflected.\nbfloat, the float point number 0σ₁σ₂σ_n.\nbfloat_r, the float point number 0σ_nσ₂σ₁.(Image: 010101)bint(0b010101)\nbint_r(0b010101, nbits=6)\nbfloat(0b010101)\nbfloat_r(0b010101, nbits=6);Notice the functions with _r as postfix always require nbits as an additional input parameter to help reading, which is regarded as less natural way of expressing numbers."
 },
 
 {
