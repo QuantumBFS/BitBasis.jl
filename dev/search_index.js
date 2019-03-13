@@ -37,7 +37,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "Tutorial",
     "category": "page",
-    "text": "using BitBasis"
+    "text": "CurrentModule = BitBasisusing BitBasis"
 },
 
 {
@@ -173,7 +173,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "Number Readouts",
     "category": "section",
-    "text": "In phase estimation and HHL algorithms, one need to read out qubits as integer or float point numbers. A register can be read out in different ways, likebint, the integer itself\nbint_r, the integer with bits small-big end reflected.\nbfloat, the float point number 0σ₁σ₂σ_n.\nbfloat_r, the float point number 0σ_nσ₂σ₁.(Image: 010101)bint(0b010101)\nbint_r(0b010101, nbits=6)\nbfloat(0b010101)\nbfloat_r(0b010101, nbits=6);Notice the functions with _r as postfix always require nbits as an additional input parameter to help reading, which is regarded as less natural way of expressing numbers."
+    "text": "In phase estimation and HHL algorithms, one need to read out qubits as integer or float point numbers. A register can be read out in different ways, likebint, the integer itself\nbint_r, the integer with bits small-big end reflected.\nbfloat, the float point number 0σ₁σ₂ cdots σ_n.\nbfloat_r, the float point number 0σ_n cdots σ₂σ₁.(Image: 010101)bint(0b010101)\nbint_r(0b010101, nbits=6)\nbfloat(0b010101)\nbfloat_r(0b010101, nbits=6);Notice the functions with _r as postfix always require nbits as an additional input parameter to help reading, which is regarded as less natural way of expressing numbers."
 },
 
 {
@@ -197,7 +197,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Manual",
     "title": "Manual",
     "category": "page",
-    "text": "DocTestSetup = quote\n    using BitBasis\nend"
+    "text": "CurrentModule = BitBasis\nDocTestSetup = quote\n    using BitBasis\nend"
 },
 
 {
