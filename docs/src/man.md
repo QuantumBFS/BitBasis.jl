@@ -1,4 +1,5 @@
 ```@meta
+CurrentModule = BitBasis
 DocTestSetup = quote
     using BitBasis
 end
