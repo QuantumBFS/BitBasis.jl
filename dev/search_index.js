@@ -41,14 +41,6 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "tutorial/#tutorial-1",
-    "page": "Tutorial",
-    "title": "Tutorial",
-    "category": "section",
-    "text": ""
-},
-
-{
     "location": "tutorial/#Basics-Bitwise-Operations-1",
     "page": "Tutorial",
     "title": "Basics Bitwise Operations",
@@ -181,7 +173,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "Iterating over Bases",
     "category": "section",
-    "text": "Counting from 0 is very natural way of iterating quantum registers, very pity for Juliaitr = basis(4)\ncollect(itr)itercontrol is a complicated API, but it plays an fundamental role in high performance quantum simulation of Yao. It is used for iterating over basis in controlled way, its interface looks likeusing BitBasis\nfor each in itercontrol(7, [1, 3, 4, 7], (1, 0, 1, 0))\n    println(string(each, base=2, pad=7))\nend"
+    "text": "Counting from 0 is very natural way of iterating quantum registers, very pity for Juliaitr = basis(4)\ncollect(itr)itercontrol is a complicated API, but it plays an fundamental role in high performance quantum simulation of Yao. It is used for iterating over basis in controlled way, its interface looks likefor each in itercontrol(7, [1, 3, 4, 7], (1, 0, 1, 0))\n    println(string(each, base=2, pad=7))\nend"
 },
 
 {
@@ -189,7 +181,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "Reordering Basis",
     "category": "section",
-    "text": "We store the wave function as vb+1 = langle bpsirangle. We are able to reorder the basis asusing BitBasis\nv = onehot(5, 0b11100)  # the one hot vector representation of given bits\nreorder(v, (3,2,1,5,4)) ≈ onehot(5, 0b11001)\ninvorder(v) ≈ onehot(5, 0b00111)  # breflect for each basis"
+    "text": "We store the wave function as vb+1 = langle bpsirangle. We are able to reorder the basis asv = onehot(5, 0b11100)  # the one hot vector representation of given bits\nreorder(v, (3,2,1,5,4)) ≈ onehot(5, 0b11001)\ninvorder(v) ≈ onehot(5, 0b00111)  # breflect for each basis"
 },
 
 {
