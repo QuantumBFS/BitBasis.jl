@@ -3,19 +3,19 @@ export anyone, allone, bmask, baddrs, readbit, setbit, controller
 export swapbits, ismatch, neg, breflect, btruncate
 
 """
-    bitarray(v::Vector, [num_bits::Int]) -> BitArray
-    bitarray(v::Int, num_bits::Int) -> BitArray
-    bitarray(num_bits::Int) -> Function
+    bitarray(v::Vector, [nbits::Int]) -> BitArray
+    bitarray(v::Int, nbits::Int) -> BitArray
+    bitarray(nbits::Int) -> Function
 
-Construct BitArray from an integer vector, if num_bits not supplied, it is 64.
+Construct BitArray from an integer vector, if nbits not supplied, it is 64.
 If an integer is supplied, it returns a function mapping a Vector/Int to bitarray.
 """
-function bitarray(v::Vector{T}, num_bits::Int)::BitArray{2} where T<:Number
+function bitarray(v::Vector{T}, nbits::Int)::BitArray{2} where T<:Number
     ba = BitArray(undef, 0, 0)
     ba.len = 64*length(v)
     ba.chunks = UInt64.(v)
     ba.dims = (64, length(v))
-    view(ba, 1:num_bits, :)
+    view(ba, 1:nbits, :)
 end
 
 function bitarray(v::Vector{T})::BitArray{2} where T<:Union{UInt64, Int64}
@@ -26,19 +26,19 @@ function bitarray(v::Vector{T})::BitArray{2} where T<:Union{UInt64, Int64}
     ba
 end
 
-bitarray(v::Number, num_bits::Int)::BitArray{1} = vec(bitarray([v], num_bits))
-bitarray(nbit::Int) = x->bitarray(x, nbit)
+bitarray(v::Number, nbits::Int)::BitArray{1} = vec(bitarray([v], nbits))
+bitarray(nbits::Int) = x->bitarray(x, nbits)
 
 """
-    basis([IntType], num_bits::Int) -> UnitRange{IntType}
+    basis([IntType], nbits::Int) -> UnitRange{IntType}
     basis([IntType], state::AbstractArray) -> UnitRange{IntType}
 
-Returns the UnitRange for basis in Hilbert Space of num_bits qubits.
+Returns the UnitRange for basis in Hilbert Space of nbits qubits.
 If an array is supplied, it will return a basis having the same size
 with the first diemension of array.
 """
 basis(arg::Union{Int, AbstractArray}) = basis(Int, arg)
-basis(::Type{T}, num_bits::Int) where T <: Integer = UnitRange{T}(0, 1 << num_bits-1)
+basis(::Type{T}, nbits::Int) where T <: Integer = UnitRange{T}(0, 1 << nbits-1)
 basis(::Type{T}, state::AbstractArray) where T <: Integer = UnitRange{T}(0, size(state, 1) - 1)
 
 """
@@ -58,34 +58,34 @@ Truncate bits `b` to given length `n`.
 btruncate(b::Integer, n) = b & (1 << n - 1)
 
 """
-    bfloat(b::Integer; nbit::Int=bit_length(b)) -> Float64
+    bfloat(b::Integer; nbits::Int=bit_length(b)) -> Float64
 
 float view, with big end qubit 1.
 """
-bfloat(b::Integer; nbit::Int=bit_length(b)) = breflect(nbit, b) / (1<<nbit)
+bfloat(b::Integer; nbits::Int=bit_length(b)) = breflect(nbits, b) / (1<<nbits)
 
 """
-    bfloat_r(b::Integer; nbit::Int) -> Float64
+    bfloat_r(b::Integer; nbits::Int) -> Float64
 
 float view, with bits read in inverse order.
 """
-bfloat_r(b::Integer; nbit::Int) = b / (1<<nbit)
+bfloat_r(b::Integer; nbits::Int) = b / (1<<nbits)
 
 """
-    bint(b; nbit=nothing) -> Int
+    bint(b; nbits=nothing) -> Int
 
 integer view, with little end qubit 1.
 """
-bint(b::Integer; nbit=nothing) = b
-bint(x::Float64; nbit::Int) = breflect(nbit,bint_r(x, nbit=nbit))
+bint(b::Integer; nbits=nothing) = b
+bint(x::Float64; nbits::Int) = breflect(nbits,bint_r(x, nbits=nbits))
 
 """
-    bint_r(b; nbit::Int) -> Integer
+    bint_r(b; nbits::Int) -> Integer
 
 integer read in inverse order.
 """
-bint_r(b::Integer; nbit::Int) = breflect(nbit, b)
-bint_r(x::Float64; nbit::Int) = Int(round(x * (1<<nbit)))
+bint_r(b::Integer; nbits::Int) = breflect(nbits, b)
+bint_r(x::Float64; nbits::Int) = Int(round(x * (1<<nbits)))
 
 
 """
@@ -103,7 +103,7 @@ bmask(::Type{T}) where T <: Integer = zero(T)
 bmask(::Type{T}, positions::Int...) where T <: Integer = bmask(T, positions)
 bmask(::Type{T}, itr) where T <: Integer = isempty(itr) ? 0 : reduce(+, one(T) << (b - 1) for b in itr)
 
-function bmask(::Type{T}, range::UnitRange{Int})::T where T<:Integer
+@inline function bmask(::Type{T}, range::UnitRange{Int})::T where T<:Integer
     ((one(T) << (range.stop - range.start + 1)) - one(T)) << (range.start - 1)
 end
 
@@ -186,33 +186,26 @@ Return an Integer with bits at masked position flipped.
 flip(index::T, mask::T) where T<:Integer = index ⊻ mask
 
 """
-    neg(index::Integer, num_bits::Int) -> Integer
+    neg(index::Integer, nbits::Int) -> Integer
 
-Return an integer with all bits flipped (with total number of bit `num_bits`).
+Return an integer with all bits flipped (with total number of bit `nbits`).
 """
-neg(index::T, num_bits::Int) where T<:Integer = bmask(T, 1:num_bits) ⊻ index
+neg(index::T, nbits::Int) where T<:Integer = bmask(T, 1:nbits) ⊻ index
 
 """
     swapbits(n::Integer, mask_ij::Integer) -> Integer
+    swapbits(n::Integer, i::Int, j::Int) -> Integer
 
-Return an integer with bits at `i` and `j` in given mask flipped.
+Return an integer with bits at `i` and `j` flipped. For performance, locations `i` and `j` specified by mask is prefered.
 
 !!! warning
 
     `mask_ij` should only contain two `1`, `swapbits` will not check it, use at
     your own risk.
 """
-Base.@propagate_inbounds swapbits(b::T, mask_ij::T) where T <: Integer = unsafe_swapbits(b, mask_ij)
+swapbits(b::T, i::Int, j::Int) where {T <: Integer} = swapbits(b, bmask(T, i, j))
 
-"""
-    swapbits(n::Integer, i::Int, j::Int) -> Integer
-
-Return an integer with bits at `i` and `j` flipped.
-"""
-swapbits(b::Integer, i::Int, j::Int) = unsafe_swapbits(b, i, j)
-unsafe_swapbits(b::T, i::Int, j::Int) where {T <: Integer} = unsafe_swapbits(b, bmask(T, i, j))
-
-@inline function unsafe_swapbits(b::T, mask::T) where T <: Integer
+@inline function swapbits(b::T, mask::T) where T <: Integer
     bm = b & mask
     if bm !=0 && bm != mask
         b ⊻= mask
@@ -221,7 +214,7 @@ unsafe_swapbits(b::T, i::Int, j::Int) where {T <: Integer} = unsafe_swapbits(b, 
 end
 
 """
-    breflect(num_bits::Int, b::Integer[, masks::Vector{Integer}]) -> Integer
+    breflect(nbits::Int, b::Integer[, masks::Vector{Integer}]) -> Integer
 
 Return left-right reflected integer.
 """
@@ -229,14 +222,14 @@ function breflect end
 
 @inline function breflect(nbits::Int, b::Integer)
     @simd for i in 1:nbits÷2
-        b = unsafe_swapbits(b, i, nbits - i + 1)
+        b = swapbits(b, i, nbits - i + 1)
     end
     return b
 end
 
-@inline function breflect(num_bits::Int, b::T, masks::Vector{T})::T where T<:Integer
+@inline function breflect(nbits::Int, b::T, masks::Vector{T})::T where T<:Integer
     @simd for m in masks
-        b = unsafe_swapbits(b, m)
+        b = swapbits(b, m)
     end
     return b
 end
