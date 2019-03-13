@@ -5,4 +5,3 @@
 *.jl.mem
 
 docs/build
-docs/src/tutorial.md

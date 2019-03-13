@@ -63,7 +63,7 @@ mask = bmask(UInt8, 1,3,4)
 # ![swapbits](assets/swapbits.png)
 @assert swapbits(0b1011, 0b1100) == 0b0111  # swap masked positions
 
-# #### [`neg`](@ref)
+#### [`neg`](@ref)
 @assert neg(0b1011, 2) == 0b1000  # flip masked positions
 
 # #### [`btruncate`](@ref) and [`breflect`](@ref)
@@ -75,7 +75,7 @@ mask = bmask(UInt8, 1,3,4)
 @assert breflect(4, 0b1011) == 0b1101  # reflect little end and big end
 
 # For more interesting bitwise operations, see manual page [BitBasis](@ref BitBasis).
-#----------------------------------
+# ----------------------------------
 # ## Number Readouts
 # In phase estimation and HHL algorithms, one need to read out qubits as integer or float point numbers.
 # A register can be read out in different ways, like
@@ -96,7 +96,7 @@ mask = bmask(UInt8, 1,3,4)
 # Counting from `0` is very natural way of iterating quantum registers, very pity for `Julia`
 basis(4)
 
-# `itercontrol` is a complicated API, but it plays an fundamental role in high performance quantum simulation of `Yao`.
+# [`itercontrol`](@ref) is a complicated API, but it plays an fundamental role in high performance quantum simulation of `Yao`.
 # It is used for iterating over basis in controlled way, its interface looks like
 @doc itercontrol
 
@@ -108,4 +108,5 @@ v = onehot(5, 0b11100)  # the product state
 @assert invorder(v) ≈ onehot(5, 0b00111)  # breflect for each basis
 
 # ## Bit String Representation
-# [to be continue ...]
+# bit strings are literals for bits, it provides better view on binary basis.
+# you could use
