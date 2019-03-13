@@ -37,7 +37,15 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "Tutorial",
     "category": "page",
-    "text": "EditURL = \"https://github.com/QuantumBFS/BitBasis.jl/blob/master/docs/src/tutorial.jl\""
+    "text": "using BitBasis"
+},
+
+{
+    "location": "tutorial/#tutorial-1",
+    "page": "Tutorial",
+    "title": "Tutorial",
+    "category": "section",
+    "text": ""
 },
 
 {
@@ -45,23 +53,23 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "Basics Bitwise Operations",
     "category": "section",
-    "text": "using BitBasis"
+    "text": ""
 },
 
 {
-    "location": "tutorial/#Table-of-Contents-1",
+    "location": "tutorial/#Integer-Representations-1",
     "page": "Tutorial",
-    "title": "Table of Contents",
+    "title": "Integer Representations",
     "category": "section",
-    "text": "Representations\nBit Manipulations\nNumber Readouts\nIterating over Bases\nReordering Basis\nBit String Representation"
+    "text": "We use an Int type to store bit-wise (spin) configurations, e.g. 0b011101 (29) represents the configurationsigma_1=1 sigma_2=0 sigma_3=1 sigma_4=1 sigma_5=1 sigma_6=0so we relate the configurations vec σ with integer b by b = sumlimits_i 2^i-1σ_i. (Image: 11100) e.g. we can use a digit 28 to represent bit configuration 0b11100bdistance(0b11100, 0b10101) == 2  # Hamming distance\nbit_length(0b11100) == 5In BitBasis, we also provide a more readable way to define these kind of objects, which is called the bit string literal, most of the integer operations and BitBasis functions are overloaded for the bit string literal.We can switch between binary and digital representations withbitarray(integers, nbits), transform integers to bistrings of type BitArray.\npackabits(bitstring), transform bitstrings to integers.\nbaddrs(integer), get the locations of nonzero qubits.bitarray(4, 5)\nbitarray([4, 5, 6], 5)\npackbits([1, 1, 0])\nbitarray([4, 5, 6], 5) |> packbits;A curried version of the above function is also provided. See also bitarray."
 },
 
 {
-    "location": "tutorial/#Representations-1",
+    "location": "tutorial/#bit_literal-1",
     "page": "Tutorial",
-    "title": "Representations",
+    "title": "Bit String Literal",
     "category": "section",
-    "text": "We use an Int type to store spin configurations, e.g. 0b011101 (29) represents qubit configurationsigma_1=1 sigma_2=0 sigma_3=1 sigma_4=1 sigma_5=1 sigma_6=0so we relate the configurations vec σ with integer b by b = sumlimits_i 2^i-1σ_i. (Image: 11100) e.g. we can use a digit 28 to represent bit configuration 0b11100@assert bdistance(0b11100, 0b10101) == 2  # Hamming distance\n@assert bit_length(0b11100) == 5We can switch between binary and digital representations withinteger(s) |> bitarray(nbits), transform integers to bistrings of type BitArray.\nbitstring |> packabits, transform bitstrings to integers.\ninteger |> baddrs, get the locations of nonzero qubits.@show 4 |> bitarray(5)\n@show [4, 5, 6] |> bitarray(5)\n@show [1, 1 , 0] |> packbits\n@show [4, 5, 6] |> bitarray(5) |> packbits;"
+    "text": "bit strings are literals for bits, it provides better view on binary basis. you could use @bit_str, which looks like the followingbit\"101\" * 2\nbcat(bit\"101\" for i in 1:10)\nrepeat(bit\"101\", 2)\nbit\"1101\"[2]to define a bit string with length. bit\"10101\" is equivalent to 0b10101 on both performance and functionality but it store the length of given bits statically. The bit string literal offers a more readable syntax for these kind of objects."
 },
 
 {
@@ -77,7 +85,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "readbit and baddrs",
     "category": "section",
-    "text": "(Image: 11100)@assert readbit(0b11100, 2, 3) == 0b10  # read the 2nd and 3rd bits as `x₃x₂`\n@assert baddrs(0b11100) == [3,4,5]  # locations of one bits"
+    "text": "(Image: 11100)readbit(0b11100, 2, 3) == 0b10  # read the 2nd and 3rd bits as `x₃x₂`\nbaddrs(0b11100) == [3,4,5]  # locations of one bits"
 },
 
 {
@@ -85,7 +93,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "bmask",
     "category": "section",
-    "text": "Masking technic provides faster binary operations, to generate a mask with specific position masked, e.g. we want to mask qubits 1, 3, 4mask = bmask(UInt8, 1,3,4)\n@assert mask == 0b1101;"
+    "text": "Masking technic provides faster binary operations, to generate a mask with specific position masked, e.g. we want to mask qubits 1, 3, 4mask = bmask(UInt8, 1,3,4)\nstring(mask, base=2, pad=4)"
 },
 
 {
@@ -93,7 +101,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "allone and anyone",
     "category": "section",
-    "text": "with this mask (masked positions are colored light blue), we have (Image: 1011_1101)@assert allone(0b1011, mask) == false # true if all masked positions are 1\n@assert anyone(0b1011, mask) == true # true if any masked positions is 1"
+    "text": "with this mask (masked positions are colored light blue), we have (Image: 1011_1101)allone(0b1011, mask) == false # true if all masked positions are 1\nanyone(0b1011, mask) == true # true if any masked positions is 1"
 },
 
 {
@@ -101,7 +109,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "ismatch",
     "category": "section",
-    "text": "(Image: ismatch)@assert ismatch(0b1011, mask, 0b1001) == true  # true if masked part matches `0b1001`"
+    "text": "(Image: ismatch)ismatch(0b1011, mask, 0b1001) == true  # true if masked part matches `0b1001`"
 },
 
 {
@@ -109,7 +117,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "flip",
     "category": "section",
-    "text": "(Image: 1011_1101)@assert flip(0b1011, mask) == 0b0110  # flip masked positions"
+    "text": "(Image: 1011_1101)bit(flip(0b1011, mask), 4)  # flip masked positions"
 },
 
 {
@@ -117,7 +125,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "setbit",
     "category": "section",
-    "text": "(Image: setbit)@assert setbit(0b1011, 0b1100) == 0b1111 # set masked positions 1"
+    "text": "(Image: setbit)setbit(0b1011, 0b1100) == 0b1111 # set masked positions 1"
 },
 
 {
@@ -125,7 +133,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "swapbits",
     "category": "section",
-    "text": "(Image: swapbits)@assert swapbits(0b1011, 0b1100) == 0b0111  # swap masked positions"
+    "text": "(Image: swapbits)swapbits(0b1011, 0b1100) == 0b0111  # swap masked positions"
 },
 
 {
@@ -133,7 +141,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "neg",
     "category": "section",
-    "text": "@assert neg(0b1011, 2) == 0b1000  # flip masked positions"
+    "text": "neg(0b1011, 2) == 0b1000"
 },
 
 {
@@ -141,7 +149,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "btruncate and breflect",
     "category": "section",
-    "text": "(Image: btruncate)@assert btruncate(0b1011, 2) == 0b0011  # only the first two qubits are retained"
+    "text": "(Image: btruncate)btruncate(0b1011, 2) == 0b0011  # only the first two qubits are retained"
 },
 
 {
@@ -149,7 +157,15 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "breflect",
     "category": "section",
-    "text": "(Image: breflect)@assert breflect(4, 0b1011) == 0b1101  # reflect little end and big endFor more interesting bitwise operations, see manual page BitBasis."
+    "text": "(Image: breflect)breflect(4, 0b1011) == 0b1101  # reflect little end and big end"
+},
+
+{
+    "location": "tutorial/#For-more-interesting-bitwise-operations,-see-manual-page-[BitBasis](@ref-BitBasis).-1",
+    "page": "Tutorial",
+    "title": "For more interesting bitwise operations, see manual page BitBasis.",
+    "category": "section",
+    "text": ""
 },
 
 {
@@ -157,7 +173,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "Number Readouts",
     "category": "section",
-    "text": "In phase estimation and HHL algorithms, one need to read out qubits as integer or float point numbers. A register can be read out in different ways, likebint, the integer itself\nbint_r, the integer with bits small-big end reflected.\nbfloat, the float point number 0.σ₁σ₂...σₙ.\nbfloat_r, the float point number 0.σₙ...σ₂σ₁.(Image: 010101)@show bint(0b010101)\n@show bint_r(0b010101, nbits=6)\n@show bfloat(0b010101)\n@show bfloat_r(0b010101, nbits=6);Notice here functions with _r ending always require nbits as an additional input parameter to help reading, which is regarded as less natural way of expressing numbers."
+    "text": "In phase estimation and HHL algorithms, one need to read out qubits as integer or float point numbers. A register can be read out in different ways, likebint, the integer itself\nbint_r, the integer with bits small-big end reflected.\nbfloat, the float point number 0.σ₁σ₂...σₙ.\nbfloat_r, the float point number 0.σₙ...σ₂σ₁.(Image: 010101)bint(0b010101)\nbint_r(0b010101, nbits=6)\nbfloat(0b010101)\nbfloat_r(0b010101, nbits=6);Notice the functions with _r as postfix always require nbits as an additional input parameter to help reading, which is regarded as less natural way of expressing numbers."
 },
 
 {
@@ -165,7 +181,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "Iterating over Bases",
     "category": "section",
-    "text": "Counting from 0 is very natural way of iterating quantum registers, very pity for Juliabasis(4)itercontrol is a complicated API, but it plays an fundamental role in high performance quantum simulation of Yao. It is used for iterating over basis in controlled way, its interface looks like@doc itercontrol"
+    "text": "Counting from 0 is very natural way of iterating quantum registers, very pity for Juliaitr = basis(4)\ncollect(itr)itercontrol is a complicated API, but it plays an fundamental role in high performance quantum simulation of Yao. It is used for iterating over basis in controlled way, its interface looks likeusing BitBasis\nfor each in itercontrol(7, [1, 3, 4, 7], (1, 0, 1, 0))\n    println(string(each, base=2, pad=7))\nend"
 },
 
 {
@@ -173,15 +189,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "Reordering Basis",
     "category": "section",
-    "text": "We store the wave function as vb+1 = langle bpsirangle. We are able to reorder the basis asv = onehot(5, 0b11100)  # the product state\n@assert reorder(v, (3,2,1,5,4)) ≈ onehot(5, 0b11001)\n@assert invorder(v) ≈ onehot(5, 0b00111)  # breflect for each basis"
-},
-
-{
-    "location": "tutorial/#Bit-String-Representation-1",
-    "page": "Tutorial",
-    "title": "Bit String Representation",
-    "category": "section",
-    "text": "[to be continue ...]This page was generated using Literate.jl."
+    "text": "We store the wave function as vb+1 = langle bpsirangle. We are able to reorder the basis asusing BitBasis\nv = onehot(5, 0b11100)  # the one hot vector representation of given bits\nreorder(v, (3,2,1,5,4)) ≈ onehot(5, 0b11001)\ninvorder(v) ≈ onehot(5, 0b00111)  # breflect for each basis"
 },
 
 {
@@ -229,7 +237,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Manual",
     "title": "BitBasis.@bit_str",
     "category": "macro",
-    "text": "@bit_str -> BitStr\n\nConstruct a bit string. such as bit\"0000\". The bit strings also supports string bcat. Just use it like normal strings.\n\nExample\n\njulia> bit\"10001\"\n10001 (17)\n\njulia> bit\"100_111_101\"\n00001110101 (117)\n\njulia> bcat(bit\"1001\", bit\"11\", bit\"1110\")\n1001111110 (638)\n\njulia> v = rand(16);\n\njulia> v[bit\"1001\"]\n0.38965443157314406\n\njulia> onehot(bit\"1001\")\n16-element Array{Float64,1}:\n 0.0\n 0.0\n 0.0\n 0.0\n 0.0\n 0.0\n 0.0\n 0.0\n 0.0\n 1.0\n 0.0\n 0.0\n 0.0\n 0.0\n 0.0\n 0.0\n\n\n\n\n\n\n"
+    "text": "@bit_str -> BitStr\n\nConstruct a bit string. such as bit\"0000\". The bit strings also supports string bcat. Just use it like normal strings.\n\nExample\n\njulia> bit\"10001\"\n10001 (17)\n\njulia> bit\"100_111_101\"\n100111101 (317)\n\njulia> bcat(bit\"1001\", bit\"11\", bit\"1110\")\n1001111110 (638)\n\njulia> v = collect(1:16);\n\njulia> v[bit\"1001\"]\n10\n\njulia> onehot(bit\"1001\")\n16-element Array{Float64,1}:\n 0.0\n 0.0\n 0.0\n 0.0\n 0.0\n 0.0\n 0.0\n 0.0\n 0.0\n 1.0\n 0.0\n 0.0\n 0.0\n 0.0\n 0.0\n 0.0\n\n\n\n\n\n\n"
 },
 
 {
@@ -237,7 +245,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Manual",
     "title": "BitBasis.allone",
     "category": "method",
-    "text": "allone(index::Integer, mask::Integer) -> Bool\n\nReturn true if all masked position of index is 1.\n\n\n\n\n\n"
+    "text": "allone(index::Integer, mask::Integer) -> Bool\n\nReturn true if all masked position of index is 1.\n\nExample\n\ntrue if all masked positions are 1.\n\njulia> allone(0b1011, 0b1011)\ntrue\n\njulia> allone(0b1011, 0b1001)\ntrue\n\njulia> allone(0b1011, 0b0100)\nfalse\n\n\n\n\n\n"
 },
 
 {
@@ -245,7 +253,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Manual",
     "title": "BitBasis.anyone",
     "category": "method",
-    "text": "anyone(index::Integer, mask::Integer) -> Bool\n\nReturn true if any masked position of index is 1.\n\n\n\n\n\n"
+    "text": "anyone(index::Integer, mask::Integer) -> Bool\n\nReturn true if any masked position of index is 1.\n\nExample\n\ntrue if any masked positions is 1.\n\njulia> anyone(0b1011, 0b1001)\ntrue\n\njulia> anyone(0b1011, 0b1100)\ntrue\n\njulia> anyone(0b1011, 0b0100)\nfalse\n\n\n\n\n\n"
 },
 
 {
@@ -302,6 +310,30 @@ var documenterSearchIndex = {"docs": [
     "title": "BitBasis.bint_r",
     "category": "method",
     "text": "bint_r(b; nbits::Int) -> Integer\n\ninteger read in inverse order.\n\n\n\n\n\n"
+},
+
+{
+    "location": "man/#BitBasis.bit-Tuple{Integer}",
+    "page": "Manual",
+    "title": "BitBasis.bit",
+    "category": "method",
+    "text": "bit(x[; len=ndigits(x, base=2)])\n\nCreate a BitStr accroding to integer x to given length len.\n\n\n\n\n\n"
+},
+
+{
+    "location": "man/#BitBasis.bit-Tuple{String}",
+    "page": "Manual",
+    "title": "BitBasis.bit",
+    "category": "method",
+    "text": "bit(string)\n\nCreate a BitStr with given string of bits. See also @bit_str.\n\n\n\n\n\n"
+},
+
+{
+    "location": "man/#BitBasis.bit-Tuple{}",
+    "page": "Manual",
+    "title": "BitBasis.bit",
+    "category": "method",
+    "text": "bit(;len)\n\nLazy curried version of bit.\n\n\n\n\n\n"
 },
 
 {
@@ -381,7 +413,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Manual",
     "title": "BitBasis.flip",
     "category": "method",
-    "text": "flip(index::Integer, mask::Integer) -> Integer\n\nReturn an Integer with bits at masked position flipped.\n\n\n\n\n\n"
+    "text": "flip(index::Integer, mask::Integer) -> Integer\n\nReturn an Integer with bits at masked position flipped.\n\nExample\n\njulia> flip(0b1011, 0b1011) |> bit(len=4)\n0000 (0)\n\n\n\n\n\n"
 },
 
 {
@@ -445,7 +477,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Manual",
     "title": "BitBasis.neg",
     "category": "method",
-    "text": "neg(index::Integer, nbits::Int) -> Integer\n\nReturn an integer with all bits flipped (with total number of bit nbits).\n\n\n\n\n\n"
+    "text": "neg(index::Integer, nbits::Int) -> Integer\n\nReturn an integer with all bits flipped (with total number of bit nbits).\n\nExample\n\njulia> neg(0b1111, 4) |> bit(len=4)\n0000 (0)\n\njulia> neg(0b0111, 4) |> bit(len=4)\n1000 (8)\n\n\n\n\n\n"
 },
 
 {
@@ -493,7 +525,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Manual",
     "title": "BitBasis.setbit",
     "category": "method",
-    "text": "setbit(index::Integer, mask::Integer) -> Integer\n\nset the bit at masked position to 1.\n\n\n\n\n\n"
+    "text": "setbit(index::Integer, mask::Integer) -> Integer\n\nset the bit at masked position to 1.\n\nExample\n\njulia> setbit(0b1011, 0b1100) |> bit(len=4)\n1111 (15)\n\njulia> setbit(0b1011, 0b0100) |> bit(len=4)\n1111 (15)\n\njulia> setbit(0b1011, 0b0000) |> bit(len=4)\n1011 (11)\n\n\n\n\n\n"
 },
 
 {
@@ -501,7 +533,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Manual",
     "title": "BitBasis.swapbits",
     "category": "method",
-    "text": "swapbits(n::Integer, mask_ij::Integer) -> Integer\nswapbits(n::Integer, i::Int, j::Int) -> Integer\n\nReturn an integer with bits at i and j flipped. For performance, locations i and j specified by mask is prefered.\n\nwarning: Warning\nmask_ij should only contain two 1, swapbits will not check it, use at your own risk.\n\n\n\n\n\n"
+    "text": "swapbits(n::Integer, mask_ij::Integer) -> Integer\nswapbits(n::Integer, i::Int, j::Int) -> Integer\n\nReturn an integer with bits at i and j flipped. For performance, locations i and j specified by mask is prefered.\n\nExample\n\njulia> swapbits(0b1011, 0b1100) == 0b0111\ntrue\n\nwarning: Warning\nmask_ij should only contain two 1, swapbits will not check it, use at your own risk.\n\n\n\n\n\n"
 },
 
 {
