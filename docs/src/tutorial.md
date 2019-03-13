@@ -2,9 +2,7 @@
 using BitBasis
 ```
 
-## Basics Bitwise Operations
-
-### Integer Representations
+## Integer Representations
 
 We use an `Int` type to store bit-wise (spin) configurations, e.g. `0b011101` (`29`) represents the configuration
 
@@ -37,7 +35,7 @@ bitarray([4, 5, 6], 5) |> packbits;
 
 A curried version of the above function is also provided. See also [`bitarray`](@ref).
 
-### [Bit String Literal](@id bit_literal)
+## [Bit String Literal](@id bit_literal)
 bit strings are literals for bits, it provides better view on binary basis.
 you could use [`@bit_str`](@ref), which looks like the following
 
