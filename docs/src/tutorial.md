@@ -102,7 +102,7 @@ Masking technic provides faster binary operations, to generate a mask with speci
 
 ```@repl tutorial
 mask = bmask(UInt8, 1,3,4)
-string(mask, base=2, pad=4)
+bit(mask; len=4)
 ```
 
 #### [`allone`](@ref) and [`anyone`](@ref)
