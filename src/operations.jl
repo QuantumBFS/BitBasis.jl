@@ -145,6 +145,21 @@ end
     anyone(index::Integer, mask::Integer) -> Bool
 
 Return `true` if any masked position of index is 1.
+
+# Example
+
+`true` if any masked positions is 1.
+
+```jldoctest
+julia> anyone(0b1011, 0b1001)
+true
+
+julia> anyone(0b1011, 0b1100)
+true
+
+julia> anyone(0b1011, 0b0100)
+false
+```
 """
 anyone(index::T, mask::T) where T <: Integer = (index & mask) != zero(T)
 
@@ -152,6 +167,21 @@ anyone(index::T, mask::T) where T <: Integer = (index & mask) != zero(T)
     allone(index::Integer, mask::Integer) -> Bool
 
 Return `true` if all masked position of index is 1.
+
+# Example
+
+`true` if all masked positions are 1.
+
+```jldoctest
+julia> allone(0b1011, 0b1011)
+true
+
+julia> allone(0b1011, 0b1001)
+true
+
+julia> allone(0b1011, 0b0100)
+false
+```
 """
 allone(index::T, mask::T) where T <: Integer = (index & mask) == mask
 
@@ -175,6 +205,19 @@ ismatch(index::T, mask::T, target::T) where T<:Integer = (index & mask) == targe
     setbit(index::Integer, mask::Integer) -> Integer
 
 set the bit at masked position to 1.
+
+# Example
+
+```jldoctest
+julia> setbit(0b1011, 0b1100) |> bit(len=4)
+1111 (15)
+
+julia> setbit(0b1011, 0b0100) |> bit(len=4)
+1111 (15)
+
+julia> setbit(0b1011, 0b0000) |> bit(len=4)
+1011 (11)
+```
 """
 setbit(index::T, mask::T) where T<:Integer = index | mask
 
@@ -182,6 +225,13 @@ setbit(index::T, mask::T) where T<:Integer = index | mask
     flip(index::Integer, mask::Integer) -> Integer
 
 Return an Integer with bits at masked position flipped.
+
+# Example
+
+```jldoctest
+julia> flip(0b1011, 0b1011) |> bit(len=4)
+0000 (0)
+```
 """
 flip(index::T, mask::T) where T<:Integer = index ⊻ mask
 
@@ -189,6 +239,16 @@ flip(index::T, mask::T) where T<:Integer = index ⊻ mask
     neg(index::Integer, nbits::Int) -> Integer
 
 Return an integer with all bits flipped (with total number of bit `nbits`).
+
+# Example
+
+```jldoctest
+julia> neg(0b1111, 4) |> bit(len=4)
+0000 (0)
+
+julia> neg(0b0111, 4) |> bit(len=4)
+1000 (8)
+```
 """
 neg(index::T, nbits::Int) where T<:Integer = bmask(T, 1:nbits) ⊻ index
 
@@ -197,6 +257,13 @@ neg(index::T, nbits::Int) where T<:Integer = bmask(T, 1:nbits) ⊻ index
     swapbits(n::Integer, i::Int, j::Int) -> Integer
 
 Return an integer with bits at `i` and `j` flipped. For performance, locations `i` and `j` specified by mask is prefered.
+
+# Example
+
+```jldoctest
+julia> swapbits(0b1011, 0b1100) == 0b0111
+true
+```
 
 !!! warning
 

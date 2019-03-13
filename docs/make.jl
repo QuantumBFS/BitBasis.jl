@@ -1,13 +1,6 @@
 using Documenter, BitBasis
 import BitBasis
 
-# preprocess tutorial scripts
-using Literate, Pkg
-tutorialpath = joinpath(@__DIR__, "src")
-for jlfile in ["tutorial.jl"]
-    Literate.markdown(joinpath(tutorialpath, jlfile), tutorialpath)
-end
-
 const PAGES = [
     "Home" => "index.md",
     "Tutorial" => "tutorial.md",

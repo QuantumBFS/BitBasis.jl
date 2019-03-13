@@ -50,7 +50,26 @@ end
 
 BitStr(x::BitStr{T, N}) where {T, N} = BitStr(x.val, N)
 
-bit(x) = BitStr(x)
+"""
+    bit(string)
+
+Create a [`BitStr`](@ref) with given string of bits. See also [`@bit_str`](@ref).
+"""
+bit(x::String) = BitStr(x)
+
+"""
+    bit(x[; len=ndigits(x, base=2)])
+
+Create a [`BitStr`](@ref) accroding to integer `x` to given length `len`.
+"""
+bit(x::Integer; len=ndigits(x, base=2)) = BitStr(x, len)
+
+"""
+    bit(;len)
+
+Lazy curried version of [`bit`](@ref).
+"""
+bit(;len) = x -> bit(x; len=len)
 
 """
     bit_literal(xs...)
@@ -89,7 +108,7 @@ it like normal strings.
 
 ## Example
 
-```julia
+```jldoctest
 julia> bit"10001"
 10001 (17)
 
