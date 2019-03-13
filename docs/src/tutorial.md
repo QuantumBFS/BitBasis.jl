@@ -1,10 +1,7 @@
-```@meta
-DocTestSetup  = quote
-    using BitBasis
-end
+```@setup tutorial
+using BitBasis
 ```
 
-# [Tutorial](@id tutorial)
 ## Basics Bitwise Operations
 
 ### Integer Representations
@@ -19,8 +16,7 @@ so we relate the configurations ``\vec σ`` with integer $b$ by ``b = \sum\limit
 ![11100](assets/bitbasic.png)
 e.g. we can use a digit `28` to represent bit configuration `0b11100`
 
-```@repl
-using BitBasis # hide
+```@repl tutorial
 bdistance(0b11100, 0b10101) == 2  # Hamming distance
 bit_length(0b11100) == 5
 ```
@@ -32,7 +28,7 @@ We can switch between binary and digital representations with
 * `packabits(bitstring)`, transform bitstrings to integers.
 * `baddrs(integer)`, get the locations of nonzero qubits.
 
-```@repl
+```@repl tutorial
 bitarray(4, 5)
 bitarray([4, 5, 6], 5)
 packbits([1, 1, 0])
@@ -45,7 +41,7 @@ A curried version of the above function is also provided. See also [`bitarray`](
 bit strings are literals for bits, it provides better view on binary basis.
 you could use [`@bit_str`](@ref), which looks like the following
 
-```@repl
+```@repl tutorial
 bit"101" * 2
 bcat(bit"101" for i in 1:10)
 repeat(bit"101", 2)
@@ -59,7 +55,7 @@ The bit string literal offers a more readable syntax for these kind of objects.
 #### [`readbit`](@ref) and [`baddrs`](@ref)
 ![11100](assets/11100.png)
 
-```@repl
+```@repl tutorial
 readbit(0b11100, 2, 3) == 0b10  # read the 2nd and 3rd bits as `x₃x₂`
 baddrs(0b11100) == [3,4,5]  # locations of one bits
 ```
@@ -67,7 +63,7 @@ baddrs(0b11100) == [3,4,5]  # locations of one bits
 #### [`bmask`](@ref)
 Masking technic provides faster binary operations, to generate a mask with specific position masked, e.g. we want to mask qubits `1, 3, 4`
 
-```@repl
+```@repl tutorial
 mask = bmask(UInt8, 1,3,4)
 string(mask, base=2, pad=4)
 ```
@@ -76,7 +72,7 @@ string(mask, base=2, pad=4)
 with this mask (masked positions are colored light blue), we have
 ![1011_1101](assets/1011_1101.png)
 
-```@repl
+```@repl tutorial
 allone(0b1011, mask) == false # true if all masked positions are 1
 anyone(0b1011, mask) == true # true if any masked positions is 1
 ```
@@ -84,7 +80,7 @@ anyone(0b1011, mask) == true # true if any masked positions is 1
 #### [`ismatch`](@ref)
 ![ismatch](assets/ismatch.png)
 
-```@repl
+```@repl tutorial
 ismatch(0b1011, mask, 0b1001) == true  # true if masked part matches `0b1001`
 ```
 
@@ -92,41 +88,41 @@ ismatch(0b1011, mask, 0b1001) == true  # true if masked part matches `0b1001`
 #### [`flip`](@ref)
 ![1011_1101](assets/flip.png)
 
-```@repl
+```@repl tutorial
 bit(flip(0b1011, mask), 4)  # flip masked positions
 ```
 
 #### [`setbit`](@ref)
 ![setbit](assets/setbit.png)
 
-```@repl
+```@repl tutorial
 setbit(0b1011, 0b1100) == 0b1111 # set masked positions 1
 ```
 
 #### [`swapbits`](@ref)
 ![swapbits](assets/swapbits.png)
 
-```@repl
+```@repl tutorial
 swapbits(0b1011, 0b1100) == 0b0111  # swap masked positions
 ```
 
 #### [`neg`](@ref)
 
-```@repl
+```@repl tutorial
 neg(0b1011, 2) == 0b1000
 ```
 
 #### [`btruncate`](@ref) and [`breflect`](@ref)
 ![btruncate](assets/btruncate.png)
 
-```@repl
+```@repl tutorial
 btruncate(0b1011, 2) == 0b0011  # only the first two qubits are retained
 ```
 
 #### [`breflect`](@ref)
 ![breflect](assets/breflect.png)
 
-```@repl
+```@repl tutorial
 breflect(4, 0b1011) == 0b1101  # reflect little end and big end
 ```
 
@@ -144,7 +140,7 @@ A register can be read out in different ways, like
 ![010101](assets/010101.png)
 
 
-```@repl
+```@repl tutorial
 bint(0b010101)
 bint_r(0b010101, nbits=6)
 bfloat(0b010101)
@@ -157,7 +153,7 @@ Notice the functions with `_r` as postfix always require `nbits` as an additiona
 Counting from `0` is very natural way of iterating quantum registers, very pity for `Julia`
 
 
-```@repl
+```@repl tutorial
 itr = basis(4)
 collect(itr)
 ```
@@ -165,8 +161,7 @@ collect(itr)
 
 [`itercontrol`](@ref) is a complicated API, but it plays an fundamental role in high performance quantum simulation of `Yao`. It is used for iterating over basis in controlled way, its interface looks like
 
-```@example
-using BitBasis
+```@repl tutorial
 for each in itercontrol(7, [1, 3, 4, 7], (1, 0, 1, 0))
     println(string(each, base=2, pad=7))
 end
@@ -177,8 +172,7 @@ We store the wave function as $v[b+1] := \langle b|\psi\rangle$.
 We are able to reorder the basis as
 
 
-```@example
-using BitBasis
+```@repl tutorial
 v = onehot(5, 0b11100)  # the one hot vector representation of given bits
 reorder(v, (3,2,1,5,4)) ≈ onehot(5, 0b11001)
 invorder(v) ≈ onehot(5, 0b00111)  # breflect for each basis
