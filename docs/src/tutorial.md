@@ -1,5 +1,7 @@
 ```@meta
-using BitBasis
+DocTestSetup  = quote
+    using BitBasis
+end
 ```
 
 # [Tutorial](@id tutorial)
@@ -18,6 +20,7 @@ so we relate the configurations ``\vec σ`` with integer $b$ by ``b = \sum\limit
 e.g. we can use a digit `28` to represent bit configuration `0b11100`
 
 ```@repl
+using BitBasis # hide
 bdistance(0b11100, 0b10101) == 2  # Hamming distance
 bit_length(0b11100) == 5
 ```
