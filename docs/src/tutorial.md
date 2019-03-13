@@ -126,7 +126,7 @@ breflect(4, 0b1011) == 0b1101  # reflect little end and big end
 
 
 For more interesting bitwise operations, see manual page [BitBasis](@ref BitBasis).
-----------------------------------
+
 ## Number Readouts
 In phase estimation and HHL algorithms, one need to read out qubits as integer or float point numbers.
 A register can be read out in different ways, like
