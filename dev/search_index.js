@@ -41,14 +41,6 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "tutorial/#Basics-Bitwise-Operations-1",
-    "page": "Tutorial",
-    "title": "Basics Bitwise Operations",
-    "category": "section",
-    "text": ""
-},
-
-{
     "location": "tutorial/#Integer-Representations-1",
     "page": "Tutorial",
     "title": "Integer Representations",
@@ -149,15 +141,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "breflect",
     "category": "section",
-    "text": "(Image: breflect)breflect(4, 0b1011) == 0b1101  # reflect little end and big end"
-},
-
-{
-    "location": "tutorial/#For-more-interesting-bitwise-operations,-see-manual-page-[BitBasis](@ref-BitBasis).-1",
-    "page": "Tutorial",
-    "title": "For more interesting bitwise operations, see manual page BitBasis.",
-    "category": "section",
-    "text": ""
+    "text": "(Image: breflect)breflect(4, 0b1011) == 0b1101  # reflect little end and big endFor more interesting bitwise operations, see manual page BitBasis."
 },
 
 {
