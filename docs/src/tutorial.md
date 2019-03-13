@@ -171,8 +171,8 @@ In phase estimation and HHL algorithms, one need to read out qubits as integer o
 A register can be read out in different ways, like
 * [bint](@ref), the integer itself
 * [bint_r](@ref), the integer with bits small-big end reflected.
-* [bfloat](@ref), the float point number ``0.σ₁σ₂⋯σ\_n``.
-* [bfloat_r](@ref), the float point number ``0.σ\_n⋯σ₂σ₁``.
+* [bfloat](@ref), the float point number ``0.σ₁σ₂⋯σ\\_n``.
+* [bfloat_r](@ref), the float point number ``0.σ\\_n⋯σ₂σ₁``.
 
 ![010101](assets/010101.png)
 
