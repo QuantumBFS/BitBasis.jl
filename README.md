@@ -15,7 +15,7 @@ pkg> add BitBasis
 
 ## Documentation
 
-| stable  | latest  |
+| stable  | dev  |
 |:-------:|:-------:|
 |[![doc-stable](https://img.shields.io/badge/docs-stable-blue.svg)](http://quantumbfs.github.io/BitBasis.jl/stable)|[![doc-latest](https://img.shields.io/badge/docs-latest-blue.svg)](http://quantumbfs.github.io/BitBasis.jl/latest)|
 
