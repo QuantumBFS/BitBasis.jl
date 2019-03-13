@@ -365,7 +365,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Manual",
     "title": "BitBasis.breflect",
     "category": "function",
-    "text": "breflect(nbits::Int, b::Integer[, masks::Vector{Integer}]) -> Integer\n\nReturn left-right reflected integer.\n\n\n\n\n\n"
+    "text": "breflect(nbits::Int, b::Integer[, masks::Vector{Integer}]) -> Integer\n\nReturn left-right reflected integer.\n\nExample\n\nReflect the order of bits.\n\njulia> breflect(4, 0b1011) == 0b1101\ntrue\n\n\n\n\n\n"
 },
 
 {
