@@ -113,15 +113,15 @@ julia> bit"10001"
 10001 (17)
 
 julia> bit"100_111_101"
-00001110101 (117)
+100111101 (317)
 
 julia> bcat(bit"1001", bit"11", bit"1110")
 1001111110 (638)
 
-julia> v = rand(16);
+julia> v = collect(1:16);
 
 julia> v[bit"1001"]
-0.38965443157314406
+10
 
 julia> onehot(bit"1001")
 16-element Array{Float64,1}:

@@ -163,6 +163,7 @@ collect(itr)
 [`itercontrol`](@ref) is a complicated API, but it plays an fundamental role in high performance quantum simulation of `Yao`. It is used for iterating over basis in controlled way, its interface looks like
 
 ```@example
+using BitBasis
 for each in itercontrol(7, [1, 3, 4, 7], (1, 0, 1, 0))
     println(string(each, base=2, pad=7))
 end
@@ -174,6 +175,7 @@ We are able to reorder the basis as
 
 
 ```@example
+using BitBasis
 v = onehot(5, 0b11100)  # the one hot vector representation of given bits
 reorder(v, (3,2,1,5,4)) ≈ onehot(5, 0b11001)
 invorder(v) ≈ onehot(5, 0b00111)  # breflect for each basis
