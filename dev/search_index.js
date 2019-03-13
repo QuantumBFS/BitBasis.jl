@@ -41,11 +41,35 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "tutorial/#Conventions-1",
+    "page": "Tutorial",
+    "title": "Conventions",
+    "category": "section",
+    "text": "We use σ to represent a binary digit, its subtitle usually refers to the position of a given binary digit inside a number (bit string).There are two different representation orders of a bit string."
+},
+
+{
+    "location": "tutorial/#array_order-1",
+    "page": "Tutorial",
+    "title": "array order",
+    "category": "section",
+    "text": "This follows the order of BitArray or other array representation of bits, e.gFor number 0b011101 (29)sigma_1=1 sigma_2=0 sigma_3=1 sigma_4=1 sigma_5=1 sigma_6=0"
+},
+
+{
+    "location": "tutorial/#literal_order-1",
+    "page": "Tutorial",
+    "title": "literal order",
+    "category": "section",
+    "text": "This follows the order of binary literal 0bxxxx, e.gFor number 0b011101 (29)sigma_1=0 sigma_2=1 sigma_3=1 sigma_4=1 sigma_5=0 sigma_6=1"
+},
+
+{
     "location": "tutorial/#Integer-Representations-1",
     "page": "Tutorial",
     "title": "Integer Representations",
     "category": "section",
-    "text": "We use an Int type to store bit-wise (spin) configurations, e.g. 0b011101 (29) represents the configurationsigma_1=1 sigma_2=0 sigma_3=1 sigma_4=1 sigma_5=1 sigma_6=0so we relate the configurations vec σ with integer b by b = sumlimits_i 2^i-1σ_i. (Image: 11100) e.g. we can use a digit 28 to represent bit configuration 0b11100bdistance(0b11100, 0b10101) == 2  # Hamming distance\nbit_length(0b11100) == 5In BitBasis, we also provide a more readable way to define these kind of objects, which is called the bit string literal, most of the integer operations and BitBasis functions are overloaded for the bit string literal.We can switch between binary and digital representations withbitarray(integers, nbits), transform integers to bistrings of type BitArray.\npackabits(bitstring), transform bitstrings to integers.\nbaddrs(integer), get the locations of nonzero qubits.bitarray(4, 5)\nbitarray([4, 5, 6], 5)\npackbits([1, 1, 0])\nbitarray([4, 5, 6], 5) |> packbits;A curried version of the above function is also provided. See also bitarray."
+    "text": "We use an Int type to store bit-wise (spin) configurations, e.g. 0b011101 (29) represents the configurationsigma_1=1 sigma_2=0 sigma_3=1 sigma_4=1 sigma_5=1 sigma_6=0so we annotate the configurations vec σ with integer b by b = sumlimits_i 2^i-1σ_i. (Image: 11100) e.g. we can use a number 28 to represent bit configuration 0b11100bdistance(0b11100, 0b10101) == 2  # Hamming distance\nbit_length(0b11100) == 5In BitBasis, we also provide a more readable way to define these kind of objects, which is called the bit string literal, most of the integer operations and BitBasis functions are overloaded for the bit string literal.We can switch between binary and digital representations withbitarray(integers, nbits), transform integers to bistrings of type BitArray.\npackabits(bitstring), transform bitstrings to integers.\nbaddrs(integer), get the locations of nonzero qubits.bitarray(4, 5)\nbitarray([4, 5, 6], 5)\npackbits([1, 1, 0])\nbitarray([4, 5, 6], 5) |> packbits;A curried version of the above function is also provided. See also bitarray."
 },
 
 {
@@ -53,7 +77,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "Bit String Literal",
     "category": "section",
-    "text": "bit strings are literals for bits, it provides better view on binary basis. you could use @bit_str, which looks like the followingbit\"101\" * 2\nbcat(bit\"101\" for i in 1:10)\nrepeat(bit\"101\", 2)\nbit\"1101\"[2]to define a bit string with length. bit\"10101\" is equivalent to 0b10101 on both performance and functionality but it store the length of given bits statically. The bit string literal offers a more readable syntax for these kind of objects."
+    "text": "bit strings are literals for bits, it provides better view on binary basis. you could use @bit_str, which looks like the followingbit\"101\" * 2\nbcat(bit\"101\" for i in 1:10)\nrepeat(bit\"101\", 2)\nbit\"1101\"[2]to define a bit string with length. bit\"10101\" is equivalent to 0b10101 on both performance and functionality but it store the length of given bits statically. The bit string literal offers a more readable syntax for these kind of objects.Besides bit literal, you can convert a string or an integer to bit literal by bit, e.gbit(0b00101; len=5)Or use the least number of digits requiredbit(0b00101)"
 },
 
 {
@@ -77,7 +101,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "bmask",
     "category": "section",
-    "text": "Masking technic provides faster binary operations, to generate a mask with specific position masked, e.g. we want to mask qubits 1, 3, 4mask = bmask(UInt8, 1,3,4)\nstring(mask, base=2, pad=4)"
+    "text": "Masking technic provides faster binary operations, to generate a mask with specific position masked, e.g. we want to mask qubits 1, 3, 4mask = bmask(UInt8, 1,3,4)\nbit(mask; len=4)"
 },
 
 {
@@ -101,7 +125,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "flip",
     "category": "section",
-    "text": "(Image: 1011_1101)bit(flip(0b1011, mask), 4)  # flip masked positions"
+    "text": "(Image: 1011_1101)bit(flip(0b1011, mask); len=4)  # flip masked positions"
 },
 
 {
