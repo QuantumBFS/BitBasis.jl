@@ -2,6 +2,33 @@
 using BitBasis
 ```
 
+## Conventions
+
+We use ``σ`` to represent a binary digit, its subtitle usually refers to the
+position of a given binary digit inside a number (bit string).
+
+There are two different representation orders of a bit string.
+
+### [**array order**](@id array_order)
+
+This follows the order of `BitArray` or other array representation of bits, e.g
+
+For number `0b011101` (`29`)
+
+```math
+\sigma_1=1, \sigma_2=0, \sigma_3=1, \sigma_4=1, \sigma_5=1, \sigma_6=0
+```
+
+### [**literal order**](@id literal_order)
+
+This follows the order of binary literal `0bxxxx`, e.g
+
+For number `0b011101` (`29`)
+
+```math
+\sigma_1=0, \sigma_2=1, \sigma_3=1, \sigma_4=1, \sigma_5=0, \sigma_6=1
+```
+
 ## Integer Representations
 
 We use an `Int` type to store bit-wise (spin) configurations, e.g. `0b011101` (`29`) represents the configuration
@@ -10,9 +37,9 @@ We use an `Int` type to store bit-wise (spin) configurations, e.g. `0b011101` (`
 \sigma_1=1, \sigma_2=0, \sigma_3=1, \sigma_4=1, \sigma_5=1, \sigma_6=0
 ```
 
-so we relate the configurations ``\vec σ`` with integer $b$ by ``b = \sum\limits_i 2^{i-1}σ_i``.
+so we annotate the configurations ``\vec σ`` with integer $b$ by ``b = \sum\limits_i 2^{i-1}σ_i``.
 ![11100](assets/bitbasic.png)
-e.g. we can use a digit `28` to represent bit configuration `0b11100`
+e.g. we can use a number `28` to represent bit configuration `0b11100`
 
 ```@repl tutorial
 bdistance(0b11100, 0b10101) == 2  # Hamming distance
@@ -48,6 +75,18 @@ bit"1101"[2]
 
 to define a bit string with length. `bit"10101"` is equivalent to `0b10101` on both performance and functionality but it store the length of given bits statically.
 The bit string literal offers a more readable syntax for these kind of objects.
+
+Besides bit literal, you can convert a string or an integer to bit literal by [`bit`](@ref), e.g
+
+```@repl tutorial
+bit(0b00101; len=5)
+```
+
+Or use the least number of digits required
+
+```@repl tutorial
+bit(0b00101)
+```
 
 ## Bit Manipulations
 #### [`readbit`](@ref) and [`baddrs`](@ref)
@@ -87,7 +126,7 @@ ismatch(0b1011, mask, 0b1001) == true  # true if masked part matches `0b1001`
 ![1011_1101](assets/flip.png)
 
 ```@repl tutorial
-bit(flip(0b1011, mask), 4)  # flip masked positions
+bit(flip(0b1011, mask); len=4)  # flip masked positions
 ```
 
 #### [`setbit`](@ref)
