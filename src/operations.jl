@@ -284,6 +284,15 @@ end
     breflect(nbits::Int, b::Integer[, masks::Vector{Integer}]) -> Integer
 
 Return left-right reflected integer.
+
+# Example
+
+Reflect the order of bits.
+
+```jldoctest
+julia> breflect(4, 0b1011) == 0b1101
+true
+```
 """
 function breflect end
 
