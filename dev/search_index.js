@@ -45,23 +45,23 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "Conventions",
     "category": "section",
-    "text": "We use σ to represent a binary digit, its subtitle usually refers to the position of a given binary digit inside a number (bit string).There are two different representation orders of a bit string."
+    "text": "We use σ to represent a binary digit, its subtitle usually refers to the position of a given binary digit inside a number (bit string).In computing, bit numbering (or sometimes bit endianness) is the convention used to identify the bit positions in a binary number or a container of such a value. The bit number starts with zero and is incremented by one for each subsequent bit position. See also Bit numbering((Bit endianness)).There are two different representation orders of a bit string:Least significant bit 0 bit  numbering\nMost significant bit 0 bit numbering"
 },
 
 {
     "location": "tutorial/#array_order-1",
     "page": "Tutorial",
-    "title": "array order",
+    "title": "LSB 0 bit numbering",
     "category": "section",
-    "text": "This follows the order of BitArray or other array representation of bits, e.gFor number 0b011101 (29)sigma_1=1 sigma_2=0 sigma_3=1 sigma_4=1 sigma_5=1 sigma_6=0"
+    "text": "This follows the order of BitArray or other array representation of bits, e.gFor number 0b011101 (29)sigma_1=1 sigma_2=0 sigma_3=1 sigma_4=1 sigma_5=1 sigma_6=0See also LSB 0 bit numbering"
 },
 
 {
     "location": "tutorial/#literal_order-1",
     "page": "Tutorial",
-    "title": "literal order",
+    "title": "MSB 0 bit numbering",
     "category": "section",
-    "text": "This follows the order of binary literal 0bxxxx, e.gFor number 0b011101 (29)sigma_1=0 sigma_2=1 sigma_3=1 sigma_4=1 sigma_5=0 sigma_6=1"
+    "text": "This follows the order of binary literal 0bxxxx, e.gFor number 0b011101 (29)sigma_1=0 sigma_2=1 sigma_3=1 sigma_4=1 sigma_5=0 sigma_6=1See also MSB 0 bit numbering."
 },
 
 {
@@ -285,7 +285,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Manual",
     "title": "BitBasis.bfloat",
     "category": "method",
-    "text": "bfloat(b::Integer; nbits::Int=bit_length(b)) -> Float64\n\nfloat view, with big end qubit 1.\n\n\n\n\n\n"
+    "text": "bfloat(b::Integer; nbits::Int=bit_length(b)) -> Float64\n\nfloat view, with MSB 0 bit numbering. See also wiki: bit numbering\n\n\n\n\n\n"
 },
 
 {
@@ -301,7 +301,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Manual",
     "title": "BitBasis.bint",
     "category": "method",
-    "text": "bint(b; nbits=nothing) -> Int\n\ninteger view, with little end qubit 1.\n\n\n\n\n\n"
+    "text": "bint(b; nbits=nothing) -> Int\n\ninteger view, with LSB 0 bit numbering. See also wiki: bit numbering\n\n\n\n\n\n"
 },
 
 {
