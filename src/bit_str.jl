@@ -213,6 +213,10 @@ Base.@propagate_inbounds function Base.:(>>)(bit::BitStr, n::Int)
     return BitStr(bit.val >> n, length(bit) - n)
 end
 
+# Forward if it's not on BitStr
+Base.:(<<)(n::Int, b::BitStr) = n << b.val
+Base.:(>>)(n::Int, b::BitStr) = n >> b.val
+
 for op in [:+, :-, :*, :÷]
 
     @eval function Base.$op(lhs::BitStr, rhs::BitStr)
@@ -262,7 +266,188 @@ for IntType in [:Int8, :Int16, :Int32, :Int64, :Int128, :BigInt]
     @eval Base.$IntType(x::BitStr) = $IntType(x.val)
 end
 
+# operations
+
 btruncate(b::BitStr, n) = BitStr(btruncate(b.val, n), n)
 
-# TODO: support operations defined in operations.jl for BitStr
-#    - bmask
+"""
+    breflect(bit_str[, masks])
+
+Return left-right reflected bit string.
+"""
+breflect(b::BitStr) = bit(breflect(length(b), b.val); len=length(b))
+breflect(b::BitStr, masks::Vector{<:Integer}) = bit(breflect(length(b), b.val, masks), len=length(b))
+
+"""
+    neg(bit_str) -> Integer
+
+Return an [`BitStr`](@ref) with all bits flipped.
+
+# Example
+
+```jldoctest
+julia> neg(bit"1111", 4)
+0000 (0)
+
+julia> neg(bit"0111", 4)
+1000 (8)
+```
+"""
+neg(bit::BitStr) = bit(neg(bit.val, length(bit)); len=length(bit))
+
+"""
+    flip(bit_str, mask::Integer) -> Integer
+
+Return an [`BitStr`](@ref) with bits at masked position flipped.
+
+# Example
+
+```jldoctest
+julia> flip(bit"1011", 0b1011)
+0000 (0)
+```
+"""
+flip(b::BitStr{T}, mask::Integer) where T = flip(b.val, T(mask)) |> bit(len=length(b))
+
+
+"""
+    swapbits(n::BitStr, mask_ij::Integer) -> BitStr
+    swapbits(n::BitStr, i::Int, j::Int) -> BitStr
+
+Return a [`BitStr`](@ref) with bits at `i` and `j` flipped.
+
+# Example
+
+```jldoctest
+julia> swapbits(0b1011, 0b1100) == 0b0111
+true
+```
+
+!!! warning
+
+    `mask_ij` should only contain two `1`, `swapbits` will not check it, use at
+    your own risk.
+"""
+swapbits(b::BitStr, i::Int, j::Int) = bit(swapbits(b.val, i, j); len=length(b))
+swapbits(b::BitStr{T}, mask::Integer) where T = bit(swapbits(b.val, T(mask)); len=length(b))
+
+"""
+    setbit(b::BitStr, mask::Integer) -> Integer
+
+set the bit at masked position to 1.
+
+# Example
+
+```jldoctest
+julia> setbit(bit"1011", 0b1100)
+1111 (15)
+
+julia> setbit(bit"1011", 0b0100)
+1111 (15)
+
+julia> setbit(bit"1011", 0b0000)
+1011 (11)
+```
+"""
+setbit(b::BitStr{T}, mask::Integer) where T = setbit(b.val, T(mask)) |> bit(len=length(b))
+
+
+"""
+    anyone(b::BitStr, mask::Integer) -> Bool
+
+Return `true` if any masked position of index is 1.
+
+# Example
+
+`true` if any masked positions is 1.
+
+```jldoctest
+julia> anyone(bit"1011", 0b1001)
+true
+
+julia> anyone(bit"1011", 0b1100)
+true
+
+julia> anyone(bit"1011", 0b0100)
+false
+```
+"""
+anyone(b::BitStr{T}, mask::Integer) where T = anyone(b.val, mask) |> bit(len=length(b))
+
+"""
+    allone(b::BitStr, mask::Integer) -> Bool
+
+Return `true` if all masked position of index is 1.
+
+# Example
+
+`true` if all masked positions are 1.
+
+```jldoctest
+julia> allone(bit"1011", 0b1011)
+true
+
+julia> allone(bit"1011", 0b1001)
+true
+
+julia> allone(bit"1011", 0b0100)
+false
+```
+"""
+allone(b::BitStr{T}, mask::Integer) where T = allone(b.val, T(mask))
+
+"""
+    ismatch(index::Integer, mask::Integer, target::Integer) -> Bool
+
+Return `true` if bits at positions masked by `mask` equal to `1` are equal to `target`.
+
+## Example
+
+```julia
+julia> n = 0b11001; mask = 0b10100; target = 0b10000;
+
+julia> ismatch(n, mask, target)
+true
+```
+"""
+ismatch(b::BitStr{T}, mask::Integer, target::Integer) where T = ismatch(b.val, T(mask), T(target))
+
+# NOTE: we have to return a vector here since this is calculated in runtime
+
+"""
+    baddrs(b::Integer) -> Vector
+
+get the locations of nonzeros bits, i.e. the inverse operation of bmask.
+"""
+baddrs(b::BitStr) = baddrs(b.val) |> bit(len=length(b))
+
+
+"""
+    bfloat(b::BitStr) -> Float64
+
+float view, with MSB 0 bit numbering.
+See also [wiki: bit numbering](https://en.wikipedia.org/wiki/Bit_numbering)
+"""
+bfloat(b::BitStr) = bfloat(b.val; nbits=length(b))
+
+"""
+    bfloat_r(b::Integer; nbits::Int) -> Float64
+
+float view, with bits read in inverse order.
+"""
+bfloat_r(b::BitStr) = bfloat_r(b.val; nbits=length(b))
+
+"""
+    bint(b; nbits=nothing) -> Int
+
+integer view, with LSB 0 bit numbering.
+See also [wiki: bit numbering](https://en.wikipedia.org/wiki/Bit_numbering)
+"""
+bint(b::BitStr) = b.val
+
+"""
+    bint_r(b; nbits::Int) -> Integer
+
+integer read in inverse order.
+"""
+bint_r(b::BitStr) = breflect(length(b), b)

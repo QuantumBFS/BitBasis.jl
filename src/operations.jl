@@ -258,7 +258,7 @@ neg(index::T, nbits::Int) where T<:Integer = bmask(T, 1:nbits) ⊻ index
     swapbits(n::Integer, mask_ij::Integer) -> Integer
     swapbits(n::Integer, i::Int, j::Int) -> Integer
 
-Return an integer with bits at `i` and `j` flipped. For performance, locations `i` and `j` specified by mask is prefered.
+Return an integer with bits at `i` and `j` flipped.
 
 # Example
 
@@ -266,6 +266,11 @@ Return an integer with bits at `i` and `j` flipped. For performance, locations `
 julia> swapbits(0b1011, 0b1100) == 0b0111
 true
 ```
+
+!!! tip
+
+    locations `i` and `j` specified by mask could be faster when [`bmask`](@ref)
+    is not straight forward but known by constant.
 
 !!! warning
 
@@ -312,6 +317,7 @@ end
     return b
 end
 
+# TODO: use a more general trait if possible
 const IntIterator{T} = Union{NTuple{<:Any, T}, Vector{T}, T, UnitRange{T}} where T <: Integer
 
 """
