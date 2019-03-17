@@ -60,7 +60,8 @@ btruncate(b::Integer, n) = b & (1 << n - 1)
 """
     bfloat(b::Integer; nbits::Int=bit_length(b)) -> Float64
 
-float view, with big end qubit 1.
+float view, with MSB 0 bit numbering.
+See also [wiki: bit numbering](https://en.wikipedia.org/wiki/Bit_numbering)
 """
 bfloat(b::Integer; nbits::Int=bit_length(b)) = breflect(nbits, b) / (1<<nbits)
 
@@ -74,7 +75,8 @@ bfloat_r(b::Integer; nbits::Int) = b / (1<<nbits)
 """
     bint(b; nbits=nothing) -> Int
 
-integer view, with little end qubit 1.
+integer view, with LSB 0 bit numbering.
+See also [wiki: bit numbering](https://en.wikipedia.org/wiki/Bit_numbering)
 """
 bint(b::Integer; nbits=nothing) = b
 bint(x::Float64; nbits::Int) = breflect(nbits,bint_r(x, nbits=nbits))
