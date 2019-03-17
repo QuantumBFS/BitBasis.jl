@@ -241,6 +241,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "man/#BitBasis.allone-Union{Tuple{T}, Tuple{BitStr{T,N} where N,Integer}} where T",
+    "page": "Manual",
+    "title": "BitBasis.allone",
+    "category": "method",
+    "text": "allone(b::BitStr, mask::Integer) -> Bool\n\nReturn true if all masked position of index is 1.\n\nExample\n\ntrue if all masked positions are 1.\n\njulia> allone(bit\"1011\", 0b1011)\ntrue\n\njulia> allone(bit\"1011\", 0b1001)\ntrue\n\njulia> allone(bit\"1011\", 0b0100)\nfalse\n\n\n\n\n\n"
+},
+
+{
     "location": "man/#BitBasis.allone-Union{Tuple{T}, Tuple{T,T}} where T<:Integer",
     "page": "Manual",
     "title": "BitBasis.allone",
@@ -249,11 +257,27 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "man/#BitBasis.anyone-Union{Tuple{T}, Tuple{BitStr{T,N} where N,Integer}} where T",
+    "page": "Manual",
+    "title": "BitBasis.anyone",
+    "category": "method",
+    "text": "anyone(b::BitStr, mask::Integer) -> Bool\n\nReturn true if any masked position of index is 1.\n\nExample\n\ntrue if any masked positions is 1.\n\njulia> anyone(bit\"1011\", 0b1001)\ntrue\n\njulia> anyone(bit\"1011\", 0b1100)\ntrue\n\njulia> anyone(bit\"1011\", 0b0100)\nfalse\n\n\n\n\n\n"
+},
+
+{
     "location": "man/#BitBasis.anyone-Union{Tuple{T}, Tuple{T,T}} where T<:Integer",
     "page": "Manual",
     "title": "BitBasis.anyone",
     "category": "method",
     "text": "anyone(index::Integer, mask::Integer) -> Bool\n\nReturn true if any masked position of index is 1.\n\nExample\n\ntrue if any masked positions is 1.\n\njulia> anyone(0b1011, 0b1001)\ntrue\n\njulia> anyone(0b1011, 0b1100)\ntrue\n\njulia> anyone(0b1011, 0b0100)\nfalse\n\n\n\n\n\n"
+},
+
+{
+    "location": "man/#BitBasis.baddrs-Tuple{BitStr}",
+    "page": "Manual",
+    "title": "BitBasis.baddrs",
+    "category": "method",
+    "text": "baddrs(b::Integer) -> Vector\n\nget the locations of nonzeros bits, i.e. the inverse operation of bmask.\n\n\n\n\n\n"
 },
 
 {
@@ -281,11 +305,27 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "man/#BitBasis.bfloat-Tuple{BitStr}",
+    "page": "Manual",
+    "title": "BitBasis.bfloat",
+    "category": "method",
+    "text": "bfloat(b::BitStr) -> Float64\n\nfloat view, with MSB 0 bit numbering. See also wiki: bit numbering\n\n\n\n\n\n"
+},
+
+{
     "location": "man/#BitBasis.bfloat-Tuple{Integer}",
     "page": "Manual",
     "title": "BitBasis.bfloat",
     "category": "method",
     "text": "bfloat(b::Integer; nbits::Int=bit_length(b)) -> Float64\n\nfloat view, with MSB 0 bit numbering. See also wiki: bit numbering\n\n\n\n\n\n"
+},
+
+{
+    "location": "man/#BitBasis.bfloat_r-Tuple{BitStr}",
+    "page": "Manual",
+    "title": "BitBasis.bfloat_r",
+    "category": "method",
+    "text": "bfloat_r(b::Integer; nbits::Int) -> Float64\n\nfloat view, with bits read in inverse order.\n\n\n\n\n\n"
 },
 
 {
@@ -297,11 +337,27 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "man/#BitBasis.bint-Tuple{BitStr}",
+    "page": "Manual",
+    "title": "BitBasis.bint",
+    "category": "method",
+    "text": "bint(b; nbits=nothing) -> Int\n\ninteger view, with LSB 0 bit numbering. See also wiki: bit numbering\n\n\n\n\n\n"
+},
+
+{
     "location": "man/#BitBasis.bint-Tuple{Integer}",
     "page": "Manual",
     "title": "BitBasis.bint",
     "category": "method",
     "text": "bint(b; nbits=nothing) -> Int\n\ninteger view, with LSB 0 bit numbering. See also wiki: bit numbering\n\n\n\n\n\n"
+},
+
+{
+    "location": "man/#BitBasis.bint_r-Tuple{BitStr}",
+    "page": "Manual",
+    "title": "BitBasis.bint_r",
+    "category": "method",
+    "text": "bint_r(b; nbits::Int) -> Integer\n\ninteger read in inverse order.\n\n\n\n\n\n"
 },
 
 {
@@ -377,6 +433,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "man/#BitBasis.breflect-Tuple{BitStr}",
+    "page": "Manual",
+    "title": "BitBasis.breflect",
+    "category": "method",
+    "text": "breflect(bit_str[, masks])\n\nReturn left-right reflected bit string.\n\n\n\n\n\n"
+},
+
+{
     "location": "man/#BitBasis.bsizeof-Union{Tuple{Type{T}}, Tuple{T}} where T",
     "page": "Manual",
     "title": "BitBasis.bsizeof",
@@ -406,6 +470,14 @@ var documenterSearchIndex = {"docs": [
     "title": "BitBasis.controller",
     "category": "method",
     "text": "controller(cbits, cvals) -> Function\n\nReturn a function that checks whether a basis at cbits takes specific value cvals.\n\n\n\n\n\n"
+},
+
+{
+    "location": "man/#BitBasis.flip-Union{Tuple{T}, Tuple{BitStr{T,N} where N,Integer}} where T",
+    "page": "Manual",
+    "title": "BitBasis.flip",
+    "category": "method",
+    "text": "flip(bit_str, mask::Integer) -> Integer\n\nReturn an BitStr with bits at masked position flipped.\n\nExample\n\njulia> flip(bit\"1011\", 0b1011)\n0000 (0)\n\n\n\n\n\n"
 },
 
 {
@@ -441,6 +513,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "man/#BitBasis.ismatch-Union{Tuple{T}, Tuple{BitStr{T,N} where N,Integer,Integer}} where T",
+    "page": "Manual",
+    "title": "BitBasis.ismatch",
+    "category": "method",
+    "text": "ismatch(index::Integer, mask::Integer, target::Integer) -> Bool\n\nReturn true if bits at positions masked by mask equal to 1 are equal to target.\n\nExample\n\njulia> n = 0b11001; mask = 0b10100; target = 0b10000;\n\njulia> ismatch(n, mask, target)\ntrue\n\n\n\n\n\n"
+},
+
+{
     "location": "man/#BitBasis.ismatch-Union{Tuple{T}, Tuple{T,T,T}} where T<:Integer",
     "page": "Manual",
     "title": "BitBasis.ismatch",
@@ -470,6 +550,14 @@ var documenterSearchIndex = {"docs": [
     "title": "BitBasis.log2i",
     "category": "function",
     "text": "log2i(x::Integer) -> Integer\n\nReturn log2(x), this integer version of log2 is fast but only valid for number equal to 2^n.\n\n\n\n\n\n"
+},
+
+{
+    "location": "man/#BitBasis.neg-Tuple{BitStr}",
+    "page": "Manual",
+    "title": "BitBasis.neg",
+    "category": "method",
+    "text": "neg(bit_str) -> Integer\n\nReturn an BitStr with all bits flipped.\n\nExample\n\njulia> neg(bit\"1111\", 4)\n0000 (0)\n\njulia> neg(bit\"0111\", 4)\n1000 (8)\n\n\n\n\n\n"
 },
 
 {
@@ -521,6 +609,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "man/#BitBasis.setbit-Union{Tuple{T}, Tuple{BitStr{T,N} where N,Integer}} where T",
+    "page": "Manual",
+    "title": "BitBasis.setbit",
+    "category": "method",
+    "text": "setbit(b::BitStr, mask::Integer) -> Integer\n\nset the bit at masked position to 1.\n\nExample\n\njulia> setbit(bit\"1011\", 0b1100)\n1111 (15)\n\njulia> setbit(bit\"1011\", 0b0100)\n1111 (15)\n\njulia> setbit(bit\"1011\", 0b0000)\n1011 (11)\n\n\n\n\n\n"
+},
+
+{
     "location": "man/#BitBasis.setbit-Union{Tuple{T}, Tuple{T,T}} where T<:Integer",
     "page": "Manual",
     "title": "BitBasis.setbit",
@@ -529,11 +625,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "man/#BitBasis.swapbits-Tuple{BitStr,Int64,Int64}",
+    "page": "Manual",
+    "title": "BitBasis.swapbits",
+    "category": "method",
+    "text": "swapbits(n::BitStr, mask_ij::Integer) -> BitStr\nswapbits(n::BitStr, i::Int, j::Int) -> BitStr\n\nReturn a BitStr with bits at i and j flipped.\n\nExample\n\njulia> swapbits(0b1011, 0b1100) == 0b0111\ntrue\n\nwarning: Warning\nmask_ij should only contain two 1, swapbits will not check it, use at your own risk.\n\n\n\n\n\n"
+},
+
+{
     "location": "man/#BitBasis.swapbits-Union{Tuple{T}, Tuple{T,Int64,Int64}} where T<:Integer",
     "page": "Manual",
     "title": "BitBasis.swapbits",
     "category": "method",
-    "text": "swapbits(n::Integer, mask_ij::Integer) -> Integer\nswapbits(n::Integer, i::Int, j::Int) -> Integer\n\nReturn an integer with bits at i and j flipped. For performance, locations i and j specified by mask is prefered.\n\nExample\n\njulia> swapbits(0b1011, 0b1100) == 0b0111\ntrue\n\nwarning: Warning\nmask_ij should only contain two 1, swapbits will not check it, use at your own risk.\n\n\n\n\n\n"
+    "text": "swapbits(n::Integer, mask_ij::Integer) -> Integer\nswapbits(n::Integer, i::Int, j::Int) -> Integer\n\nReturn an integer with bits at i and j flipped.\n\nExample\n\njulia> swapbits(0b1011, 0b1100) == 0b0111\ntrue\n\ntip: Tip\nlocations i and j specified by mask could be faster when bmask is not straight forward but known by constant.\n\nwarning: Warning\nmask_ij should only contain two 1, swapbits will not check it, use at your own risk.\n\n\n\n\n\n"
 },
 
 {
