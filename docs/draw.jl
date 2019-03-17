@@ -1,5 +1,11 @@
+# NOTE: Luxor is using JuliaGraphics/Luxor.jl/pull/48
 using Luxor, BitBasis
 
+"""
+   btable(n, center=O; len=ndigits(n), width=20, title=false)
+
+Draw a table of binary digits with `n` which can be [`BitStr`](@ref) or an `Integer`.
+"""
 function btable(n::Integer, center=O; len=ndigits(n; base=2), width=20, title=false)
    sethue("black")
    if title
@@ -56,6 +62,7 @@ end
 btable(n::BitStr, center=O; width=50, title=false) =
    btable(n.val, center; len=length(n), width=width, title=title)
 
+# TODO: push this to upstream: Luxor
 function swaparrow(left::Point, right::Point, action=:fill;
     linewidth=1.0, headlength=10, headangle=pi/8, target_angle=pi/3,
     fraction=1/5, debug=false)
