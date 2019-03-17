@@ -11,9 +11,14 @@ using BitBasis
 We use ``σ`` to represent a binary digit, its subtitle usually refers to the
 position of a given binary digit inside a number (bit string).
 
-There are two different representation orders of a bit string.
+In computing, bit numbering (or sometimes bit endianness) is the convention used to identify the bit positions in a binary number or a container of such a value. The bit number starts with zero and is incremented by one for each subsequent bit position. See also [Bit numbering](https://en.wikipedia.org/wiki/Bit_numbering)(**(Bit endianness)**).
 
-### [**array order**](@id array_order)
+There are two different representation orders of a bit string:
+
+- **Least significant bit 0 bit  numbering**
+- **Most significant bit 0 bit numbering**
+
+### [**LSB 0 bit numbering**](@id array_order)
 
 This follows the order of `BitArray` or other array representation of bits, e.g
 
@@ -23,7 +28,9 @@ For number `0b011101` (`29`)
 \sigma_1=1, \sigma_2=0, \sigma_3=1, \sigma_4=1, \sigma_5=1, \sigma_6=0
 ```
 
-### [**literal order**](@id literal_order)
+See also [LSB 0 bit numbering](https://en.wikipedia.org/wiki/Bit_numbering#LSB_0_bit_numbering)
+
+### [**MSB 0 bit numbering**](@id literal_order)
 
 This follows the order of binary literal `0bxxxx`, e.g
 
@@ -32,6 +39,8 @@ For number `0b011101` (`29`)
 ```math
 \sigma_1=0, \sigma_2=1, \sigma_3=1, \sigma_4=1, \sigma_5=0, \sigma_6=1
 ```
+
+See also [MSB 0 bit numbering](https://en.wikipedia.org/wiki/Bit_numbering#MSB_0_bit_numbering).
 
 ## Integer Representations
 
