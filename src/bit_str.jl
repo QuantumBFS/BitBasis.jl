@@ -98,6 +98,7 @@ Base.to_index(x::BitStr) = Int(x.val) + 1
 Base.checkindex(::Type{Bool}, inds::AbstractUnitRange, i::BitStr) =
     checkindex(Bool, inds, Base.to_index(i))
 Base.length(bits::BitStr{<:Integer, N}) where N = N
+Base.lastindex(bits::BitStr) = length(bits)
 
 """
     to_location(x)
@@ -209,6 +210,13 @@ Base.@propagate_inbounds function Base.getindex(bit::BitStr{T}, index::Int) wher
     @boundscheck 1 <= index <= length(bit) || throw(BoundsError(bit, index))
     return readbit(bit.val, index)
 end
+
+Base.@propagate_inbounds function Base.getindex(bit::BitStr{T}, itr::Union{AbstractVector, AbstractRange}) where T
+    @boundscheck all(x->1<=x<=length(bit), itr) || throw(BoundsError(bit, itr))
+    return map(x->readbit(bit.val, x), itr)
+end
+
+# TODO: support AbstractArray, should return its corresponding shape
 
 Base.@propagate_inbounds function Base.getindex(bit::BitStr{T}, mask::Union{Vector{Bool}, BitArray}) where T
     @boundscheck length(bit) == length(mask) || error("length of bits and mask does not match.")
