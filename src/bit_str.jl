@@ -1,4 +1,4 @@
-export BitStr, @bit_str, bcat, bit_literal, bit
+export BitStr, @bit_str, bcat, bit_literal, bit, to_location
 
 """
     BitStr{T}
@@ -98,6 +98,25 @@ Base.to_index(x::BitStr) = Int(x.val) + 1
 Base.checkindex(::Type{Bool}, inds::AbstractUnitRange, i::BitStr) =
     checkindex(Bool, inds, Base.to_index(i))
 Base.length(bits::BitStr{<:Integer, N}) where N = N
+
+"""
+    to_location(x)
+
+Convert bit configuration `x` to an index.
+
+# Example
+
+```jldoctest
+julia> to_location(1)
+2
+
+julia> to_location(bit"111")
+111 (7)
+```
+"""
+to_location(x) = error("expect an integer or @bit_str, got $(typeof(x))")
+to_location(x::Integer) = x + 1
+to_location(x::BitStr) = x
 
 
 """
