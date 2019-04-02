@@ -263,6 +263,7 @@ onehot(n::BitStr) = onehot(Float64, n)
 
 # conversions
 for IntType in [:Int8, :Int16, :Int32, :Int64, :Int128, :BigInt]
+    @eval Base.convert(::Type{$IntType}, x::BitStr) = $IntType(x.val)
     @eval Base.$IntType(x::BitStr) = $IntType(x.val)
 end
 
