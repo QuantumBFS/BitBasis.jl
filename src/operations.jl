@@ -65,14 +65,14 @@ See also [`bfloat_r`](@ref).
 
 Ref: [wiki: bit numbering](https://en.wikipedia.org/wiki/Bit_numbering)
 """
-bfloat(b::Integer; nbits::Int=bit_length(b)) = b / (1<<nbits)
+bfloat(b::Integer; nbits::Int=bit_length(b)) = breflect(b; nbits=nbits) / (1<<nbits)
 
 """
     bfloat_r(b::Integer; nbits::Int=bit_length(b)) -> Float64
 
 float view, with reversed bit numbering. See also [`bfloat`](@ref).
 """
-bfloat_r(b::Integer; nbits::Int) = breflect(b; nbits=nbits) / (1<<nbits)
+bfloat_r(b::Integer; nbits::Int) = b / (1<<nbits)
 
 """
     bint(b; nbits=nothing) -> Int

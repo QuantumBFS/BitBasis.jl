@@ -49,8 +49,8 @@ msk = bmask(2,5)
 @testset "bint & bfloat" begin
     @test bint(5) == 5
     @test bint_r(3, nbits=4) == 12
-    @test bfloat(3; nbits=4) == 0.75 / 4
-    @test bfloat_r(3; nbits=4) == 0.75
+    @test bfloat(3) == 0.75
+    @test bfloat_r(3; nbits=4) == 0.75 / 4
     @test bint_r(0.75, nbits=3) == 6
     @test bint(0.75, nbits=3) == 3
 end
