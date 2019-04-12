@@ -478,4 +478,4 @@ bint(b::BitStr) = b.val
 
 integer read in inverse order.
 """
-bint_r(b::BitStr) = breflect(length(b), b)
+bint_r(b::BitStr) = breflect(b; nbits=length(b))

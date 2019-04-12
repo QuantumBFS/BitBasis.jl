@@ -63,7 +63,7 @@ btruncate(b::Integer, n) = b & (1 << n - 1)
 float view, with MSB 0 bit numbering.
 See also [wiki: bit numbering](https://en.wikipedia.org/wiki/Bit_numbering)
 """
-bfloat(b::Integer; nbits::Int=bit_length(b)) = breflect(nbits, b) / (1<<nbits)
+bfloat(b::Integer; nbits::Int=bit_length(b)) = breflect(b; nbits=nbits) / (1<<nbits)
 
 """
     bfloat_r(b::Integer; nbits::Int) -> Float64
@@ -79,14 +79,14 @@ integer view, with LSB 0 bit numbering.
 See also [wiki: bit numbering](https://en.wikipedia.org/wiki/Bit_numbering)
 """
 bint(b::Integer; nbits=nothing) = b
-bint(x::Float64; nbits::Int) = breflect(nbits,bint_r(x, nbits=nbits))
+bint(x::Float64; nbits::Int) = breflect(bint_r(x, nbits=nbits); nbits=nbits)
 
 """
     bint_r(b; nbits::Int) -> Integer
 
 integer read in inverse order.
 """
-bint_r(b::Integer; nbits::Int) = breflect(nbits, b)
+bint_r(b::Integer; nbits::Int) = breflect(b; nbits=nbits)
 bint_r(x::Float64; nbits::Int) = Int(round(x * (1<<nbits)))
 
 
@@ -288,7 +288,7 @@ swapbits(b::T, i::Int, j::Int) where {T <: Integer} = swapbits(b, bmask(T, i, j)
 end
 
 """
-    breflect(nbits::Int, b::Integer[, masks::Vector{Integer}]) -> Integer
+    breflect(b::Integer[, masks::Vector{Integer}]; nbits) -> Integer
 
 Return left-right reflected integer.
 
@@ -297,20 +297,20 @@ Return left-right reflected integer.
 Reflect the order of bits.
 
 ```jldoctest
-julia> breflect(4, 0b1011) == 0b1101
+julia> breflect(0b1011; nbits=4) == 0b1101
 true
 ```
 """
 function breflect end
 
-@inline function breflect(nbits::Int, b::Integer)
+@inline function breflect(b::Integer; nbits::Int)
     @simd for i in 1:nbits÷2
         b = swapbits(b, i, nbits - i + 1)
     end
     return b
 end
 
-@inline function breflect(nbits::Int, b::T, masks::Vector{T})::T where T<:Integer
+@inline function breflect(b::T, masks::Vector{T}; nbits::Int)::T where T<:Integer
     @simd for m in masks
         b = swapbits(b, m)
     end
