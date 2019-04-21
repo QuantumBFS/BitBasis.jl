@@ -19,3 +19,10 @@ end
     @test bit_length(8) == 4
     @test bit_length(Int32(8)) == 4
 end
+
+@testset "indices with" begin
+    # indices_with
+    nbit = 5
+    poss, vals = [4,2,3], [1,0,1]
+    @test indices_with(nbit, poss, vals) == filter(x-> takebit.(x, poss) == vals, basis(nbit))
+end

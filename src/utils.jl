@@ -95,3 +95,14 @@ function int(n::Int)
     n <= 64 ?  Int64  :
     n <= 128 ? Int128 : BigInt
 end
+
+"""
+    indices_with(n::Int, locs::Vector{Int}, vals::Vector{Int}) -> Vector{Int}
+
+Return indices with specific positions `locs` with value `vals` in a hilbert space of `n` qubits.
+"""
+function indices_with(n::Int, locs::Vector{Int}, vals::Vector{Int})
+    mask = bmask(locs)
+    onemask = bmask(locs[vals.!=0])
+    return filter(x->ismasked_equal(x, mask, onemask), basis(n))
+end
