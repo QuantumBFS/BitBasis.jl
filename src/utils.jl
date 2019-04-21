@@ -1,4 +1,4 @@
-export bsizeof, bdistance, bit_length, onehot, log2i, hypercubic, log2dim1
+export bsizeof, bdistance, bit_length, onehot, log2i, hypercubic, log2dim1, indices_with
 # NOTE: all binary specified operations begin with b
 
 """
@@ -104,5 +104,5 @@ Return indices with specific positions `locs` with value `vals` in a hilbert spa
 function indices_with(n::Int, locs::Vector{Int}, vals::Vector{Int})
     mask = bmask(locs)
     onemask = bmask(locs[vals.!=0])
-    return filter(x->ismasked_equal(x, mask, onemask), basis(n))
+    return filter(x->ismatch(x, mask, onemask), basis(n))
 end
