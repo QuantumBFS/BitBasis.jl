@@ -17,9 +17,10 @@ Return number of different bits.
 bdistance(i::Ti, j::Ti) where Ti<:Integer = count_ones(i ⊻ j)
 
 """
-    onehot([T=Float64], nbits, x::Integer)
+    onehot([T=Float64], nbits, x::Integer[, nbatch::Int])
 
-Returns an onehot vector of type `Vector{T}`, where index `x + 1` is one.
+Create an onehot vector in type `Vector{T}` or a batch of onehot vector in type `Matrix{T}`,
+where index `x + 1` is one.
 """
 function onehot(::Type{T}, nbits::Int, x::Integer) where T
     v = zeros(T, 1 << nbits)
@@ -28,6 +29,14 @@ function onehot(::Type{T}, nbits::Int, x::Integer) where T
 end
 
 onehot(nbits::Int, x::Integer) = onehot(Float64, nbits, x)
+
+function onehot(::Type{T}, nbits::Int, x::Integer, nbatch::Int) where T
+    v = zeros(T, 1 << nbits, nbatch)
+    v[x + 1, :] .= 1
+    return v
+end
+
+onehot(nbits::Int, x::Integer, nbatch::Int) = onehot(Float64, nbits, x, nbatch)
 
 """
     unsafe_sub(a::UnitRange, b::NTuple{N}) -> NTuple{N}
