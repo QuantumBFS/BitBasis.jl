@@ -1,4 +1,4 @@
-export BitStr, @bit_str, bcat, bit_literal, bit, to_location
+export BitStr, @bit_str, bcat, bit_literal, bit, to_location, onehot, onehot_batch
 
 """
     BitStr{T}
@@ -287,6 +287,9 @@ Returns an onehot vector of type `Vector{T}`, where the `bit_str`-th element is 
 """
 onehot(::Type{T}, n::BitStr) where T = onehot(T, length(n), n.val)
 onehot(n::BitStr) = onehot(Float64, n)
+
+onehot_batch(::Type{T}, n::BitStr, nbatch::Int) where T = onehot_batch(T, length(n), n.val, nbatch)
+onehot_batch(n::BitStr, nbatch::Int) = onehot_batch(Float64, n, nbatch)
 
 # conversions
 for IntType in [:Int8, :Int16, :Int32, :Int64, :Int128, :BigInt]
