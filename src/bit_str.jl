@@ -281,15 +281,16 @@ Base.repeat(s::BitStr, n::Integer) = bcat(s for i in 1:n)
 Base.show(io::IO, bitstr::BitStr) = print(io, string(bitstr.val, base=2, pad=length(bitstr)), " (", bitstr.val, ")")
 
 """
-    onehot([T=Float64], bit_str)
+    onehot([T=Float64], bit_str[, nbatch])
 
-Returns an onehot vector of type `Vector{T}`, where the `bit_str`-th element is one.
+Returns an onehot vector in type `Vector{T}`, or a batch of onehot
+vector in type `Matrix{T}`, where the `bit_str`-th element is one.
 """
 onehot(::Type{T}, n::BitStr) where T = onehot(T, length(n), n.val)
 onehot(n::BitStr) = onehot(Float64, n)
 
-onehot_batch(::Type{T}, n::BitStr, nbatch::Int) where T = onehot_batch(T, length(n), n.val, nbatch)
-onehot_batch(n::BitStr, nbatch::Int) = onehot_batch(Float64, n, nbatch)
+onehot(::Type{T}, n::BitStr, nbatch::Int) where T = onehot(T, length(n), n.val, nbatch)
+onehot(n::BitStr, nbatch::Int) = onehot(Float64, n, nbatch)
 
 # conversions
 for IntType in [:Int8, :Int16, :Int32, :Int64, :Int128, :BigInt]

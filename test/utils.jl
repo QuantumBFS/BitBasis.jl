@@ -3,7 +3,7 @@ using Test, BitBasis
 @test bsizeof(ind) == sizeof(Int) * 8
 @test onehot(ComplexF64, 2, 2) == [0, 0, 1, 0]
 @test bdistance(1,7) == 2
-@test onehot_batch(ComplexF64, bit"01", 2) == transpose(ComplexF64[0 1 0 0;0 1 0 0])
+@test onehot(ComplexF64, bit"01", 2) == transpose(ComplexF64[0 1 0 0;0 1 0 0])
 @test log2dim1(rand(4, 4)) == log2i(4)
 
 @testset "log2i" begin

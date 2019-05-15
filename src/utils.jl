@@ -1,4 +1,4 @@
-export bsizeof, bdistance, bit_length, onehot, onehot_batch, log2i, hypercubic, log2dim1, indices_with
+export bsizeof, bdistance, bit_length, onehot, log2i, hypercubic, log2dim1, indices_with
 # NOTE: all binary specified operations begin with b
 
 """
@@ -17,9 +17,10 @@ Return number of different bits.
 bdistance(i::Ti, j::Ti) where Ti<:Integer = count_ones(i ⊻ j)
 
 """
-    onehot([T=Float64], nbits, x::Integer)
+    onehot([T=Float64], nbits, x::Integer[, nbatch::Int])
 
-Returns an onehot vector of type `Vector{T}`, where index `x + 1` is one.
+Create an onehot vector in type `Vector{T}` or a batch of onehot vector in type `Matrix{T}`,
+where index `x + 1` is one.
 """
 function onehot(::Type{T}, nbits::Int, x::Integer) where T
     v = zeros(T, 1 << nbits)
@@ -29,19 +30,13 @@ end
 
 onehot(nbits::Int, x::Integer) = onehot(Float64, nbits, x)
 
-"""
-    onehot_batch([T=Float64], nbits, x::Integer, nbatch::Int)
-
-Create a batch of onehot vector in type `Matrix{T}`, where the last dimension is
-the batch dimension, and the index `x + 1` is `1`.
-"""
-function onehot_batch(::Type{T}, nbits::Int, x::Integer, nbatch::Int) where T
+function onehot(::Type{T}, nbits::Int, x::Integer, nbatch::Int) where T
     v = zeros(T, 1 << nbits, nbatch)
     v[x + 1, :] .= 1
     return v
 end
 
-onehot_batch(nbits::Int, x::Integer, nbatch::Int) = onehot_batch(Float64, nbits, x, nbatch)
+onehot(nbits::Int, x::Integer, nbatch::Int) = onehot(Float64, nbits, x, nbatch)
 
 """
     unsafe_sub(a::UnitRange, b::NTuple{N}) -> NTuple{N}
