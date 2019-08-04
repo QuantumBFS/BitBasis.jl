@@ -79,10 +79,10 @@ it like normal strings.
 
 ```jldoctest
 julia> bit"10001"
-10001 (17)
+10001
 
 julia> bit"100_111_101"
-100111101 (317)
+100111101
 
 julia> bcat(bit"1001", bit"11", bit"1110")
 1001111110 (638)
