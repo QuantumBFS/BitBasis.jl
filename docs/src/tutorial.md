@@ -89,8 +89,6 @@ bit"1101"[2]
 to define a bit string with length. `bit"10101"` is equivalent to `0b10101` on both performance and functionality but it store the length of given bits statically.
 The bit string literal offers a more readable syntax for these kind of objects.
 
-Besides bit literal, you can convert a string or an integer to bit literal by [`bit`](@ref), e.g
-
 ```@repl tutorial
 bit(0b00101; len=5)
 ```
