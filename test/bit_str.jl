@@ -5,6 +5,7 @@ using Test, BitBasis
     @test bit"100_111" == 0b100_111
     @test bit"10_100_11" == bit"1010011"
     @test bit"10_100_11" != bit"01010011"
+    @test bit"1011" === bit_literal(1,1,0,1)
 end
 
 @testset "operations" begin
@@ -19,6 +20,7 @@ end
     @test bit"10011" == bit"10011"
 
     @test collect(bit"1101101") == Int64[1, 0, 1, 1, 0, 1, 1]
+    @test length(bit"000":bit"111") == 8
     v = zeros(8); v[bit"101"] = 1
     @test onehot(bit"101") == v
 
@@ -74,6 +76,10 @@ end
         @test z == zz
     end
 
+    for op in [>, <, >=, <=]
+        @test op(x, y) == op(Int64(x), Int64(y))
+    end
+
     for op in [leading_ones, leading_zeros, count_ones, count_zeros]
         op(x) == op(Int64(x))
     end
@@ -86,6 +92,10 @@ end
     @test y == 7
     @test y != BitStr{4}(7)
     @test bit"1001" == BitStr{4}(9)
+    @test typemax(x) == bit"11111111"
+    @test typemax(typeof(x)) == bit"11111111"
+    @test typemin(x) == bit"00000000"
+    @test typemin(typeof(x)) == bit"00000000"
 end
 
 @testset "bitstr binaryop" begin
@@ -101,6 +111,9 @@ end
     @test allone(x, msk) === false
     @test ismatch(x, msk, bit"000110") === true
     @test ismatch(x, msk, bit"100110") === false
+    @test length(basis(x)) == 2^6
+    @test length(basis(typeof(x))) == 2^6
+    @test basis(x)[1] === bit"000000"
 
     @test neg(x) === bit"110001"
     @test swapbits(x, bit"101000") === bit"100110"

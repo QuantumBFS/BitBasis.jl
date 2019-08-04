@@ -41,8 +41,13 @@ for op in [:+, :-, :*, :÷, :|, :⊻, :&, :%, :mod, :mod1]
 end
 for op in [:(>>), :(<<)]
     @eval Base.$op(a::T, b::Int64) where T<:BitStr = reinterpret(T, Base.$op(Int64(a),b))
-    @eval Base.$op(a::T, b::T) where T<:BitStr = reinterpret(T, Base.$op(Int64(a),Int64(b)))
+    #@eval Base.$op(a::T, b::T) where T<:BitStr = reinterpret(T, Base.$op(Int64(a),Int64(b)))
 end
+
+for op in [:<, :>, :(<=), :(>=)]
+    @eval Base.$op(a::T, b::T) where T<:BitStr = Base.$op(Int64(a),Int64(b))
+end
+
 for op in [:(==)]
     @eval Base.$op(a::T, b::Number) where T<:BitStr = Base.$op(Int64(a),b)
     @eval Base.$op(a::Number, b::T) where T<:BitStr = Base.$op(a,Int64(b))
@@ -68,6 +73,11 @@ Base.checkindex(::Type{Bool}, inds::AbstractUnitRange, i::BitStr) =
     checkindex(Bool, inds, Base.to_index(i))
 Base.length(bits::BitStr{N}) where N = N
 Base.lastindex(bits::BitStr) = length(bits)
+
+Base.typemax(::Type{BitStr{N}}) where N = BitStr{N}(1<<N-1)
+Base.typemin(::Type{BitStr{N}}) where N = BitStr{N}(0)
+Base.typemax(::BitStr{N}) where N = BitStr{N}(1<<N-1)
+Base.typemin(::BitStr{N}) where N = BitStr{N}(0)
 
 """
     @bit_str -> BitStr
@@ -252,5 +262,8 @@ function bit_literal(xs::NTuple{N, Int}) where N
         xs[k] == 0 || xs[k] == 1 || error("expect 0 or 1, got $(xs[k])")
         val += xs[k] << (k - 1)
     end
-    return BitStr(val, N)
+    return BitStr{N}(val)
 end
+
+basis(b::BitStr) = typemin(b):typemax(b)
+basis(::Type{BT}) where BT<:BitStr = typemin(BT):typemax(BT)
