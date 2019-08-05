@@ -67,6 +67,7 @@ Base.isapprox(a::T, b::T; kwargs...) where T<:BitStr = Base.isapprox(Int64(a),In
 # Note: it is a bit confusing, with x::BitStr == y::Int64,
 # they behave different when used for indexing.
 Base.to_index(x::BitStr) = Int64(x) + 1
+Base.to_index(x::UnitRange{<:BitStr}) = Int64(x.start) + 1:Int64(x.stop) + 1
 
 # use system interface
 Base.checkindex(::Type{Bool}, inds::AbstractUnitRange, i::BitStr) =

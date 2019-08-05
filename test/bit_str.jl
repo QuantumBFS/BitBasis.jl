@@ -127,6 +127,7 @@ end
     @test x[[true, false, true, true, true, false]] == [0,1,1,0]
     @test x[1:2] == [0,1]
     @test x[[1,4]] == [0,1]
+    @test [1,2,3,4,5][bit"001": bit"010"] == [2,3]
 end
 
 @testset "bitstr readout" begin
