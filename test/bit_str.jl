@@ -20,7 +20,7 @@ end
     @test bit"10011" == bit"10011"
 
     @test collect(bit"1101101") == Int64[1, 0, 1, 1, 0, 1, 1]
-    @test length(bit"000":bit"111") == 8
+    @test length(bit"000": bit"111") == 8
     v = zeros(8); v[bit"101"] = 1
     @test onehot(bit"101") == v
 
@@ -47,7 +47,7 @@ end
 
 @testset "bitstr arithmetic" begin
     x = BitStr{8}(99)
-    y = BitStr{8}(UInt64(7))
+    y = BitStr{8}(7)
     @test length(x) == 8
     for op in [+, -, *, ÷, |, ⊻, &, %, mod, mod1]
         z = op(x, y)
@@ -88,6 +88,7 @@ end
 @testset "bitstr constructors" begin
     x = BitStr{8}(99)
     y = BitStr{8}(UInt64(7))
+    @test zero(BitStr{8}) == zero(BitStr{8}(5)) == BitStr{8}(0)
     @test x == 99
     @test y == 7
     @test y != BitStr{4}(7)
@@ -117,6 +118,9 @@ end
 
     @test neg(x) === bit"110001"
     @test swapbits(x, bit"101000") === bit"100110"
+
+    @test basis(bit"000") == bit"000": bit"111"
+    @test basis(BitStr{3,Int64}) == bit"000": bit"111"
 end
 
 @testset "bitstr indexing" begin
