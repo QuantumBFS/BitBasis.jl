@@ -312,7 +312,7 @@ function breflect end
     return b
 end
 
-@inline function breflect(b::T, masks::Vector{T}; nbits::Int)::T where T<:Integer
+@inline function breflect(b::T, masks::AbstractVector{T}; nbits::Int)::T where T<:Integer
     @simd for m in masks
         b = swapbits(b, m)
     end

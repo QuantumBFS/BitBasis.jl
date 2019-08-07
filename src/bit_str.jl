@@ -49,7 +49,7 @@ for op in [:+, :-, :*, :÷, :|, :⊻, :&, :%, :mod, :mod1]
     @eval Base.$op(a::T, b::Integer) where T<:BitStr = T($op(Integer(a),b))
     @eval Base.$op(a::Integer, b::T) where T<:BitStr = T($op(a,Integer(b)))
     @eval Base.$op(a::BitStr{N,T}, b::BitStr{N,T}) where {N,T} = BitStr{N}($op(Integer(a), Integer(b)))
-    @eval Base.$op(a::BitStr, b::BitStr) = error("type mismatch $(typeof(a)), $(typeof(b))")
+    @eval Base.$op(a::BitStr, b::BitStr) = error("type mismatch: $(typeof(a)), $(typeof(b))")
 end
 for op in [:(>>), :(<<)]
     @eval Base.$op(a::BitStr{N}, b::Int) where N = BitStr{N}(Base.$op(Integer(a),b))
@@ -231,7 +231,7 @@ onehot(n::BitStr, nbatch::Int) = onehot(Float64, n, nbatch)
 Return left-right reflected bit string.
 """
 breflect(b::BitStr{N}) where N = breflect(b; nbits=N)
-breflect(b::BitStr{N}, masks::Vector{<:Integer}) where N = BitStr{N}(breflect(Integer(b), masks; nbits=N))
+breflect(b::BitStr{N,T}, masks::Vector{<:BitStr{N,T}}) where {N,T} = BitStr{N}(breflect(Integer(b), reinterpret(T,masks); nbits=N))
 
 """
     neg(b::BitStr) -> BitStr

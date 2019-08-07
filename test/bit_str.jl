@@ -23,6 +23,7 @@ end
     @test length(bit"000": bit"111") == 8
     v = zeros(8); v[bit"101"] = 1
     @test onehot(bit"101") == v
+    @test onehot(bit"101", 2) == [v v]
 
     @test repeat(bit"101", 3) == bit"101101101"
 end
@@ -101,12 +102,21 @@ end
     @test typemax(typeof(x)) == bit"11111111"
     @test typemin(x) == bit"00000000"
     @test typemin(typeof(x)) == bit"00000000"
+    @test typemin(BitStr{4}) == bit"0000"
+    @test typemax(BitStr{4}) == bit"1111"
+    @test typemin(x) == bit"00000000"
+    @test typemin(typeof(x)) == bit"00000000"
+    @test BitStr{10,Int32}(x) === BitStr{10}(Int32(99))
+    @test_throws ErrorException x + BitStr{10}(x)
+    @test BitStr{10}(x) != x
+    @test !(BitStr{10}(x) ≈ x)
 end
 
 @testset "bitstr binaryop" begin
     x = bit"001110"
     @test baddrs(x) == [2,3,4]
     @test breflect(x) === bit"011100"
+    @test breflect(x, [bit"000011", bit"101000"]) === bit"100101"
     msk = bmask(BitStr{6}, 1,2,3)
     @test flip(x, msk) === bit"001001"
     @test setbit(x, msk) === bit"001111"
@@ -125,6 +135,7 @@ end
 
     @test basis(bit"000") == bit"000": bit"111"
     @test basis(BitStr{3,Int64}) == bit"000": bit"111"
+    @test eltype(x) == Int64 == eltype(x[1])
 end
 
 @testset "bitstr indexing" begin
@@ -136,6 +147,10 @@ end
     @test x[1:2] == [0,1]
     @test x[[1,4]] == [0,1]
     @test [1,2,3,4,5][bit"001": bit"010"] == [2,3]
+    @test lastindex(x) == 6
+    @test checkindex(Bool, 1:3, x) == false
+    @test checkindex(Bool, 1:10000, x)
+    @test Base.IteratorSize(x) == Base.HasLength()
 end
 
 @testset "bitstr readout" begin
