@@ -58,6 +58,8 @@ for op in [:+, :-, :*, :÷, :|, :⊻, :&, :%, :mod, :mod1]
     @eval Base.$op(a::BitStr{N,T}, b::BitStr{N,T}) where {N,T} = BitStr{N,T}($op(Integer(a), Integer(b)))
     @eval Base.$op(a::BitStr, b::BitStr) = error("type mismatch: $(typeof(a)), $(typeof(b))")
 end
+Base.:-(x::BitStr{N,T}) where {N,T} = BitStr{N,T}(-Integer(x))
+
 for op in [:(>>), :(<<)]
     @eval Base.$op(a::BitStr{N,T}, b::Int) where {N,T} = BitStr{N,T}(Base.$op(Integer(a),b))
     #@eval Base.$op(a::T, b::T) where T<:BitStr = T(Base.$op(Integer(a),Integer(b)))

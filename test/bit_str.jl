@@ -69,6 +69,7 @@ end
         @test z isa BitStr
         @test z == op(7, Int64(y))
     end
+    @test -x === BitStr64{8}(-99)
 
     for op in [==, ≈]
         z = op(x, y)
