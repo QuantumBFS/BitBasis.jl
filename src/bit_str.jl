@@ -1,10 +1,10 @@
 export BitStr, @bit_str, @lbit_str, BitStr64, LongBitStr, bit_literal
-export bcat, onehot, onehot_batch
+export bcat, onehot, onehot_batch, buf
 
 """
     BitStr{N,T} <: Integer
 
-primitive type for bit string with fixed length `N`, the storage type is `T`.
+struct for bit string with fixed length `N`, the storage type is `T`.
 
     BitStr{N,T}(value)
     BitStr64{N}(value)
@@ -42,53 +42,53 @@ BitStr{N,T}(val::BitStr{N,T}) where {N,T} = val
 Base.zero(::Type{BitStr{N,T}}) where {N,T} = BitStr{N,T}(zero(T))
 Base.zero(::BitStr{N,T}) where {N,T} = BitStr{N,T}(zero(T))
 
-Base.Integer(b::BitStr) = b.val
-Base.reinterpret(::Type{BitStr{N,T}}, x::Integer) where {N,T} = BitStr{N,T}(x)
-Base.reinterpret(::Type{T}, x::BitStr) where {T} = reinterpret(T, Integer(x))
-Base.convert(::Type{T}, b::BitStr) where T<:Integer = convert(T, Integer(b))
+buf(b::BitStr) = b.val
+Base.reinterpret(::Type{BitStr{N,T}}, x::Integer) where {N,T} = BitStr{N,T}(reinterpret(T,x))
+Base.reinterpret(::Type{T}, x::BitStr) where {T} = reinterpret(T, buf(x))
+Base.convert(::Type{T}, b::BitStr) where T<:Integer = convert(T, buf(b))
 Base.convert(::Type{T}, b::Integer) where T<:BitStr = T(b)
-Base.convert(::Type{T1}, b::BitStr{N2,T2}) where {T1<:BitStr,N2,T2} = convert(T1, Integer(b))
+Base.convert(::Type{T1}, b::BitStr{N2,T2}) where {T1<:BitStr,N2,T2} = convert(T1, buf(b))
 #Base.promote_rule(::Type{BitStr{N,T1}}, ::Type{BitStr{N,T2}}) where {N,T1,T2} = BitStr{N,promote_rule(T1,T2)}
 for IT in [:BigInt, :Int128, :UInt128, :Int64,:UInt64, :Int32, :UInt32, :Int16, :UInt16, :Int8, :UInt8, :Bool]
-    @eval Base.$IT(b::BitStr) = $IT(Integer(b))
+    @eval Base.$IT(b::BitStr) = $IT(buf(b))
 end
 for op in [:+, :-, :*, :÷, :|, :⊻, :&, :%, :mod, :mod1]
-    @eval Base.$op(a::T, b::Integer) where T<:BitStr = T($op(Integer(a),b))
-    @eval Base.$op(a::Integer, b::T) where T<:BitStr = T($op(a,Integer(b)))
-    @eval Base.$op(a::BitStr{N,T}, b::BitStr{N,T}) where {N,T} = BitStr{N,T}($op(Integer(a), Integer(b)))
+    @eval Base.$op(a::T, b::Integer) where T<:BitStr = T($op(buf(a),b))
+    @eval Base.$op(a::Integer, b::T) where T<:BitStr = T($op(a,buf(b)))
+    @eval Base.$op(a::BitStr{N,T}, b::BitStr{N,T}) where {N,T} = BitStr{N,T}($op(buf(a), buf(b)))
     @eval Base.$op(a::BitStr, b::BitStr) = error("type mismatch: $(typeof(a)), $(typeof(b))")
 end
-Base.:-(x::BitStr{N,T}) where {N,T} = BitStr{N,T}(-Integer(x))
+Base.:-(x::BitStr{N,T}) where {N,T} = BitStr{N,T}(-buf(x))
 
 for op in [:(>>), :(<<)]
-    @eval Base.$op(a::BitStr{N,T}, b::Int) where {N,T} = BitStr{N,T}(Base.$op(Integer(a),b))
-    #@eval Base.$op(a::T, b::T) where T<:BitStr = T(Base.$op(Integer(a),Integer(b)))
+    @eval Base.$op(a::BitStr{N,T}, b::Int) where {N,T} = BitStr{N,T}(Base.$op(buf(a),b))
+    #@eval Base.$op(a::T, b::T) where T<:BitStr = T(Base.$op(buf(a),buf(b)))
 end
 
 for op in [:<, :>, :(<=), :(>=)]
-    @eval Base.$op(a::T, b::T) where T<:BitStr = Base.$op(Integer(a),Integer(b))
+    @eval Base.$op(a::T, b::T) where T<:BitStr = Base.$op(buf(a),buf(b))
 end
 
 for op in [:(==)]
-    @eval Base.$op(a::T, b::Number) where T<:BitStr = Base.$op(Integer(a),b)
-    @eval Base.$op(a::Number, b::T) where T<:BitStr = Base.$op(a,Integer(b))
-    @eval Base.$op(a::BitStr{N}, b::BitStr{N}) where N = Base.$op(Integer(a),Integer(b))
+    @eval Base.$op(a::T, b::Number) where T<:BitStr = Base.$op(buf(a),b)
+    @eval Base.$op(a::Number, b::T) where T<:BitStr = Base.$op(a,buf(b))
+    @eval Base.$op(a::BitStr{N}, b::BitStr{N}) where N = Base.$op(buf(a),buf(b))
 end
 for op in [:count_ones, :count_zeros, :leading_ones, :leading_zeros]
-    @eval Base.$op(a::BitStr) = Base.$op(Integer(a))
+    @eval Base.$op(a::BitStr) = Base.$op(buf(a))
 end
 
 # Note: the transitivity of == is not satisfied here.
 Base.:(==)(lhs::BitStr, rhs::BitStr) = false
-Base.isapprox(a::BitStr, b::Number; kwargs...) = Base.isapprox(Integer(a),b; kwargs...)
-Base.isapprox(a::Number, b::BitStr; kwargs...) = Base.isapprox(a,Integer(b); kwargs...)
+Base.isapprox(a::BitStr, b::Number; kwargs...) = Base.isapprox(buf(a),b; kwargs...)
+Base.isapprox(a::Number, b::BitStr; kwargs...) = Base.isapprox(a,buf(b); kwargs...)
 Base.isapprox(lhs::BitStr, rhs::BitStr; kwargs...) = false
-Base.isapprox(a::T, b::T; kwargs...) where T<:BitStr = Base.isapprox(Integer(a),Integer(b); kwargs...)
+Base.isapprox(a::T, b::T; kwargs...) where T<:BitStr = Base.isapprox(buf(a),buf(b); kwargs...)
 
 # Note: it is a bit confusing, with x::BitStr == y::Integer,
 # they behave different when used for indexing.
-Base.to_index(x::BitStr) = Integer(x) + 1
-Base.to_index(x::UnitRange{<:BitStr}) = Integer(x.start) + 1:Integer(x.stop) + 1
+Base.to_index(x::BitStr) = buf(x) + 1
+Base.to_index(x::UnitRange{<:BitStr}) = buf(x.start) + 1:buf(x.stop) + 1
 
 # use system interface
 Base.checkindex(::Type{Bool}, inds::AbstractUnitRange, i::BitStr) =
@@ -159,7 +159,7 @@ macro lbit_str(str)
 end
 
 function parse_bit(::Type{T}, str::String) where {T <: Integer}
-    val = T(0); k = 1
+    val = zero(T); k = 1
     for each in reverse(filter(x->x!='_', str))
         if each == '1'
             val += one(T) << (k - 1)
@@ -176,12 +176,15 @@ function parse_bit(::Type{T}, str::String) where {T <: Integer}
     return BitStr{k-1,T}(val)
 end
 
+sum_length(a::BitStr, bits::BitStr...) = length(a) + sum_length(bits...)
+sum_length(a::BitStr) = length(a)
+
 function bcat(bits::(BitStr{N,T} where N)...) where T
-    total_bits = mapreduce(length, +, bits)
-    val, len = Integer(0), 0
+    total_bits = sum_length(bits...)
+    val, len = zero(T), 0
 
     for k in length(bits):-1:1
-        val += Integer(bits[k]) << len
+        val += buf(bits[k]) << len
         len += length(bits[k])
     end
     return BitStr{total_bits,T}(val)
@@ -192,20 +195,20 @@ bcat(bits) = bcat(bits...)
 
 Base.@propagate_inbounds function Base.getindex(bit::BitStr{N}, index::Int) where N
     @boundscheck 1 <= index <= N || throw(BoundsError(bit, index))
-    return Integer(readbit(bit, index))
+    return buf(readbit(bit, index))
 end
 
 Base.@propagate_inbounds function Base.getindex(bit::BitStr{N}, itr::Union{AbstractVector, AbstractRange}) where N
     @boundscheck all(x->1<=x<=N, itr) || throw(BoundsError(bit, itr))
-    return map(x->Integer(readbit(bit, x)), itr)
+    return map(x->buf(readbit(bit, x)), itr)
 end
 
 # TODO: support AbstractArray, should return its corresponding shape
 
-Base.@propagate_inbounds function Base.getindex(bit::BitStr{N}, mask::Union{Vector{Bool}, BitArray}) where N
+Base.@propagate_inbounds function Base.getindex(bit::BitStr{N,T}, mask::Union{Vector{Bool}, BitArray}) where {N,T}
     @boundscheck N == length(mask) || error("length of bits and mask does not match.")
 
-    out = Integer[]
+    out = T[]
     for k in eachindex(mask)
         if mask[k]
             push!(out, bit[k])
@@ -226,7 +229,7 @@ end
 Base.IteratorSize(::BitStr) = Base.HasLength()
 
 Base.repeat(s::BitStr, n::Integer) = bcat(s for i in 1:n)
-Base.show(io::IO, bitstr::BitStr64{N}) where N = print(io, string(Int64(bitstr), base=2, pad=N))
+Base.show(io::IO, bitstr::BitStr64{N}) where N = print(io, string(buf(bitstr), base=2, pad=N))
 Base.show(io::IO, bitstr::LongBitStr{N}) where N = print(io, join(map(string, [Base.Iterators.reverse(bitstr)...]), ""))
 
 """
@@ -235,10 +238,10 @@ Base.show(io::IO, bitstr::LongBitStr{N}) where N = print(io, join(map(string, [B
 Returns an onehot vector in type `Vector{T}`, or a batch of onehot
 vector in type `Matrix{T}`, where the `bit_str`-th element is one.
 """
-onehot(::Type{T}, n::BitStr{N}) where {T,N} = onehot(T, N, Integer(n))
+onehot(::Type{T}, n::BitStr{N}) where {T,N} = onehot(T, N, buf(n))
 onehot(n::BitStr) = onehot(Float64, n)
 
-onehot(::Type{T}, n::BitStr{N}, nbatch::Int) where {T,N} = onehot(T, N, Integer(n), nbatch)
+onehot(::Type{T}, n::BitStr{N}, nbatch::Int) where {T,N} = onehot(T, N, buf(n), nbatch)
 onehot(n::BitStr, nbatch::Int) = onehot(Float64, n, nbatch)
 
 # operations
@@ -248,7 +251,7 @@ onehot(n::BitStr, nbatch::Int) = onehot(Float64, n, nbatch)
 Return left-right reflected bit string.
 """
 breflect(b::BitStr{N}) where N = breflect(b; nbits=N)
-breflect(b::BitStr{N,T}, masks::Vector{<:BitStr{N,T}}) where {N,T} = BitStr{N,T}(breflect(Integer(b), reinterpret(T,masks); nbits=N))
+breflect(b::BitStr{N,T}, masks::Vector{<:BitStr{N,T}}) where {N,T} = BitStr{N,T}(breflect(buf(b), reinterpret(T,masks); nbits=N))
 
 """
     neg(b::BitStr) -> BitStr
@@ -258,22 +261,22 @@ neg(b::BitStr{N}) where N = neg(b, N)
 """
     bfloat(b::BitStr) -> Float64
 """
-bfloat(b::BitStr{N}) where N = bfloat(b; nbits=N)
+bfloat(b::BitStr{N}) where N = bfloat(buf(b); nbits=N)
 
 """
     bfloat_r(b::BitStr) -> Float64
 """
-bfloat_r(b::BitStr{N}) where N = bfloat_r(b; nbits=N)
+bfloat_r(b::BitStr{N}) where N = bfloat_r(buf(b); nbits=N)
 
 """
     bint_r(b::BitStr) -> Integer
 """
-bint_r(b::BitStr{N}) where N = Integer(breflect(b))
+bint_r(b::BitStr{N}) where N = buf(breflect(b))
 
 """
     bint(b::BitStr) -> Integer
 """
-bint(b::BitStr) = Integer(b)
+bint(b::BitStr) = buf(b)
 
 """
     bit_literal(xs...)
