@@ -230,7 +230,7 @@ Base.IteratorSize(::BitStr) = Base.HasLength()
 
 Base.repeat(s::BitStr, n::Integer) = bcat(s for i in 1:n)
 Base.show(io::IO, bitstr::BitStr64{N}) where N = print(io, string(buf(bitstr), base=2, pad=N))
-Base.show(io::IO, bitstr::LongBitStr{N}) where N = print(io, join(map(string, [Base.Iterators.reverse(bitstr)...]), ""))
+Base.show(io::IO, bitstr::LongBitStr{N}) where N = print(io, join(map(string, [bitstr[end:-1:1]...])), "")
 
 """
     onehot([T=Float64], bit_str[, nbatch])
