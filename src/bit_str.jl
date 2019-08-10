@@ -87,8 +87,8 @@ Base.isapprox(a::T, b::T; kwargs...) where T<:BitStr = Base.isapprox(buf(a),buf(
 
 # Note: it is a bit confusing, with x::BitStr == y::Integer,
 # they behave different when used for indexing.
-Base.to_index(x::BitStr) = buf(x) + 1
-Base.to_index(x::UnitRange{<:BitStr}) = buf(x.start) + 1:buf(x.stop) + 1
+Base.to_index(x::BitStr) = error("please do not use bit string for indexing, you may want to use `buf(x)+1` for indexing to avoid ambiguity.")
+Base.to_index(x::UnitRange{<:BitStr}) = error("please do not use bit string for indexing, you may want to use `buf(x)+1` for indexing to avoid ambiguity.")
 
 # use system interface
 Base.checkindex(::Type{Bool}, inds::AbstractUnitRange, i::BitStr) =

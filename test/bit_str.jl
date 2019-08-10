@@ -21,7 +21,7 @@ end
 
     @test collect(bit"1101101") == Int64[1, 0, 1, 1, 0, 1, 1]
     @test length(bit"000": bit"111") == 8
-    v = zeros(8); v[bit"101"] = 1
+    v = zeros(8); v[buf(bit"101")+1] = 1
     @test onehot(bit"101") == v
     @test onehot(bit"101", 2) == [v v]
 
@@ -44,7 +44,7 @@ end
 
 @testset "indexing" begin
     A = rand(16)
-    @test A[bit"1101"] == A[14]
+    @test_throws ErrorException A[bit"1101"]
     @test bit"1101"[1] == 1
     @test bit"1101"[2] == 0
     @test bit"1101"[3] == 1
@@ -154,10 +154,7 @@ end
     @test x[[true, false, true, true, true, false]] == [0,1,1,0]
     @test x[1:2] == [0,1]
     @test x[[1,4]] == [0,1]
-    @test [1,2,3,4,5][bit"001": bit"010"] == [2,3]
     @test lastindex(x) == 6
-    @test checkindex(Bool, 1:3, x) == false
-    @test checkindex(Bool, 1:10000, x)
     @test Base.IteratorSize(x) == Base.HasLength()
 end
 
