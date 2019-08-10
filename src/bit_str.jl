@@ -19,13 +19,13 @@ some frequently used methods for binary basis.
 
 ```julia
 julia> bit"0101" * 2
-1010
+1010 ₍₂₎
 
 julia> bcat(bit"101" for i in 1:10)
 101101101101101101101101101101 (766958445)
 
 julia> repeat(bit"101", 2)
-101101
+101101 ₍₂₎
 
 julia> bit"1101"[2]
 0
@@ -111,18 +111,13 @@ it like normal strings.
 
 ```jldoctest
 julia> bit"10001"
-10001
+10001 ₍₂₎
 
 julia> bit"100_111_101"
-100111101
+100111101 ₍₂₎
 
 julia> bcat(bit"1001", bit"11", bit"1110")
-1001111110 (638)
-
-julia> v = collect(1:16);
-
-julia> v[bit"1001"]
-10
+1001111110 ₍₂₎
 
 julia> onehot(bit"1001")
 16-element Array{Float64,1}:
@@ -229,8 +224,8 @@ end
 Base.IteratorSize(::BitStr) = Base.HasLength()
 
 Base.repeat(s::BitStr, n::Integer) = bcat(s for i in 1:n)
-Base.show(io::IO, bitstr::BitStr64{N}) where N = print(io, string(buf(bitstr), base=2, pad=N))
-Base.show(io::IO, bitstr::LongBitStr{N}) where N = print(io, join(map(string, [bitstr[end:-1:1]...])), "")
+Base.show(io::IO, bitstr::BitStr64{N}) where N = print(io, string(buf(bitstr), base=2, pad=N), " ₍₂₎")
+Base.show(io::IO, bitstr::LongBitStr{N}) where N = print(io, join(map(string, [bitstr[end:-1:1]...])), " ₍₂₎")
 
 """
     onehot([T=Float64], bit_str[, nbatch])
@@ -287,7 +282,7 @@ Create a [`BitStr`](@ref) by input bits `xs`.
 
 ```jldoctest
 julia> bit_literal(1, 0, 1, 0, 1, 1)
-110101
+110101 ₍₂₎
 ```
 """
 bit_literal(xs...) = bit_literal(xs)
