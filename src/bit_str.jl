@@ -166,7 +166,7 @@ function parse_bit(::Type{T}, str::String) where {T <: Integer}
         else
             error("expect 0 or 1, got $each at $k-th bit")
         end
-        k<=bsizeof(T) || error("Bit String too long! use Long bit string?")
+        (isbitstype(T) && k>bsizeof(T)) && error("Bit String too long! use Long bit string?")
     end
     return BitStr{k-1,T}(val)
 end
