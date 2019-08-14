@@ -92,13 +92,7 @@ The bit string literal offers a more readable syntax for these kind of objects.
 Besides bit literal, you can convert a string or an integer to bit literal by [`bit`](@ref), e.g
 
 ```@repl tutorial
-bit(0b00101; len=5)
-```
-
-Or use the least number of digits required
-
-```@repl tutorial
-bit(0b00101)
+BitStr{5}(0b00101)
 ```
 
 ## Bit Manipulations

@@ -17,7 +17,7 @@ Return number of different bits.
 bdistance(i::Ti, j::Ti) where Ti<:Integer = count_ones(i ⊻ j)
 
 """
-    onehot([T=Float64], nbits, x::Integer[, nbatch::Int])
+    onehot([T=Float64], nbits, x::Integer; nbatch::Int])
 
 Create an onehot vector in type `Vector{T}` or a batch of onehot vector in type `Matrix{T}`,
 where index `x + 1` is one.
@@ -95,15 +95,6 @@ log2dim1(X) = log2i(size(X, 1))
 get the hypercubic representation for an array.
 """
 hypercubic(A::Array) = reshape(A, fill(2, size(A) |> prod |> log2i)...)
-
-# NOTE: this is not exported
-function int(n::Int)
-    n <= 8 ?   Int8   :
-    n <= 16 ?  Int16  :
-    n <= 32 ?  Int32  :
-    n <= 64 ?  Int64  :
-    n <= 128 ? Int128 : BigInt
-end
 
 """
     indices_with(n::Int, locs::Vector{Int}, vals::Vector{Int}) -> Vector{Int}

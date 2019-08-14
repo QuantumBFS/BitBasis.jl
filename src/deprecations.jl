@@ -5,3 +5,7 @@
 @deprecate takebit(index::T, bits::Int...) where T <: Integer  readbit(index, bits...)
 @deprecate breflect(nbits::Int, b::Integer)  breflect(b; nbits=nbits)
 @deprecate breflect(nbits::Int, b::T, masks::Vector{T}) where T breflect(b, masks; nbits=nbits)
+@deprecate bit(b; len) BitStr{len}(b)
+
+@deprecate to_location(x::Integer) x+1
+@deprecate to_location(x::BitStr) buffer(x)+1
