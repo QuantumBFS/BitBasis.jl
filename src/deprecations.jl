@@ -8,5 +8,5 @@
 @deprecate bit(b; len) BitStr{len}(b)
 @deprecate to_location Base.to_index
 
-@deprecate to_location(x::Integer) x + 1
-@deprecate to_location(x::BitStr) x
+@deprecate to_location(x::Integer) x+1
+@deprecate to_location(x::BitStr) buffer(x)+1

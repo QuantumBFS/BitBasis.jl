@@ -23,7 +23,7 @@ end
 
     @test collect(bit"1101101") == Int64[1, 0, 1, 1, 0, 1, 1]
     @test length(bit"000": bit"111") == 8
-    v = zeros(8); v[buf(bit"101")+1] = 1
+    v = zeros(8); v[buffer(bit"101")+1] = 1
     @test onehot(bit"101") == v
     @test onehot(bit"101", 2) == [v v]
 
