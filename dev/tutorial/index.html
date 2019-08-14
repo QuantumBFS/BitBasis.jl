@@ -23,18 +23,22 @@ julia&gt; packbits([1, 1, 0])
 3
 
 julia&gt; bitarray([4, 5, 6], 5) |&gt; packbits;</code></pre><p>A curried version of the above function is also provided. See also <a href="../man/#BitBasis.bitarray-Union{Tuple{T}, Tuple{Array{T,1},Int64}} where T&lt;:Number"><code>bitarray</code></a>.</p><h2><a class="nav-anchor" id="bit_literal-1" href="#bit_literal-1">Bit String Literal</a></h2><p>bit strings are literals for bits, it provides better view on binary basis. you could use <a href="../man/#BitBasis.@bit_str-Tuple{Any}"><code>@bit_str</code></a>, which looks like the following</p><pre><code class="language-julia-repl">julia&gt; bit&quot;101&quot; * 2
-1010 (10)
+1010 ₍₂₎
 
 julia&gt; bcat(bit&quot;101&quot; for i in 1:10)
-101101101101101101101101101101 (766958445)
+101101101101101101101101101101 ₍₂₎
 
 julia&gt; repeat(bit&quot;101&quot;, 2)
-101101 (45)
+101101 ₍₂₎
 
 julia&gt; bit&quot;1101&quot;[2]
-0</code></pre><p>to define a bit string with length. <code>bit&quot;10101&quot;</code> is equivalent to <code>0b10101</code> on both performance and functionality but it store the length of given bits statically. The bit string literal offers a more readable syntax for these kind of objects.</p><p>Besides bit literal, you can convert a string or an integer to bit literal by <a href="../man/#BitBasis.bit-Tuple{Integer}"><code>bit</code></a>, e.g</p><pre><code class="language-julia-repl">julia&gt; bit(0b00101; len=5)
-00101 (5)</code></pre><p>Or use the least number of digits required</p><pre><code class="language-julia-repl">julia&gt; bit(0b00101)
-101 (5)</code></pre><h2><a class="nav-anchor" id="Bit-Manipulations-1" href="#Bit-Manipulations-1">Bit Manipulations</a></h2><h4><a class="nav-anchor" id="[readbit](@ref)-and-[baddrs](@ref)-1" href="#[readbit](@ref)-and-[baddrs](@ref)-1"><a href="../man/#BitBasis.readbit-Union{Tuple{T}, Tuple{T,Int64}} where T&lt;:Integer"><code>readbit</code></a> and <a href="../man/#BitBasis.baddrs-Tuple{BitStr}"><code>baddrs</code></a></a></h4><p><img src="../assets/11100.png" alt="11100"/></p><pre><code class="language-julia-repl">julia&gt; readbit(0b11100, 2, 3) == 0b10  # read the 2nd and 3rd bits as `x₃x₂`
+0</code></pre><p>to define a bit string with length. <code>bit&quot;10101&quot;</code> is equivalent to <code>0b10101</code> on both performance and functionality but it store the length of given bits statically. The bit string literal offers a more readable syntax for these kind of objects.</p><p>Besides bit literal, you can convert a string or an integer to bit literal by <a href="@ref"><code>bit</code></a>, e.g</p><pre><code class="language-julia-repl">julia&gt; BitStr{5}(0b00101)
+ERROR: MethodError: no method matching BitStr{5,T} where T(::UInt8)
+Closest candidates are:
+  BitStr{5,T} where T(::T&lt;:Number) where T&lt;:Number at boot.jl:741
+  BitStr{5,T} where T(!Matched::Float16) where T&lt;:Integer at float.jl:71
+  BitStr{5,T} where T(!Matched::Complex) where T&lt;:Real at complex.jl:37
+  ...</code></pre><h2><a class="nav-anchor" id="Bit-Manipulations-1" href="#Bit-Manipulations-1">Bit Manipulations</a></h2><h4><a class="nav-anchor" id="[readbit](@ref)-and-[baddrs](@ref)-1" href="#[readbit](@ref)-and-[baddrs](@ref)-1"><a href="../man/#BitBasis.readbit-Union{Tuple{T}, Tuple{T,Int64}} where T&lt;:Integer"><code>readbit</code></a> and <a href="../man/#BitBasis.baddrs-Tuple{Integer}"><code>baddrs</code></a></a></h4><p><img src="../assets/11100.png" alt="11100"/></p><pre><code class="language-julia-repl">julia&gt; readbit(0b11100, 2, 3) == 0b10  # read the 2nd and 3rd bits as `x₃x₂`
 true
 
 julia&gt; baddrs(0b11100) == [3,4,5]  # locations of one bits
@@ -42,21 +46,37 @@ true</code></pre><h4><a class="nav-anchor" id="[bmask](@ref)-1" href="#[bmask](@
 0x0d
 
 julia&gt; bit(mask; len=4)
-1101 (13)</code></pre><h4><a class="nav-anchor" id="[allone](@ref)-and-[anyone](@ref)-1" href="#[allone](@ref)-and-[anyone](@ref)-1"><a href="../man/#BitBasis.allone-Union{Tuple{T}, Tuple{BitStr{T,N} where N,Integer}} where T"><code>allone</code></a> and <a href="../man/#BitBasis.anyone-Union{Tuple{T}, Tuple{BitStr{T,N} where N,Integer}} where T"><code>anyone</code></a></a></h4><p>with this mask (masked positions are colored light blue), we have <img src="../assets/1011_1101.png" alt="1011_1101"/></p><pre><code class="language-julia-repl">julia&gt; allone(0b1011, mask) == false # true if all masked positions are 1
+┌ Warning: `bit(b; len)` is deprecated, use `BitStr{len}(b)` instead.
+│   caller = ip:0x0
+└ @ Core :-1
+ERROR: MethodError: no method matching BitStr{4,T} where T(::UInt8)
+Closest candidates are:
+  BitStr{4,T} where T(::T&lt;:Number) where T&lt;:Number at boot.jl:741
+  BitStr{4,T} where T(!Matched::Float16) where T&lt;:Integer at float.jl:71
+  BitStr{4,T} where T(!Matched::Complex) where T&lt;:Real at complex.jl:37
+  ...</code></pre><h4><a class="nav-anchor" id="[allone](@ref)-and-[anyone](@ref)-1" href="#[allone](@ref)-and-[anyone](@ref)-1"><a href="../man/#BitBasis.allone-Union{Tuple{T}, Tuple{T,T}} where T&lt;:Integer"><code>allone</code></a> and <a href="../man/#BitBasis.anyone-Union{Tuple{T}, Tuple{T,T}} where T&lt;:Integer"><code>anyone</code></a></a></h4><p>with this mask (masked positions are colored light blue), we have <img src="../assets/1011_1101.png" alt="1011_1101"/></p><pre><code class="language-julia-repl">julia&gt; allone(0b1011, mask) == false # true if all masked positions are 1
 true
 
 julia&gt; anyone(0b1011, mask) == true # true if any masked positions is 1
-true</code></pre><h4><a class="nav-anchor" id="[ismatch](@ref)-1" href="#[ismatch](@ref)-1"><a href="../man/#BitBasis.ismatch-Union{Tuple{T}, Tuple{BitStr{T,N} where N,Integer,Integer}} where T"><code>ismatch</code></a></a></h4><p><img src="../assets/ismatch.png" alt="ismatch"/></p><pre><code class="language-julia-repl">julia&gt; ismatch(0b1011, mask, 0b1001) == true  # true if masked part matches `0b1001`
-true</code></pre><h4><a class="nav-anchor" id="[flip](@ref)-1" href="#[flip](@ref)-1"><a href="../man/#BitBasis.flip-Union{Tuple{T}, Tuple{BitStr{T,N} where N,Integer}} where T"><code>flip</code></a></a></h4><p><img src="../assets/flip.png" alt="1011_1101"/></p><pre><code class="language-julia-repl">julia&gt; bit(flip(0b1011, mask); len=4)  # flip masked positions
-0110 (6)</code></pre><h4><a class="nav-anchor" id="[setbit](@ref)-1" href="#[setbit](@ref)-1"><a href="../man/#BitBasis.setbit-Union{Tuple{T}, Tuple{BitStr{T,N} where N,Integer}} where T"><code>setbit</code></a></a></h4><p><img src="../assets/setbit.png" alt="setbit"/></p><pre><code class="language-julia-repl">julia&gt; setbit(0b1011, 0b1100) == 0b1111 # set masked positions 1
-true</code></pre><h4><a class="nav-anchor" id="[swapbits](@ref)-1" href="#[swapbits](@ref)-1"><a href="../man/#BitBasis.swapbits-Tuple{BitStr,Int64,Int64}"><code>swapbits</code></a></a></h4><p><img src="../assets/swapbits.png" alt="swapbits"/></p><pre><code class="language-julia-repl">julia&gt; swapbits(0b1011, 0b1100) == 0b0111  # swap masked positions
-true</code></pre><h4><a class="nav-anchor" id="[neg](@ref)-1" href="#[neg](@ref)-1"><a href="../man/#BitBasis.neg-Tuple{BitStr}"><code>neg</code></a></a></h4><pre><code class="language-julia-repl">julia&gt; neg(0b1011, 2) == 0b1000
+true</code></pre><h4><a class="nav-anchor" id="[ismatch](@ref)-1" href="#[ismatch](@ref)-1"><a href="../man/#BitBasis.ismatch-Union{Tuple{T}, Tuple{T,T,T}} where T&lt;:Integer"><code>ismatch</code></a></a></h4><p><img src="../assets/ismatch.png" alt="ismatch"/></p><pre><code class="language-julia-repl">julia&gt; ismatch(0b1011, mask, 0b1001) == true  # true if masked part matches `0b1001`
+true</code></pre><h4><a class="nav-anchor" id="[flip](@ref)-1" href="#[flip](@ref)-1"><a href="../man/#BitBasis.flip-Union{Tuple{T}, Tuple{T,T}} where T&lt;:Integer"><code>flip</code></a></a></h4><p><img src="../assets/flip.png" alt="1011_1101"/></p><pre><code class="language-julia-repl">julia&gt; bit(flip(0b1011, mask); len=4)  # flip masked positions
+┌ Warning: `bit(b; len)` is deprecated, use `BitStr{len}(b)` instead.
+│   caller = ip:0x0
+└ @ Core :-1
+ERROR: MethodError: no method matching BitStr{4,T} where T(::UInt8)
+Closest candidates are:
+  BitStr{4,T} where T(::T&lt;:Number) where T&lt;:Number at boot.jl:741
+  BitStr{4,T} where T(!Matched::Float16) where T&lt;:Integer at float.jl:71
+  BitStr{4,T} where T(!Matched::Complex) where T&lt;:Real at complex.jl:37
+  ...</code></pre><h4><a class="nav-anchor" id="[setbit](@ref)-1" href="#[setbit](@ref)-1"><a href="../man/#BitBasis.setbit-Union{Tuple{T}, Tuple{T,T}} where T&lt;:Integer"><code>setbit</code></a></a></h4><p><img src="../assets/setbit.png" alt="setbit"/></p><pre><code class="language-julia-repl">julia&gt; setbit(0b1011, 0b1100) == 0b1111 # set masked positions 1
+true</code></pre><h4><a class="nav-anchor" id="[swapbits](@ref)-1" href="#[swapbits](@ref)-1"><a href="../man/#BitBasis.swapbits-Union{Tuple{T}, Tuple{T,Int64,Int64}} where T&lt;:Integer"><code>swapbits</code></a></a></h4><p><img src="../assets/swapbits.png" alt="swapbits"/></p><pre><code class="language-julia-repl">julia&gt; swapbits(0b1011, 0b1100) == 0b0111  # swap masked positions
+true</code></pre><h4><a class="nav-anchor" id="[neg](@ref)-1" href="#[neg](@ref)-1"><a href="../man/#BitBasis.neg-Union{Tuple{BitStr{N,T} where T}, Tuple{N}} where N"><code>neg</code></a></a></h4><pre><code class="language-julia-repl">julia&gt; neg(0b1011, 2) == 0b1000
 true</code></pre><h4><a class="nav-anchor" id="[btruncate](@ref)-and-[breflect](@ref)-1" href="#[btruncate](@ref)-and-[breflect](@ref)-1"><a href="../man/#BitBasis.btruncate-Tuple{Integer,Any}"><code>btruncate</code></a> and <a href="../man/#BitBasis.breflect"><code>breflect</code></a></a></h4><p><img src="../assets/btruncate.png" alt="btruncate"/></p><pre><code class="language-julia-repl">julia&gt; btruncate(0b1011, 2) == 0b0011  # only the first two qubits are retained
 true</code></pre><h4><a class="nav-anchor" id="[breflect](@ref)-1" href="#[breflect](@ref)-1"><a href="../man/#BitBasis.breflect"><code>breflect</code></a></a></h4><p><img src="../assets/breflect.png" alt="breflect"/></p><pre><code class="language-julia-repl">julia&gt; breflect(4, 0b1011) == 0b1101  # reflect little end and big end
 ┌ Warning: `breflect(nbits::Int, b::Integer)` is deprecated, use `breflect(b; nbits=nbits)` instead.
 │   caller = top-level scope at none:0
 └ @ Core none:0
-true</code></pre><p>For more detailed bitwise operations, see manual page <a href="../#BitBasis-1">BitBasis</a>.</p><h2><a class="nav-anchor" id="Number-Readouts-1" href="#Number-Readouts-1">Number Readouts</a></h2><p>In phase estimation and HHL algorithms, one need to read out qubits as integer or float point numbers. A register can be read out in different ways, like</p><ul><li><a href="../man/#BitBasis.bint-Tuple{BitStr}"><code>bint</code></a>, the integer itself</li><li><a href="../man/#BitBasis.bint_r-Tuple{BitStr}"><code>bint_r</code></a>, the integer with bits small-big end reflected.</li><li><a href="../man/#BitBasis.bfloat-Tuple{BitStr}"><code>bfloat</code></a>, the float point number <span>$0.σ₁σ₂ \cdots σ_n$</span>.</li><li><a href="../man/#BitBasis.bfloat_r-Tuple{BitStr}"><code>bfloat_r</code></a>, the float point number <span>$0.σ_n \cdots σ₂σ₁$</span>.</li></ul><p><img src="../assets/010101.png" alt="010101"/></p><pre><code class="language-julia-repl">julia&gt; bint(0b010101)
+true</code></pre><p>For more detailed bitwise operations, see manual page <a href="../#BitBasis-1">BitBasis</a>.</p><h2><a class="nav-anchor" id="Number-Readouts-1" href="#Number-Readouts-1">Number Readouts</a></h2><p>In phase estimation and HHL algorithms, one need to read out qubits as integer or float point numbers. A register can be read out in different ways, like</p><ul><li><a href="../man/#BitBasis.bint-Tuple{BitStr}"><code>bint</code></a>, the integer itself</li><li><a href="../man/#BitBasis.bint_r-Tuple{Integer}"><code>bint_r</code></a>, the integer with bits small-big end reflected.</li><li><a href="../man/#BitBasis.bfloat-Tuple{Integer}"><code>bfloat</code></a>, the float point number <span>$0.σ₁σ₂ \cdots σ_n$</span>.</li><li><a href="../man/#BitBasis.bfloat_r-Tuple{Integer}"><code>bfloat_r</code></a>, the float point number <span>$0.σ_n \cdots σ₂σ₁$</span>.</li></ul><p><img src="../assets/010101.png" alt="010101"/></p><pre><code class="language-julia-repl">julia&gt; bint(0b010101)
 0x15
 
 julia&gt; bint_r(0b010101, nbits=6)
