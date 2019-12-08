@@ -5,9 +5,12 @@ using Test, BitBasis
     @test bit"100_111" == 0b100_111
     @test bit"10_100_11" == bit"1010011"
     @test bit"10_100_11" != bit"01010011"
-    @test bit"1011" === bit_literal(1,1,0,1)
+    @test bit"1011" === bit_literal(1, 1, 0, 1)
     @test BitBasis.parse_bit(BigInt, "10101010101010101010101010101010010101010101"^10) isa LongBitStr
-    @test_throws ErrorException BitBasis.parse_bit(Int64, "10101010101010101010101010101010010101010101"^10)
+    @test_throws ErrorException BitBasis.parse_bit(
+        Int64,
+        "10101010101010101010101010101010010101010101"^10,
+    )
 end
 
 @testset "operations" begin
@@ -22,8 +25,9 @@ end
     @test bit"10011" == bit"10011"
 
     @test collect(bit"1101101") == Int64[1, 0, 1, 1, 0, 1, 1]
-    @test length(bit"000": bit"111") == 8
-    v = zeros(8); v[buffer(bit"101")+1] = 1
+    @test length(bit"000":bit"111") == 8
+    v = zeros(8)
+    v[buffer(bit"101")+1] = 1
     @test onehot(bit"101") == v
     @test onehot(bit"101", 2) == [v v]
 
@@ -63,10 +67,10 @@ end
     for op in [+, -, *, ÷, |, ⊻, &, %, mod, mod1]
         z = op(x, y)
         @test z isa BitStr
-        @test z == op(Int64(x),Int64(y))
+        @test z == op(Int64(x), Int64(y))
         z = op(x, 7)
         @test z isa BitStr
-        @test z == op(Int64(x),7)
+        @test z == op(Int64(x), 7)
         z = op(7, y)
         @test z isa BitStr
         @test z == op(7, Int64(y))
@@ -75,11 +79,11 @@ end
 
     for op in [==, ≈]
         z = op(x, y)
-        zz = op(Int64(x),Int64(y))
+        zz = op(Int64(x), Int64(y))
         @test typeof(z) == typeof(zz)
         @test z == zz
         z = op(x, 7)
-        zz = op(Int64(x),7)
+        zz = op(Int64(x), 7)
         @test typeof(z) == typeof(zz)
         @test z == zz
         z = op(7, y)
@@ -124,14 +128,14 @@ end
 
 @testset "bitstr binaryop" begin
     x = bit"001110"
-    @test baddrs(x) == [2,3,4]
+    @test baddrs(x) == [2, 3, 4]
     @test breflect(x) === bit"011100"
     @test breflect(x, [bit"000011", bit"101000"]) === bit"100101"
-    msk = bmask(BitStr64{6}, 1,2,3)
+    msk = bmask(BitStr64{6}, 1, 2, 3)
     @test flip(x, msk) === bit"001001"
     @test setbit(x, msk) === bit"001111"
     @test readbit(x, 3) === bit"000001"
-    @test readbit(x, 3,4) === bit"000011"
+    @test readbit(x, 3, 4) === bit"000011"
     @test anyone(x, msk) === true
     @test allone(x, msk) === false
     @test ismatch(x, msk, bit"000110") === true
@@ -143,8 +147,8 @@ end
     @test neg(x) === bit"110001"
     @test swapbits(x, bit"101000") === bit"100110"
 
-    @test basis(bit"000") == bit"000": bit"111"
-    @test basis(BitStr{3,Int64}) == bit"000": bit"111"
+    @test basis(bit"000") == bit"000":bit"111"
+    @test basis(BitStr{3,Int64}) == bit"000":bit"111"
     @test eltype(x) == Int64 == eltype(x[1])
 end
 
@@ -153,9 +157,9 @@ end
     @test x[1] === Int64(0)
     @test x[2] === Int64(1)
     @test_throws BoundsError x[10]
-    @test x[[true, false, true, true, true, false]] == [0,1,1,0]
-    @test x[1:2] == [0,1]
-    @test x[[1,4]] == [0,1]
+    @test x[[true, false, true, true, true, false]] == [0, 1, 1, 0]
+    @test x[1:2] == [0, 1]
+    @test x[[1, 4]] == [0, 1]
     @test lastindex(x) == 6
     @test Base.IteratorSize(x) == Base.HasLength()
 end
@@ -164,7 +168,7 @@ end
     x = bit"001110"
     @test bint(x) === Int64(14)
     @test bint_r(x) === Int64(28)
-    @test bfloat(x) === 28/2^6
-    @test bfloat_r(x) === 14/2^6
+    @test bfloat(x) === 28 / 2^6
+    @test bfloat_r(x) === 14 / 2^6
     @test btruncate(x, 3) === bit"000110"
 end
