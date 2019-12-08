@@ -1,11 +1,7 @@
 using Documenter, BitBasis
 import BitBasis
 
-const PAGES = [
-    "Home" => "index.md",
-    "Tutorial" => "tutorial.md",
-    "Manual" => "man.md",
-]
+const PAGES = ["Home" => "index.md", "Tutorial" => "tutorial.md", "Manual" => "man.md"]
 
 makedocs(
     modules = [BitBasis],
@@ -17,10 +13,7 @@ makedocs(
     clean = false,
     sitename = "BitBasis.jl",
     linkcheck = !("skiplinks" in ARGS),
-    pages = PAGES
+    pages = PAGES,
 )
 
-deploydocs(
-    repo = "github.com/QuantumBFS/BitBasis.jl.git",
-    target = "build",
-)
+deploydocs(repo = "github.com/QuantumBFS/BitBasis.jl.git", target = "build")

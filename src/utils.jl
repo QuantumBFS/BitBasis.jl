@@ -6,15 +6,15 @@ export bsizeof, bdistance, bit_length, onehot, log2i, hypercubic, log2dim1, indi
 
 Returns the size of given type in number of binary digits.
 """
-bsizeof(::Type{T}) where T = sizeof(T) << 3
-bsizeof(::T) where T = bsizeof(T)
+bsizeof(::Type{T}) where {T} = sizeof(T) << 3
+bsizeof(::T) where {T} = bsizeof(T)
 
 """
     bdistance(i::Integer, j::Integer) -> Int
 
 Return number of different bits.
 """
-bdistance(i::Ti, j::Ti) where Ti<:Integer = count_ones(i ⊻ j)
+bdistance(i::Ti, j::Ti) where {Ti<:Integer} = count_ones(i ⊻ j)
 
 """
     onehot([T=Float64], nbits, x::Integer; nbatch::Int])
@@ -22,17 +22,17 @@ bdistance(i::Ti, j::Ti) where Ti<:Integer = count_ones(i ⊻ j)
 Create an onehot vector in type `Vector{T}` or a batch of onehot vector in type `Matrix{T}`,
 where index `x + 1` is one.
 """
-function onehot(::Type{T}, nbits::Int, x::Integer) where T
+function onehot(::Type{T}, nbits::Int, x::Integer) where {T}
     v = zeros(T, 1 << nbits)
-    v[x + 1] = 1
+    v[x+1] = 1
     return v
 end
 
 onehot(nbits::Int, x::Integer) = onehot(Float64, nbits, x)
 
-function onehot(::Type{T}, nbits::Int, x::Integer, nbatch::Int) where T
+function onehot(::Type{T}, nbits::Int, x::Integer, nbatch::Int) where {T}
     v = zeros(T, 1 << nbits, nbatch)
-    v[x + 1, :] .= 1
+    v[x+1, :] .= 1
     return v
 end
 
@@ -44,10 +44,10 @@ onehot(nbits::Int, x::Integer, nbatch::Int) = onehot(Float64, nbits, x, nbatch)
 Returns result in type `Tuple` of `a .- b`. This will not check the length of `a` and `b`, use
 at your own risk.
 """
-@generated function unsafe_sub(a::UnitRange{T}, b::NTuple{N, T}) where {N, T}
+@generated function unsafe_sub(a::UnitRange{T}, b::NTuple{N,T}) where {N,T}
     ex = Expr(:tuple)
     for k in 1:N
-        push!(ex.args, :(a.start + $(k-1) - b[$k]))
+        push!(ex.args, :(a.start + $(k - 1) - b[$k]))
     end
     return ex
 end
@@ -57,14 +57,14 @@ end
 
 Returns `a .- b`, fallback version when b is a `Vector`.
 """
-unsafe_sub(a::UnitRange{T}, b::Vector{T}) where T = a .- b
+unsafe_sub(a::UnitRange{T}, b::Vector{T}) where {T} = a .- b
 
 """
     bit_length(x::Integer) -> Int
 
 Return the number of bits required to represent input integer x.
 """
-bit_length(x::Integer)  =  sizeof(x)*8 - leading_zeros(x)
+bit_length(x::Integer) = sizeof(x) * 8 - leading_zeros(x)
 
 """
     log2i(x::Integer) -> Integer
@@ -77,7 +77,8 @@ for N in [8, 16, 32, 64, 128]
     T = Symbol(:Int, N)
     UT = Symbol(:UInt, N)
     @eval begin
-        log2i(x::$T) = !signbit(x) ? ($(N - 1) - leading_zeros(x)) : throw(ErrorException("nonnegative expected ($x)"))
+        log2i(x::$T) = !signbit(x) ? ($(N - 1) - leading_zeros(x)) :
+            throw(ErrorException("nonnegative expected ($x)"))
         log2i(x::$UT) = $(N - 1) - leading_zeros(x)
     end
 end
@@ -104,5 +105,5 @@ Return indices with specific positions `locs` with value `vals` in a hilbert spa
 function indices_with(n::Int, locs::Vector{Int}, vals::Vector{Int})
     mask = bmask(locs)
     onemask = bmask(locs[vals.!=0])
-    return filter(x->ismatch(x, mask, onemask), basis(n))
+    return filter(x -> ismatch(x, mask, onemask), basis(n))
 end
