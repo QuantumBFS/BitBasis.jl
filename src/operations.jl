@@ -51,7 +51,7 @@ packbits(arr::AbstractArray) = _packbits(arr)
 _packbits(arr) = selectdim(sum(mapslices(x -> x .* (1 .<< (0:size(arr, 1)-1)), arr, dims=1), dims=1), 1, 1)
 
 """
-    truncate(b, n)
+    btruncate(b, n)
 
 Truncate bits `b` to given length `n`.
 """
