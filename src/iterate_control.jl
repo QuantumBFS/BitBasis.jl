@@ -16,10 +16,10 @@ Iterator to iterate through controlled subspace. See also [`itercontrol`](@ref).
 struct IterControl{S}
     n::Int
     base::Int
-    masks::NTuple{S, Int}
-    ks::NTuple{S, Int}
+    masks::NTuple{S,Int}
+    ks::NTuple{S,Int}
 
-    function IterControl(n::Int, base::Int, masks::NTuple{S, Int}, ks::NTuple{S, Int}) where {S}
+    function IterControl(n::Int, base::Int, masks::NTuple{S,Int}, ks::NTuple{S,Int}) where {S}
         new{S}(n, base, masks, ks)
     end
 end
@@ -50,11 +50,11 @@ julia> for each in itercontrol(7, [1, 3, 4, 7], (1, 0, 1, 0))
 """
 # NOTE: positions should be vector (MVector is the best), since it need to be sorted
 #       do not use Tuple, or other immutables, it increases the sorting time.
-function itercontrol(nbits::Int, positions::AbstractVector, bit_configs) where T
+function itercontrol(nbits::Int, positions::AbstractVector, bit_configs) where {T}
     base = bmask(Int, positions[i] for (i, u) in enumerate(bit_configs) if u != 0)
     masks, ks = group_shift!(nbits, positions)
     S = length(masks)
-    return IterControl(1<<(nbits - length(positions)), base, Tuple(masks), Tuple(ks))
+    return IterControl(1 << (nbits - length(positions)), base, Tuple(masks), Tuple(ks))
 end
 
 """
@@ -72,7 +72,7 @@ function controldo(f::Base.Callable, ic::IterControl{S}) where {S}
         @simd for s in 1:S
             @inbounds i = lmove(i, ic.masks[s], ic.ks[s])
         end
-        f(i+ic.base)
+        f(i + ic.base)
     end
     return nothing
 end
@@ -96,7 +96,7 @@ function Base.iterate(it::IterControl{S}, state = 1) where {S}
     end
 end
 
-lmove(b::Int, mask::Int, k::Int)::Int = (b&~mask)<<k + (b&mask)
+lmove(b::Int, mask::Int, k::Int)::Int = (b & ~mask) << k + (b & mask)
 
 """
     group_shift!(nbits, positions)
@@ -105,10 +105,11 @@ Shift bits on `positions` together.
 """
 function group_shift!(nbits::Int, positions::AbstractVector{Int})
     sort!(positions)
-    masks = Int[]; ns = Int[]
+    masks = Int[]
+    ns = Int[]
     k_prv = -1
     for k in positions
-        if k == k_prv+1
+        if k == k_prv + 1
             ns[end] += 1
         else
             push!(masks, bmask(0:k-1))
