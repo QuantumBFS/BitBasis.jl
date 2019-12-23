@@ -17,7 +17,7 @@ function btable(n::Integer, center = O; len = ndigits(n; base = 2), width = 20, 
     bstr = string(n, base = 2, pad = len)
     fontsize(width ÷ 2)
 
-   # start plotting
+    # start plotting
     col = 1
     if title
         for k in 1:size(t, 2)
@@ -43,11 +43,11 @@ function btable(
     title = false,
 )
     gsave()
-   # before
+    # before
     before = btable(n, O - (0, 50); width = 50, title = true)
     sethue("blue")
     arrow(Point(0, 10), Point(0, 50); linewidth = 2)
-   # after
+    # after
     after = btable(f(n), O + (0, 80); width = 50, title = false)
     grestore()
     return (before, after)
@@ -55,11 +55,11 @@ end
 
 function btable(f::Function, n::BitStr, center = O; width = 50, title = false)
     gsave()
-   # before
+    # before
     before = btable(n, O - (0, 50); width = 50, title = true)
     sethue("blue")
     arrow(Point(0, 10), Point(0, 50); linewidth = 2)
-   # after
+    # after
     after = btable(f(n), O + (0, 80); width = 50, title = false)
     grestore()
     return (before, after)
