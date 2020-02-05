@@ -23,7 +23,8 @@ ReorderedBasis(orders::NTuple{N,T}) where {N,T<:Integer} =
 
 Base.length(::ReorderedBasis{N}) where {N} = 1 << N
 Base.eltype(::ReorderedBasis{N,T}) where {N,T} = T
-Base.getindex(it::ReorderedBasis, k::Int) = next_reordered_basis(k - 1, it.takers, it.differ)
+Base.getindex(it::ReorderedBasis, k::Int) =
+    next_reordered_basis(k - 1, it.takers, it.differ)
 
 function Base.iterate(it::ReorderedBasis{N}, state = 1) where {N}
     if state - 1 == 1 << N
@@ -38,11 +39,15 @@ end
 
 Returns the next reordered basis accroding to current basis.
 """
-function next_reordered_basis(basis::T, takers::NTuple{N,T}, differ::NTuple{N,T}) where {N,T}
+function next_reordered_basis(
+    basis::T,
+    takers::NTuple{N,T},
+    differ::NTuple{N,T},
+) where {N,T}
     out = zero(T)
     # NOTE: do not add simd here, this will cause other loop become less efficient
     #       have some confidence with the compiler :-)
-    for i in 1:N
+    for i = 1:N
         @inbounds out += (basis & takers[i]) << differ[i]
     end
     return out
@@ -89,7 +94,7 @@ function unsafe_reorder(A::PermMatrix, orders::NTuple{N,<:Integer}) where {N}
     perm = similar(A.perm)
     vals = similar(A.vals)
 
-    @simd for i in 1:length(perm)
+    @simd for i = 1:length(perm)
         @inbounds perm[od[i]] = od[A.perm[i]]
         @inbounds vals[od[i]] = A.vals[i]
     end
