@@ -6,7 +6,13 @@ using Luxor, BitBasis
 
 Draw a table of binary digits with `n` which can be [`BitStr`](@ref) or an `Integer`.
 """
-function btable(n::Integer, center = O; len = ndigits(n; base = 2), width = 20, title = false)
+function btable(
+    n::Integer,
+    center = O;
+    len = ndigits(n; base = 2),
+    width = 20,
+    title = false,
+)
     sethue("black")
     if title
         t = Table(2, len, width, width, center)
@@ -20,13 +26,13 @@ function btable(n::Integer, center = O; len = ndigits(n; base = 2), width = 20, 
     # start plotting
     col = 1
     if title
-        for k in 1:size(t, 2)
+        for k = 1:size(t, 2)
             text(string(len - k + 1), t[1, k], halign = :center, valign = :middle)
         end
         col += 1
     end
 
-    for j in 1:size(t, 2)
+    for j = 1:size(t, 2)
         box(t[col, j], width, width, :stroke)
         text(string(bstr[j]), t[col, j], halign = :center, valign = :middle)
     end
@@ -85,7 +91,16 @@ function swaparrow(
     delta = fraction * v.x
     C1 = Point(left.x + delta, left.y - delta * tan(target_angle))
     C2 = Point(right.x - delta, right.y - delta * tan(target_angle))
-    arrow(left, C1, C2, right, action; linewidth = linewidth, rightarrow = true, leftarrow = true)
+    arrow(
+        left,
+        C1,
+        C2,
+        right,
+        action;
+        linewidth = linewidth,
+        rightarrow = true,
+        leftarrow = true,
+    )
     if debug
         line(left, C1, :stroke)
         line(right, C2, :stroke)

@@ -19,7 +19,12 @@ struct IterControl{S}
     masks::NTuple{S,Int}
     ks::NTuple{S,Int}
 
-    function IterControl(n::Int, base::Int, masks::NTuple{S,Int}, ks::NTuple{S,Int}) where {S}
+    function IterControl(
+        n::Int,
+        base::Int,
+        masks::NTuple{S,Int},
+        ks::NTuple{S,Int},
+    ) where {S}
         new{S}(n, base, masks, ks)
     end
 end
@@ -68,8 +73,8 @@ Execute `f` while iterating `itr`.
     See also [`itercontrol`](@ref).
 """
 function controldo(f::Base.Callable, ic::IterControl{S}) where {S}
-    for i in 0:ic.n-1
-        @simd for s in 1:S
+    for i = 0:ic.n-1
+        @simd for s = 1:S
             @inbounds i = lmove(i, ic.masks[s], ic.ks[s])
         end
         f(i + ic.base)
@@ -82,7 +87,7 @@ Base.eltype(it::IterControl) = Int
 
 function Base.getindex(it::IterControl{S}, k::Int) where {S}
     out = k - 1
-    @simd for s in 1:S
+    @simd for s = 1:S
         @inbounds out = lmove(out, it.masks[s], it.ks[s])
     end
     return out + it.base

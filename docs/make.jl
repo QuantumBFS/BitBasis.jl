@@ -7,7 +7,8 @@ makedocs(
     modules = [BitBasis],
     format = Documenter.HTML(
         prettyurls = ("deploy" in ARGS),
-        canonical = ("deploy" in ARGS) ? "https://quantumbfs.github.io/BitBasis.jl/latest/" : nothing,
+        canonical = ("deploy" in ARGS) ?
+                    "https://quantumbfs.github.io/BitBasis.jl/latest/" : nothing,
     ),
     assets = ["assets/favicon.ico"],
     clean = false,
