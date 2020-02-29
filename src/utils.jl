@@ -46,7 +46,7 @@ at your own risk.
 """
 @generated function unsafe_sub(a::UnitRange{T}, b::NTuple{N,T}) where {N,T}
     ex = Expr(:tuple)
-    for k = 1:N
+    for k in 1:N
         push!(ex.args, :(a.start + $(k - 1) - b[$k]))
     end
     return ex

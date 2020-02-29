@@ -22,6 +22,5 @@ end
     # indices_with
     nbit = 5
     poss, vals = [4, 2, 3], [1, 0, 1]
-    @test indices_with(nbit, poss, vals) ==
-          filter(x -> readbit.(x, poss) == vals, basis(nbit))
+    @test indices_with(nbit, poss, vals) == filter(x -> readbit.(x, poss) == vals, basis(nbit))
 end

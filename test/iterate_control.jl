@@ -67,6 +67,6 @@ end
 
         @test rrr ≈ M * V
         ic = itercontrol(4, [2, 3], [0, 0])
-        @test [ic...] == [ic[k] for k = 1:4]
+        @test [ic...] == [ic[k] for k in 1:4]
     end
 end

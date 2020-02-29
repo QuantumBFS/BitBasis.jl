@@ -6,8 +6,7 @@ using Test, BitBasis
     @test bit"10_100_11" == bit"1010011"
     @test bit"10_100_11" != bit"01010011"
     @test bit"1011" === bit_literal(1, 1, 0, 1)
-    @test BitBasis.parse_bit(BigInt, "10101010101010101010101010101010010101010101"^10) isa
-          LongBitStr
+    @test BitBasis.parse_bit(BigInt, "10101010101010101010101010101010010101010101"^10) isa LongBitStr
     @test_throws ErrorException BitBasis.parse_bit(
         Int64,
         "10101010101010101010101010101010010101010101"^10,
@@ -20,7 +19,7 @@ end
     @test (bit"01010" * 2) == (2 * bit"01010") == bit"10100" == 20
     @test (bit"1010" ÷ 2) == bit"0101" == 5
     @test bcat(bit"101", bit"100", bit"111") == bit"101100111"
-    @test bcat(bit"101" for k = 1:3) == bit"101101101"
+    @test bcat(bit"101" for k in 1:3) == bit"101101101"
     @test (bit"00101" << 2) == bit"10100"
     @test (bit"1101" >> 2) == bit"0011"
     @test bit"10011" == bit"10011"

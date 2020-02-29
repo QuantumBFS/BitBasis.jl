@@ -43,8 +43,7 @@ Base.zero(::Type{BitStr{N,T}}) where {N,T} = BitStr{N,T}(zero(T))
 Base.zero(::BitStr{N,T}) where {N,T} = BitStr{N,T}(zero(T))
 
 buffer(b::BitStr) = b.buf
-Base.reinterpret(::Type{BitStr{N,T}}, x::Integer) where {N,T} =
-    BitStr{N,T}(reinterpret(T, x))
+Base.reinterpret(::Type{BitStr{N,T}}, x::Integer) where {N,T} = BitStr{N,T}(reinterpret(T, x))
 Base.reinterpret(::Type{T}, x::BitStr) where {T} = reinterpret(T, buffer(x))
 Base.convert(::Type{T}, b::BitStr) where {T<:Integer} = convert(T, buffer(b))
 Base.convert(::Type{T}, b::Integer) where {T<:BitStr} = T(b)
@@ -71,8 +70,7 @@ for op in [:+, :-, :*, :÷, :|, :⊻, :&, :%, :mod, :mod1]
     @eval Base.$op(a::Integer, b::T) where {T<:BitStr} = T($op(a, buffer(b)))
     @eval Base.$op(a::BitStr{N,T}, b::BitStr{N,T}) where {N,T} =
         BitStr{N,T}($op(buffer(a), buffer(b)))
-    @eval Base.$op(a::BitStr, b::BitStr) =
-        error("type mismatch: $(typeof(a)), $(typeof(b))")
+    @eval Base.$op(a::BitStr, b::BitStr) = error("type mismatch: $(typeof(a)), $(typeof(b))")
 end
 Base.:-(x::BitStr{N,T}) where {N,T} = BitStr{N,T}(-buffer(x))
 
@@ -199,7 +197,7 @@ function bcat(bits::(BitStr{N,T} where {N})...) where {T}
     total_bits = sum_length(bits...)
     val, len = zero(T), 0
 
-    for k = length(bits):-1:1
+    for k in length(bits):-1:1
         val += buffer(bits[k]) << len
         len += length(bits[k])
     end
@@ -250,7 +248,7 @@ function Base.iterate(bit::BitStr, state::Integer = 1)
 end
 Base.IteratorSize(::BitStr) = Base.HasLength()
 
-Base.repeat(s::BitStr, n::Integer) = bcat(s for i = 1:n)
+Base.repeat(s::BitStr, n::Integer) = bcat(s for i in 1:n)
 Base.show(io::IO, bitstr::BitStr64{N}) where {N} =
     print(io, string(buffer(bitstr), base = 2, pad = N), " ₍₂₎")
 Base.show(io::IO, bitstr::LongBitStr{N}) where {N} =
@@ -318,7 +316,7 @@ julia> bit_literal(1, 0, 1, 0, 1, 1)
 bit_literal(xs...) = bit_literal(xs)
 function bit_literal(xs::NTuple{N,T}) where {N,T<:Integer}
     val = T(0)
-    for k = 1:N
+    for k in 1:N
         xs[k] == 0 || xs[k] == 1 || error("expect 0 or 1, got $(xs[k])")
         val += xs[k] << (k - 1)
     end
