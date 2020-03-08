@@ -39,8 +39,7 @@ with the first diemension of array.
 """
 basis(arg::Union{Int,AbstractArray}) = basis(Int, arg)
 basis(::Type{T}, nbits::Int) where {T<:Integer} = UnitRange{T}(0, 1 << nbits - 1)
-basis(::Type{T}, state::AbstractArray) where {T<:Integer} =
-    UnitRange{T}(0, size(state, 1) - 1)
+basis(::Type{T}, state::AbstractArray) where {T<:Integer} = UnitRange{T}(0, size(state, 1) - 1)
 
 """
     packbits(arr::AbstractArray) -> AbstractArray
@@ -49,11 +48,8 @@ pack bits to integers, usually take a BitArray as input.
 """
 packbits(arr::AbstractVector) = _packbits(arr)[]
 packbits(arr::AbstractArray) = _packbits(arr)
-_packbits(arr) = selectdim(
-    sum(mapslices(x -> x .* (1 .<< (0:size(arr, 1)-1)), arr, dims = 1), dims = 1),
-    1,
-    1,
-)
+_packbits(arr) =
+    selectdim(sum(mapslices(x -> x .* (1 .<< (0:size(arr, 1)-1)), arr, dims = 1), dims = 1), 1, 1)
 
 """
     btruncate(b, n)
@@ -127,7 +123,7 @@ get the locations of nonzeros bits, i.e. the inverse operation of bmask.
 function baddrs(b::Integer)
     locs = Vector{Int}(undef, count_ones(b))
     k = 1
-    for i = 1:bit_length(b)
+    for i in 1:bit_length(b)
         if readbit(b, i) == 1
             locs[k] = i
             k += 1
@@ -312,7 +308,7 @@ true
 function breflect end
 
 @inline function breflect(b::Integer; nbits::Int)
-    @simd for i = 1:nbits÷2
+    @simd for i in 1:nbits÷2
         b = swapbits(b, i, nbits - i + 1)
     end
     return b
