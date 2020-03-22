@@ -39,8 +39,8 @@ ba2 = bitarray(inds, 4)
 msk = bmask(2, 5)
 @test swapbits(7, msk) == 21
 @test breflect(Int(0b0110001); nbits = 7) ==
-Int(0b1000110) ==
-breflect(Int(0b0110001), [bmask(1, 7), bmask(2, 6), bmask(3, 5)]; nbits = 7)
+      Int(0b1000110) ==
+      breflect(Int(0b0110001), [bmask(1, 7), bmask(2, 6), bmask(3, 5)]; nbits = 7)
 
 @test bitarray(2, 4) == [false, true, false, false]
 @test packbits(BitArray([true, true, true])) == 7
