@@ -107,7 +107,7 @@ end
 
 function _reorder(v::AbstractArray, orders::NTuple{N,<:Integer}) where {N}
     length(orders) == log2dim1(v) ||
-    throw(DimensionMismatch("size of array not match length of order"))
+        throw(DimensionMismatch("size of array not match length of order"))
     return unsafe_reorder(v, orders)
 end
 
