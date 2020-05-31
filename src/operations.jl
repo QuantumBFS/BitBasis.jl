@@ -1,6 +1,7 @@
 export bitarray, basis, packbits, bfloat, bfloat_r, bint, bint_r, flip
 export anyone, allone, bmask, baddrs, readbit, setbit, controller
 export swapbits, ismatch, neg, breflect, btruncate
+export rand_bitstr64
 
 """
     bitarray(v::Vector, [nbits::Int]) -> BitArray
@@ -335,3 +336,10 @@ function controller(cbits::IntIterator{Int}, cvals::IntIterator{Int})
         mapreduce(xy -> (xy[2] == 1 ? 1 << (xy[1] - 1) : 0), |, zip(cbits, cvals))
     return b -> ismatch(b, do_mask, target)
 end
+
+function rand_bitstr64(nbit::Int)
+    T = BitStr64{nbit}
+    rand(typemin(T):typemax(T))
+end
+Base.rand(::Type{T}) where T<:BitStr = rand(typemin(T):typemax(T))
+

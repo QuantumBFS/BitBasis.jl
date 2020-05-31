@@ -56,3 +56,7 @@ msk = bmask(2, 5)
     @test bint_r(0.75, nbits = 3) == 6
     @test bint(0.75, nbits = 3) == 3
 end
+
+@testset "random" begin
+    @test rand_bitstr64(5) isa BitStr64{5}
+end

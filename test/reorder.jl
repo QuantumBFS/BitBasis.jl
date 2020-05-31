@@ -1,11 +1,4 @@
-using BitBasis, Random, LuxurySparse, SparseArrays, LinearAlgebra
-
-⊗ = kron
-PA = pmrand(2)
-PB = pmrand(2)
-PC = pmrand(2)
-@test reorder(PC ⊗ PB ⊗ PA, [3, 1, 2]) ≈ PB ⊗ PA ⊗ PC
-@test invorder(PC ⊗ PB ⊗ PA) ≈ PA ⊗ PB ⊗ PC
+using BitBasis, Random, SparseArrays, LinearAlgebra
 
 DA = Diagonal(randn(2))
 DB = Diagonal(randn(2))

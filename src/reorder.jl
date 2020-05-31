@@ -1,6 +1,6 @@
 export ReorderedBasis, reorder, invorder
 
-using LuxurySparse, LinearAlgebra
+using LinearAlgebra
 
 """
     ReorderedBasis{N, T}
@@ -76,25 +76,6 @@ function unsafe_reorder(A::AbstractMatrix, orders::NTuple{N,<:Integer}) where {N
 
     od = invperm(od)
     return A[od, od]
-end
-
-unsafe_reorder(A::IMatrix, orders::NTuple{N,<:Integer}) where {N} = A
-
-function unsafe_reorder(A::PermMatrix, orders::NTuple{N,<:Integer}) where {N}
-    od = Vector{Int}(undef, 1 << length(orders))
-    for (i, b) in enumerate(ReorderedBasis(orders))
-        @inbounds od[i] = 1 + b
-    end
-
-    perm = similar(A.perm)
-    vals = similar(A.vals)
-
-    @simd for i in 1:length(perm)
-        @inbounds perm[od[i]] = od[A.perm[i]]
-        @inbounds vals[od[i]] = A.vals[i]
-    end
-
-    return PermMatrix(perm, vals)
 end
 
 function unsafe_reorder(A::Diagonal, orders::NTuple{N,<:Integer}) where {N}

@@ -313,7 +313,7 @@ julia> bit_literal(1, 0, 1, 0, 1, 1)
 110101 ₍₂₎
 ```
 """
-bit_literal(xs...) = bit_literal(xs)
+bit_literal(xs::Int...) = bit_literal(xs)
 function bit_literal(xs::NTuple{N,T}) where {N,T<:Integer}
     val = T(0)
     for k in 1:N
