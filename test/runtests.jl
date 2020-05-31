@@ -1,6 +1,8 @@
 using BitBasis
 using Test
 
+const ⊗ = kron
+
 @testset "test bit literal" begin
     include("bit_str.jl")
 end
