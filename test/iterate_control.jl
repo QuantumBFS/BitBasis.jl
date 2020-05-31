@@ -1,10 +1,18 @@
-using Test, BitBasis, LuxurySparse
+using Test, BitBasis
 
 function swaprows!(v::AbstractVector, i::Int, j::Int)
     temp = v[i]
     v[i] = v[j]
     v[j] = temp
     v
+end
+
+function eye(b::Int)
+    res = zeros(b, b)
+    for i=1:b
+        res[i,i] = 1
+    end
+    res
 end
 
 mulrow!(v::AbstractVector, i::Int, f) = (v[i] *= f; v)
@@ -43,15 +51,15 @@ end
         rrr = copy(v)
         controldo(x -> mulrow!(rrr, x + 1, -1.0), it4)
         M =
-            kron(P1, IMatrix(2), P1, Z) +
-            kron(P0, IMatrix(2), P0, IMatrix(2)) +
-            kron(P1, IMatrix(2), P0, IMatrix(2)) +
-            kron(P0, IMatrix(2), P1, IMatrix(2))
+            kron(P1, eye(2), P1, Z) +
+            kron(P0, eye(2), P0, eye(2)) +
+            kron(P1, eye(2), P0, eye(2)) +
+            kron(P0, eye(2), P1, eye(2))
         @test rrr ≈ M * v
 
         it = itercontrol(8, [3], [1])
         V = randn(ComplexF64, 1 << 8)
-        res = kron(IMatrix(1 << 5), ComplexF64[0 1; 1 0], IMatrix(1 << 2)) * V
+        res = kron(eye(1 << 5), ComplexF64[0 1; 1 0], eye(1 << 2)) * V
         rrr = copy(V)
         controldo(x -> swaprows!(rrr, x + 1, x - 3), it)
         @test rrr ≈ res
@@ -60,10 +68,10 @@ end
         controldo(x -> mulrow!(rrr, x + 1, -1), itercontrol(8, [3, 7, 6], [1, 1, 1]))
 
         M =
-            kron(IMatrix(2), P1, Z, IMatrix(4), P1, IMatrix(4)) +
-            kron(IMatrix(2), P0, IMatrix(8), P0, IMatrix(4)) +
-            kron(IMatrix(2), P1, IMatrix(8), P0, IMatrix(4)) +
-            kron(IMatrix(2), P0, IMatrix(8), P1, IMatrix(4))
+            kron(eye(2), P1, Z, eye(4), P1, eye(4)) +
+            kron(eye(2), P0, eye(8), P0, eye(4)) +
+            kron(eye(2), P1, eye(8), P0, eye(4)) +
+            kron(eye(2), P0, eye(8), P1, eye(4))
 
         @test rrr ≈ M * V
         ic = itercontrol(4, [2, 3], [0, 0])
