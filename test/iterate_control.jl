@@ -9,8 +9,8 @@ end
 
 function eye(b::Int)
     res = zeros(b, b)
-    for i=1:b
-        res[i,i] = 1
+    for i in 1:b
+        res[i, i] = 1
     end
     res
 end
