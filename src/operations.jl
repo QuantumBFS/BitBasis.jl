@@ -341,5 +341,4 @@ function rand_bitstr64(nbit::Int)
     T = BitStr64{nbit}
     rand(typemin(T):typemax(T))
 end
-Base.rand(::Type{T}) where T<:BitStr = rand(typemin(T):typemax(T))
-
+Base.rand(::Type{T}) where {T<:BitStr} = rand(typemin(T):typemax(T))
