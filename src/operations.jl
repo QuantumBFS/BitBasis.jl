@@ -332,7 +332,8 @@ Return a function that checks whether a basis at `cbits` takes specific value `c
 """
 function controller(cbits::IntIterator{Int}, cvals::IntIterator{Int})
     do_mask = bmask(cbits)
-    target = length(cvals) == 0 ? 0 :
+    target =
+        length(cvals) == 0 ? 0 :
         mapreduce(xy -> (xy[2] == 1 ? 1 << (xy[1] - 1) : 0), |, zip(cbits, cvals))
     return b -> ismatch(b, do_mask, target)
 end
