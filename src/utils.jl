@@ -77,7 +77,8 @@ for N in [8, 16, 32, 64, 128]
     T = Symbol(:Int, N)
     UT = Symbol(:UInt, N)
     @eval begin
-        log2i(x::$T) = !signbit(x) ? ($(N - 1) - leading_zeros(x)) :
+        log2i(x::$T) =
+            !signbit(x) ? ($(N - 1) - leading_zeros(x)) :
             throw(ErrorException("nonnegative expected ($x)"))
         log2i(x::$UT) = $(N - 1) - leading_zeros(x)
     end
