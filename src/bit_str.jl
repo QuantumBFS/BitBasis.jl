@@ -88,7 +88,7 @@ for op in [:(==)]
     @eval Base.$op(a::Number, b::T) where {T<:BitStr} = Base.$op(a, buffer(b))
     @eval Base.$op(a::BitStr{N}, b::BitStr{N}) where {N} = Base.$op(buffer(a), buffer(b))
 end
-for op in [:count_ones, :count_zeros, :leading_ones, :leading_zeros]
+for op in [:count_ones, :count_zeros, :leading_ones, :leading_zeros, :trailing_zeros, :trailing_ones]
     @eval Base.$op(a::BitStr) = Base.$op(buffer(a))
 end
 
