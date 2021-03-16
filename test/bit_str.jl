@@ -96,7 +96,7 @@ end
         @test op(x, y) == op(Int64(x), Int64(y))
     end
 
-    for op in [leading_ones, leading_zeros, count_ones, count_zeros]
+    for op in [leading_ones, leading_zeros, count_ones, count_zeros, trailing_ones, trailing_zeros]
         op(x) == op(Int64(x))
     end
 end
