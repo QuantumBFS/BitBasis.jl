@@ -51,9 +51,7 @@ end
         rrr = copy(v)
         controldo(x -> mulrow!(rrr, x + 1, -1.0), it4)
         M =
-            kron(P1, eye(2), P1, Z) +
-            kron(P0, eye(2), P0, eye(2)) +
-            kron(P1, eye(2), P0, eye(2)) +
+            kron(P1, eye(2), P1, Z) + kron(P0, eye(2), P0, eye(2)) + kron(P1, eye(2), P0, eye(2)) +
             kron(P0, eye(2), P1, eye(2))
         @test rrr ≈ M * v
 
@@ -70,8 +68,7 @@ end
         M =
             kron(eye(2), P1, Z, eye(4), P1, eye(4)) +
             kron(eye(2), P0, eye(8), P0, eye(4)) +
-            kron(eye(2), P1, eye(8), P0, eye(4)) +
-            kron(eye(2), P0, eye(8), P1, eye(4))
+            kron(eye(2), P1, eye(8), P0, eye(4)) + kron(eye(2), P0, eye(8), P1, eye(4))
 
         @test rrr ≈ M * V
         ic = itercontrol(4, [2, 3], [0, 0])
