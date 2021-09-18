@@ -22,14 +22,6 @@ struct ReorderedBasis{N,T<:Integer}
     end
 end
 
-function ReorderedBasis(
-    orders::Tuple{T, Vararg{T, N}},
-    takers::Tuple{T, Vararg{T, N}},
-    differ::Tuple{T, Vararg{T, N}},
-) where {N,T}
-    ReorderedBasis{N+1,T}(orders, takers, differ)
-end
-
 """
     ReorderedBasis(orders::NTuple{N, <:Integer})
 
