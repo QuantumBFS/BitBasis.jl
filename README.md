@@ -1,6 +1,6 @@
 # BitBasis
 
-[![Build Status](https://travis-ci.com/QuantumBFS/BitBasis.jl.svg?branch=master)](https://travis-ci.com/QuantumBFS/BitBasis.jl)
+[![Build Status](https://github.com/QuantumBFS/BitBasis.jl/workflows/CI/badge.svg)](https://github.com/QuantumBFS/BitBasis.jl/actions)
 [![Codecov](https://codecov.io/gh/QuantumBFS/BitBasis.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/QuantumBFS/BitBasis.jl)
 [![Aqua QA](https://img.shields.io/badge/Aqua.jl-%F0%9F%8C%A2-aqua.svg)](https://github.com/JuliaTesting/Aqua.jl)
 

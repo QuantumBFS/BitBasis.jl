@@ -1,5 +1,8 @@
 export BitStr, @bit_str, @lbit_str, BitStr64, LongBitStr, bit_literal
-export bcat, onehot, onehot_batch, buffer
+export bcat, onehot, buffer
+
+const UIntStorage = Union{UInt8, UInt16, UInt32, UInt64, UInt128}
+const IntStorage = Union{Int8, Int16, Int32, Int64, Int128, BigInt, UIntStorage}
 
 """
     BitStr{N,T} <: Integer
@@ -31,23 +34,35 @@ julia> bit"1101"[2]
 0
 ```
 """
-struct BitStr{N,T} <: Integer
+struct BitStr{N,T<:Integer} <: Integer
     buf::T
+
+    BitStr{N,T}(buf::IntStorage) where {N,T} = new{N, T}(buf)
+    BitStr{N}(buf::IntStorage) where N = new{N, typeof(buf)}(buf)
 end
 
 const BitStr64{N} = BitStr{N,Int64}
 const LongBitStr{N} = BitStr{N,BigInt}
 
-BitStr{N,T}(val::BitStr{N,T}) where {N,T} = val
+BitStr{N,T}(val::BitStr) where {N,T<:Integer} = convert(BitStr{N,T}, val)
+BitStr{N,T}(val::BitStr{N,T}) where {N,T<:Integer} = val
+
+# for Type in [Complex, Rational, Enum, AbstractChar, BigFloat, Base.TwicePrecision]
+#     @eval (::Type{T})(val::$Type) where {T <: BitStr} = error("cannot convert $(typeof(val)) to BitStr")
+# end
+
 Base.zero(::Type{BitStr{N,T}}) where {N,T} = BitStr{N,T}(zero(T))
 Base.zero(::BitStr{N,T}) where {N,T} = BitStr{N,T}(zero(T))
 
 buffer(b::BitStr) = b.buf
 Base.reinterpret(::Type{BitStr{N,T}}, x::Integer) where {N,T} = BitStr{N,T}(reinterpret(T, x))
 Base.reinterpret(::Type{T}, x::BitStr) where {T} = reinterpret(T, buffer(x))
+Base.reinterpret(::Type{BitStr{N,T}}, x::BitStr) where {N,T} = x
+
 Base.convert(::Type{T}, b::BitStr) where {T<:Integer} = convert(T, buffer(b))
 Base.convert(::Type{T}, b::Integer) where {T<:BitStr} = T(b)
-Base.convert(::Type{T1}, b::BitStr{N2,T2}) where {T1<:BitStr,N2,T2} = convert(T1, buffer(b))
+Base.convert(::Type{BitStr{N,T}}, b::BitStr{N,T}) where {N,T<:Integer} = b
+Base.convert(::Type{T1}, b::BitStr{N2,T2}) where {T1<:BitStr,N2,T2<:Integer} = convert(T1, buffer(b))
 #Base.promote_rule(::Type{BitStr{N,T1}}, ::Type{BitStr{N,T2}}) where {N,T1,T2} = BitStr{N,promote_rule(T1,T2)}
 for IT in [
     :BigInt,
@@ -66,9 +81,9 @@ for IT in [
     @eval Base.$IT(b::BitStr) = $IT(buffer(b))
 end
 for op in [:+, :-, :*, :÷, :|, :⊻, :&, :%, :mod, :mod1]
-    @eval Base.$op(a::T, b::Integer) where {T<:BitStr} = T($op(buffer(a), b))
-    @eval Base.$op(a::Integer, b::T) where {T<:BitStr} = T($op(a, buffer(b)))
-    @eval Base.$op(a::BitStr{N,T}, b::BitStr{N,T}) where {N,T} =
+    @eval Base.$op(a::T, b::Integer) where {T <: BitStr} = T($op(buffer(a), b))
+    @eval Base.$op(a::Integer, b::T) where {T <: BitStr} = T($op(a, buffer(b)))
+    @eval Base.$op(a::BitStr{N,T}, b::BitStr{N,T}) where {N,T<:Integer} =
         BitStr{N,T}($op(buffer(a), buffer(b)))
     @eval Base.$op(a::BitStr, b::BitStr) = error("type mismatch: $(typeof(a)), $(typeof(b))")
 end
@@ -83,11 +98,13 @@ for op in [:<, :>, :(<=), :(>=)]
     @eval Base.$op(a::T, b::T) where {T<:BitStr} = Base.$op(buffer(a), buffer(b))
 end
 
-for op in [:(==)]
-    @eval Base.$op(a::T, b::Number) where {T<:BitStr} = Base.$op(buffer(a), b)
-    @eval Base.$op(a::Number, b::T) where {T<:BitStr} = Base.$op(a, buffer(b))
-    @eval Base.$op(a::BitStr{N}, b::BitStr{N}) where {N} = Base.$op(buffer(a), buffer(b))
+for Type in [Number, BigInt, BigFloat, AbstractIrrational, Rational, Complex]
+    @eval Base.:(==)(a::T, b::$Type) where {T<:BitStr} = Base.:(==)(buffer(a), b)
+    @eval Base.:(==)(a::$Type, b::T) where {T<:BitStr} = Base.:(==)(a, buffer(b))
 end
+
+Base.:(==)(a::BitStr{N}, b::BitStr{N}) where {N} = Base.:(==)(buffer(a), buffer(b))
+
 for op in [:count_ones, :count_zeros, :leading_ones, :leading_zeros, :trailing_zeros, :trailing_ones]
     @eval Base.$op(a::BitStr) = Base.$op(buffer(a))
 end
@@ -195,14 +212,16 @@ end
 sum_length(a::BitStr, bits::BitStr...) = length(a) + sum_length(bits...)
 sum_length(a::BitStr) = length(a)
 
-function bcat(bits::(BitStr{N,T} where {N})...) where {T}
-    total_bits = sum_length(bits...)
+function bcat(bit::BitStr{N,T}, bits::BitStr...) where {N,T<:Integer}
+    total_bits = sum_length(bit, bits...)
     val, len = zero(T), 0
 
     for k in length(bits):-1:1
         val += buffer(bits[k]) << len
         len += length(bits[k])
     end
+    val += buffer(bit) << len
+    len += length(bit)
     return BitStr{total_bits,T}(val)
 end
 
@@ -215,9 +234,9 @@ Base.@propagate_inbounds function Base.getindex(bit::BitStr{N}, index::Int) wher
 end
 
 Base.@propagate_inbounds function Base.getindex(
-    bit::BitStr{N},
-    itr::Union{AbstractVector,AbstractRange},
-) where {N}
+    bit::BitStr{N,T},
+    itr::AbstractVector,
+) where {N,T}
     @boundscheck all(x -> 1 <= x <= N, itr) || throw(BoundsError(bit, itr))
     return map(x -> buffer(readbit(bit, x)), itr)
 end
@@ -226,7 +245,7 @@ end
 
 Base.@propagate_inbounds function Base.getindex(
     bit::BitStr{N,T},
-    mask::Union{Vector{Bool},BitArray},
+    mask::AbstractVector{Bool},
 ) where {N,T}
     @boundscheck N == length(mask) || error("length of bits and mask does not match.")
 
@@ -315,14 +334,15 @@ julia> bit_literal(1, 0, 1, 0, 1, 1)
 110101 ₍₂₎
 ```
 """
-bit_literal(xs::Int...) = bit_literal(xs)
-function bit_literal(xs::NTuple{N,T}) where {N,T<:Integer}
+bit_literal(x::Int, xs::Int...) = bit_literal((x, xs...))
+
+function bit_literal(xs::Tuple{T, Vararg{T, N}}) where {T <: Integer, N}
     val = T(0)
-    for k in 1:N
+    for k in 1:N+1
         xs[k] == 0 || xs[k] == 1 || error("expect 0 or 1, got $(xs[k])")
         val += xs[k] << (k - 1)
     end
-    return BitStr64{N}(val)
+    return BitStr64{N+1}(val)
 end
 
 basis(b::BitStr) = typemin(b):typemax(b)

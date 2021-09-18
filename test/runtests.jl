@@ -1,5 +1,7 @@
 using BitBasis
 using Test
+using Aqua
+Aqua.test_all(BitBasis)
 
 const ⊗ = kron
 
