@@ -1,9 +1,11 @@
 .DS_Store
 /Manifest.toml
 test/Manifest.toml
+docs/Manifest.toml
 *.jl.cov
 *.jl.*.cov
 *.jl.mem
 
 docs/build
+docs/src/assets/indigo.css
 .vscode
