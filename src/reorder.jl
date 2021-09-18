@@ -11,34 +11,15 @@ struct ReorderedBasis{N,T<:Integer}
     orders::NTuple{N,T}
     takers::NTuple{N,T}
     differ::NTuple{N,T}
-
-    function ReorderedBasis{M,T}(
-        orders::Tuple{T, Vararg{T, N}},
-        takers::Tuple{T, Vararg{T, N}},
-        differ::Tuple{T, Vararg{T, N}},
-    ) where {M,T,N}
-        N+1 == M || error("length mismatch")
-        new{M,T}(orders, takers, differ)
-    end
 end
-
-function ReorderedBasis(
-    orders::Tuple{T, Vararg{T, N}},
-    takers::Tuple{T, Vararg{T, N}},
-    differ::Tuple{T, Vararg{T, N}},
-) where {N,T}
-    ReorderedBasis{N+1,T}(orders, takers, differ)
-end
-
-# ReorderedBasis(orders::Tuple{}) = error("")
 
 """
     ReorderedBasis(orders::NTuple{N, <:Integer})
 
 Returns a lazy set of reordered basis.
 """
-ReorderedBasis(orders::Tuple{T, Vararg{T,N}}) where {N,T<:Integer} =
-    ReorderedBasis{N+1,T}(orders, bmask.(orders), unsafe_sub(1:N, orders))
+ReorderedBasis(orders::NTuple{N,T}) where {N,T<:Integer} =
+    ReorderedBasis{N,T}(orders, bmask.(orders), unsafe_sub(1:N, orders))
 
 Base.length(::ReorderedBasis{N}) where {N} = 1 << N
 Base.eltype(::ReorderedBasis{N,T}) where {N,T} = T
