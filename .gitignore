@@ -7,4 +7,5 @@ docs/Manifest.toml
 *.jl.mem
 
 docs/build
+docs/src/assets/indigo.css
 .vscode
