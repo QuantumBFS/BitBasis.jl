@@ -108,6 +108,7 @@ end
     @test reinterpret(BitStr{8,UInt64}, 99) === BitStr{8,UInt64}(99)
     @test reinterpret(Int64, BitStr64{8}(99)) === Int64(99)
     @test all(reinterpret(BitStr64{8}, [Int64(99)]) .=== [BitStr64{8}(99)])
+    @test reinterpret(BitStr{8,Int}, bit"1100") == bit"00001100"
     @test x == 99
     @test y == 7
     @test y != BitStr64{4}(7)
