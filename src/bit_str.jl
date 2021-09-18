@@ -53,7 +53,7 @@ Base.zero(::BitStr{N,T}) where {N,T} = BitStr{N,T}(zero(T))
 buffer(b::BitStr) = b.buf
 Base.reinterpret(::Type{BitStr{N,T}}, x::Integer) where {N,T} = BitStr{N,T}(reinterpret(T, x))
 Base.reinterpret(::Type{T}, x::BitStr) where {T} = reinterpret(T, buffer(x))
-Base.reinterpret(::Type{BitStr{N,T}}, x::BitStr) where {N,T} = x
+Base.reinterpret(::Type{BitStr{N,T}}, x::BitStr) where {N,T} = BitStr{N,T}(x)
 
 Base.convert(::Type{T}, b::BitStr) where {T<:Integer} = convert(T, buffer(b))
 Base.convert(::Type{T}, b::Integer) where {T<:BitStr} = T(b)

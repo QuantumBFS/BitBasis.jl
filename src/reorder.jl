@@ -30,8 +30,6 @@ function ReorderedBasis(
     ReorderedBasis{N+1,T}(orders, takers, differ)
 end
 
-# ReorderedBasis(orders::Tuple{}) = error("")
-
 """
     ReorderedBasis(orders::NTuple{N, <:Integer})
 
