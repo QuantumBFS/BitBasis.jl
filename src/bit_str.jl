@@ -47,10 +47,6 @@ const LongBitStr{N} = BitStr{N,BigInt}
 BitStr{N,T}(val::BitStr) where {N,T<:Integer} = convert(BitStr{N,T}, val)
 BitStr{N,T}(val::BitStr{N,T}) where {N,T<:Integer} = val
 
-# for Type in [Complex, Rational, Enum, AbstractChar, BigFloat, Base.TwicePrecision]
-#     @eval (::Type{T})(val::$Type) where {T <: BitStr} = error("cannot convert $(typeof(val)) to BitStr")
-# end
-
 Base.zero(::Type{BitStr{N,T}}) where {N,T} = BitStr{N,T}(zero(T))
 Base.zero(::BitStr{N,T}) where {N,T} = BitStr{N,T}(zero(T))
 
@@ -98,7 +94,7 @@ for op in [:<, :>, :(<=), :(>=)]
     @eval Base.$op(a::T, b::T) where {T<:BitStr} = Base.$op(buffer(a), buffer(b))
 end
 
-for Type in [Number, BigInt, BigFloat, AbstractIrrational, Rational, Complex]
+for Type in [Integer, BigInt, BigFloat]
     @eval Base.:(==)(a::T, b::$Type) where {T<:BitStr} = Base.:(==)(buffer(a), b)
     @eval Base.:(==)(a::$Type, b::T) where {T<:BitStr} = Base.:(==)(a, buffer(b))
 end
