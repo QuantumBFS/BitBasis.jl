@@ -1,8 +1,8 @@
 export BitStr, @bit_str, @lbit_str, BitStr64, LongBitStr, bit_literal
 export bcat, onehot, buffer
 
-const UIntStorage = Union{UInt8, UInt16, UInt32, UInt64, UInt128}
-const IntStorage = Union{Int8, Int16, Int32, Int64, Int128, BigInt, UIntStorage}
+const UIntStorage = Union{UInt8,UInt16,UInt32,UInt64,UInt128}
+const IntStorage = Union{Int8,Int16,Int32,Int64,Int128,BigInt,UIntStorage}
 
 """
     BitStr{N,T} <: Integer
@@ -37,8 +37,8 @@ julia> bit"1101"[2]
 struct BitStr{N,T<:Integer} <: Integer
     buf::T
 
-    BitStr{N,T}(buf::IntStorage) where {N,T} = new{N, T}(buf)
-    BitStr{N}(buf::IntStorage) where N = new{N, typeof(buf)}(buf)
+    BitStr{N,T}(buf::IntStorage) where {N,T} = new{N,T}(buf)
+    BitStr{N}(buf::IntStorage) where {N} = new{N,typeof(buf)}(buf)
 end
 
 const BitStr64{N} = BitStr{N,Int64}
@@ -77,8 +77,8 @@ for IT in [
     @eval Base.$IT(b::BitStr) = $IT(buffer(b))
 end
 for op in [:+, :-, :*, :÷, :|, :⊻, :&, :%, :mod, :mod1]
-    @eval Base.$op(a::T, b::Integer) where {T <: BitStr} = T($op(buffer(a), b))
-    @eval Base.$op(a::Integer, b::T) where {T <: BitStr} = T($op(a, buffer(b)))
+    @eval Base.$op(a::T, b::Integer) where {T<:BitStr} = T($op(buffer(a), b))
+    @eval Base.$op(a::Integer, b::T) where {T<:BitStr} = T($op(a, buffer(b)))
     @eval Base.$op(a::BitStr{N,T}, b::BitStr{N,T}) where {N,T<:Integer} =
         BitStr{N,T}($op(buffer(a), buffer(b)))
     @eval Base.$op(a::BitStr, b::BitStr) = error("type mismatch: $(typeof(a)), $(typeof(b))")
@@ -229,10 +229,7 @@ Base.@propagate_inbounds function Base.getindex(bit::BitStr{N}, index::Int) wher
     return buffer(readbit(bit, index))
 end
 
-Base.@propagate_inbounds function Base.getindex(
-    bit::BitStr{N,T},
-    itr::AbstractVector,
-) where {N,T}
+Base.@propagate_inbounds function Base.getindex(bit::BitStr{N,T}, itr::AbstractVector) where {N,T}
     @boundscheck all(x -> 1 <= x <= N, itr) || throw(BoundsError(bit, itr))
     return map(x -> buffer(readbit(bit, x)), itr)
 end
@@ -332,13 +329,13 @@ julia> bit_literal(1, 0, 1, 0, 1, 1)
 """
 bit_literal(x::Int, xs::Int...) = bit_literal((x, xs...))
 
-function bit_literal(xs::Tuple{T, Vararg{T, N}}) where {T <: Integer, N}
+function bit_literal(xs::Tuple{T,Vararg{T,N}}) where {T<:Integer,N}
     val = T(0)
     for k in 1:N+1
         xs[k] == 0 || xs[k] == 1 || error("expect 0 or 1, got $(xs[k])")
         val += xs[k] << (k - 1)
     end
-    return BitStr64{N+1}(val)
+    return BitStr64{N + 1}(val)
 end
 
 basis(b::BitStr) = typemin(b):typemax(b)

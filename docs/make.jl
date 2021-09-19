@@ -7,7 +7,7 @@ indigo = DocThemeIndigo.install(BitBasis)
 
 makedocs(
     modules = [BitBasis],
-    repo="https://github.com/QuantumBFS/BitBasis.jl/blob/{commit}{path}#{line}",
+    repo = "https://github.com/QuantumBFS/BitBasis.jl/blob/{commit}{path}#{line}",
     format = Documenter.HTML(
         prettyurls = ("deploy" in ARGS),
         canonical = "https://quantumbfs.github.io/BitBasis.jl/dev/",
@@ -15,13 +15,7 @@ makedocs(
     ),
     sitename = "BitBasis.jl",
     linkcheck = !("skiplinks" in ARGS),
-    pages = [
-        "Home" => "index.md",
-        "Tutorial" => "tutorial.md",
-        "Manual" => "man.md",
-    ],
+    pages = ["Home" => "index.md", "Tutorial" => "tutorial.md", "Manual" => "man.md"],
 )
 
-deploydocs(
-    repo = "github.com/QuantumBFS/BitBasis.jl.git",
-)
+deploydocs(repo = "github.com/QuantumBFS/BitBasis.jl.git")

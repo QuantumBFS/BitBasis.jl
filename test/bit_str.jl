@@ -102,7 +102,7 @@ end
 end
 
 @testset "bitstr constructors" begin
-    @test BitStr{8}(99) === BitStr{8, Int}(99)
+    @test BitStr{8}(99) === BitStr{8,Int}(99)
     x = BitStr64{8}(99)
     y = BitStr64{8}(UInt64(7))
     @test zero(BitStr64{8}) == zero(BitStr64{8}(5)) == BitStr64{8}(0)
