@@ -64,4 +64,5 @@ end
 @testset "bit_basis" begin
     BitBasis.bit_basis(3) == 0:8
     BitBasis.bit_basis(randn(8)) == 0:8
+    BitBasis.basis(randn(8)) == 0:7
 end
