@@ -60,3 +60,8 @@ end
 @testset "random" begin
     @test rand(BitStr64{5}) isa BitStr64{5}
 end
+
+@testset "bit_basis" begin
+    BitBasis.bit_basis(3) == 0:8
+    BitBasis.bit_basis(randn(8)) == 0:8
+end

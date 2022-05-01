@@ -14,7 +14,7 @@ end
 end
 
 @testset "test operations" begin
-    include("operations.jl")
+    include("bit_operations.jl")
 end
 
 @testset "test reorder" begin

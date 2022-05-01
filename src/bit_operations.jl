@@ -33,7 +33,8 @@ Returns the UnitRange for basis in Hilbert Space of nbits qubits.
 If an array is supplied, it will return a basis having the same size
 with the first diemension of array.
 """
-bit_basis(arg::Union{Int,AbstractArray}) = basis(Int, arg)
+bit_basis(arg::T) where T<:Integer = bit_basis(T, arg)
+bit_basis(arg::AbstractArray) = bit_basis(Int, arg)
 bit_basis(::Type{T}, nbits::Int) where {T<:Integer} = UnitRange{T}(0, 1 << nbits - 1)
 bit_basis(::Type{T}, state::AbstractArray) where {T<:Integer} = UnitRange{T}(0, size(state, 1) - 1)
 
