@@ -5,8 +5,12 @@ Aqua.test_all(BitBasis)
 
 const ⊗ = kron
 
+@testset "test dit literal" begin
+    include("DitStr.jl")
+end
+
 @testset "test bit literal" begin
-    include("bit_str.jl")
+    include("BitStr.jl")
 end
 
 @testset "test operations" begin

@@ -292,7 +292,7 @@ function parse_dit(::Type{T}, str::String) where {T<:Integer}
     return _parse_dit(Val(parse(Int,res[2])), T, res[1])
 end
 
-function _parse_dit(::Val{D}, ::Type{T}, str::String) where {D, T<:Integer}
+function _parse_dit(::Val{D}, ::Type{T}, str::AbstractString) where {D, T<:Integer}
     val = zero(T)
     k = 1
     for each in reverse(filter(x -> x != '_', str))
