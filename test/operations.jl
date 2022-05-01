@@ -58,5 +58,5 @@ msk = bmask(2, 5)
 end
 
 @testset "random" begin
-    @test rand_bitstr64(5) isa BitStr64{5}
+    @test rand(BitStr64{5}) isa BitStr64{5}
 end

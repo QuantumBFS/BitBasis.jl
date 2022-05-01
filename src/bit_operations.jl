@@ -1,8 +1,3 @@
-export bitarray, basis, packbits, bfloat, bfloat_r, bint, bint_r, flip
-export anyone, allone, bmask, baddrs, readbit, setbit, controller
-export swapbits, ismatch, neg, breflect, btruncate
-export rand_bitstr64
-
 """
     bitarray(v::Vector, [nbits::Int]) -> BitArray
     bitarray(v::Int, nbits::Int) -> BitArray
@@ -31,16 +26,16 @@ bitarray(v::Number, nbits::Int)::BitArray{1} = vec(bitarray([v], nbits))
 bitarray(nbits::Int) = x -> bitarray(x, nbits)
 
 """
-    basis([IntType], nbits::Int) -> UnitRange{IntType}
-    basis([IntType], state::AbstractArray) -> UnitRange{IntType}
+    bit_basis([IntType], nbits::Int) -> UnitRange{IntType}
+    bit_basis([IntType], state::AbstractArray) -> UnitRange{IntType}
 
 Returns the UnitRange for basis in Hilbert Space of nbits qubits.
 If an array is supplied, it will return a basis having the same size
 with the first diemension of array.
 """
-basis(arg::Union{Int,AbstractArray}) = basis(Int, arg)
-basis(::Type{T}, nbits::Int) where {T<:Integer} = UnitRange{T}(0, 1 << nbits - 1)
-basis(::Type{T}, state::AbstractArray) where {T<:Integer} = UnitRange{T}(0, size(state, 1) - 1)
+bit_basis(arg::Union{Int,AbstractArray}) = basis(Int, arg)
+bit_basis(::Type{T}, nbits::Int) where {T<:Integer} = UnitRange{T}(0, 1 << nbits - 1)
+bit_basis(::Type{T}, state::AbstractArray) where {T<:Integer} = UnitRange{T}(0, size(state, 1) - 1)
 
 """
     packbits(arr::AbstractArray) -> AbstractArray
@@ -140,12 +135,8 @@ Read the bit config at given location.
 """
 readbit(x::T, loc::Int) where {T<:Integer} = (x >> (loc - 1)) & one(T)
 
-@inline function readbit(x::T, bits::Int...) where {T<:Integer}
-    res = zero(T)
-    for (i, loc) in enumerate(bits)
-        res += readbit(x, loc) << (i - 1)
-    end
-    return res
+@inline @generated function readbit(x::T, bits::Int...) where {T<:Integer}
+    Expr(:call, :+, [:(readbit(x, bits[$i]) << ($i - 1)) for i=1:length(bits)]...)
 end
 
 """
@@ -337,9 +328,3 @@ function controller(cbits::IntIterator{Int}, cvals::IntIterator{Int})
         mapreduce(xy -> (xy[2] == 1 ? 1 << (xy[1] - 1) : 0), |, zip(cbits, cvals))
     return b -> ismatch(b, do_mask, target)
 end
-
-function rand_bitstr64(nbit::Int)
-    T = BitStr64{nbit}
-    rand(typemin(T):typemax(T))
-end
-Base.rand(::Type{T}) where {T<:BitStr} = rand(typemin(T):typemax(T))
