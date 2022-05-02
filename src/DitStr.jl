@@ -235,22 +235,22 @@ onehot(pair::Pair{DitStr{D,N,T},T2}; nbatch=nothing) where {D,N,T,T2} = _onehot(
 """
     @dit_str -> DitStr64
 
-Construct a dit string. such as `dit"0201/3"`. The dit strings also supports string `bcat`. Just use
+Construct a dit string. such as `dit"0201;3"`. The dit strings also supports string `bcat`. Just use
 it like normal strings.
 
 ## Example
 
 ```jldoctest
-julia> dit"10201/3"
+julia> dit"10201;3"
 10001 ₍₂₎
 
-julia> dit"100_121_121/3"
+julia> dit"100_121_121;3"
 100111101 ₍₂₎
 
-julia> bcat(dit"1021/3", dit"11/3", dit"1210/3")
+julia> bcat(dit"1021;3", dit"11;3", dit"1210;3")
 1001111110 ₍₂₎
 
-julia> onehot(dit"1021/3")
+julia> onehot(dit"1021;3")
 16-element Array{Float64,1}:
  0.0
  0.0
@@ -285,9 +285,9 @@ macro ldit_str(str)
 end
 
 function parse_dit(::Type{T}, str::String) where {T<:Integer}
-    res = match(r"(.*)/(\d+)", str)
+    res = match(r"(.*);(\d+)", str)
     if res === nothing
-        error("Input string literal format error, should be e.g. `dit\"01121/3\"`")
+        error("Input string literal format error, should be e.g. `dit\"01121;3\"`")
     end
     return _parse_dit(Val(parse(Int,res[2])), T, res[1])
 end
