@@ -15,4 +15,6 @@ using BitBasis, Test
     @test [DitStr{3}(Int64[0,0,1,2,1,1])...] == Int64[0,0,1,2,1,1]
     @test_throws ErrorException BitBasis.parse_dit(Int64, "112103;3")
     @test_throws ErrorException BitBasis.parse_dit(Int64, "112101;")
+
+    @test join(dit"001;3", dit"002;3") == dit"001002;3"
 end

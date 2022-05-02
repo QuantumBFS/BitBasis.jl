@@ -208,7 +208,7 @@ bcat(dits) = bcat(dits...)
 sum_length(a::DitStr, dits::DitStr...) = length(a) + sum_length(dits...)
 sum_length(a::DitStr) = length(a)
 
-function bcat(dit::DitStr{D,N,T}, dits::DitStr...) where {D,N,T<:Integer}
+function bcat(dit::DitStr{D,N,T}, dits::DitStr{D}...) where {D,N,T<:Integer}
     total_dits = sum_length(dit, dits...)
     val, len = zero(T), 0
 
@@ -221,6 +221,7 @@ function bcat(dit::DitStr{D,N,T}, dits::DitStr...) where {D,N,T<:Integer}
     return DitStr{D,total_dits,T}(val)
 end
 Base.repeat(s::DitStr, n::Integer) = bcat(s for i in 1:n)
+Base.join(s0::DitStr{D}, s::DitStr{D}...) where D = bcat(s0, s...)
 
 """
     onehot(dit_str=>value, [; nbatch])
