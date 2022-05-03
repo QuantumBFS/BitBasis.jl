@@ -24,8 +24,8 @@ some frequently used methods for binary basis.
 julia> bit"0101" * 2
 1010 ₍₂₎
 
-julia> join(bit"101" for i in 1:10)
-101101101101101101101101101101 (766958445)
+julia> join([bit"101" for i in 1:10])
+"101 ₍₂₎101 ₍₂₎101 ₍₂₎101 ₍₂₎101 ₍₂₎101 ₍₂₎101 ₍₂₎101 ₍₂₎101 ₍₂₎101 ₍₂₎"
 
 julia> repeat(bit"101", 2)
 101101 ₍₂₎
@@ -68,23 +68,23 @@ julia> join(bit"1001", bit"11", bit"1110")
 1001111110 ₍₂₎
 
 julia> onehot(bit"1001")
-16-element Array{Float64,1}:
- 0.0
- 0.0
- 0.0
- 0.0
- 0.0
- 0.0
- 0.0
- 0.0
- 0.0
- 1.0
- 0.0
- 0.0
- 0.0
- 0.0
- 0.0
- 0.0
+16-element Vector{ComplexF64}:
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 1.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
 
 ```
 """
@@ -99,24 +99,6 @@ Long bit string version of `@bit_str` macro.
 """
 macro lbit_str(str)
     return _parse_dit(Val(2), BigInt, str)
-end
-
-######## Extra bit string operations #######
-"""
-    bit_literal(xs...)
-
-Create a [`BitStr`](@ref) by input bits `xs`.
-
-# Example
-
-```jldoctest
-julia> bit_literal(1, 0, 1, 0, 1, 1)
-110101 ₍₂₎
-```
-"""
-bit_literal(x::Integer, xs::Integer...) = bit_literal((x, xs...))
-function bit_literal(xs::Tuple{T,Vararg{T,N}}) where {T<:Integer,N}
-    DitStr{2}(xs)
 end
 
 """

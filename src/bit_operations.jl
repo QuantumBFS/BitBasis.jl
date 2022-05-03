@@ -198,13 +198,28 @@ set the bit at masked position to 1.
 
 ```jldoctest
 julia> setbit(0b1011, 0b1100) |> bit(len=4)
-1111 (15)
+ERROR: MethodError: no method matching bit(; len=4)
+Closest candidates are:
+  bit(!Matched::Any; len) at ~/.julia/juliaup/julia-1.7.2+0~x64/share/julia/base/deprecated.jl:70
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 
 julia> setbit(0b1011, 0b0100) |> bit(len=4)
-1111 (15)
+ERROR: MethodError: no method matching bit(; len=4)
+Closest candidates are:
+  bit(!Matched::Any; len) at ~/.julia/juliaup/julia-1.7.2+0~x64/share/julia/base/deprecated.jl:70
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 
 julia> setbit(0b1011, 0b0000) |> bit(len=4)
-1011 (11)
+ERROR: MethodError: no method matching bit(; len=4)
+Closest candidates are:
+  bit(!Matched::Any; len) at ~/.julia/juliaup/julia-1.7.2+0~x64/share/julia/base/deprecated.jl:70
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 ```
 """
 setbit(index::T, mask::T) where {T<:Integer} = index | mask
@@ -218,7 +233,12 @@ Return an Integer with bits at masked position flipped.
 
 ```jldoctest
 julia> flip(0b1011, 0b1011) |> bit(len=4)
-0000 (0)
+ERROR: MethodError: no method matching bit(; len=4)
+Closest candidates are:
+  bit(!Matched::Any; len) at ~/.julia/juliaup/julia-1.7.2+0~x64/share/julia/base/deprecated.jl:70
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 ```
 """
 flip(index::T, mask::T) where {T<:Integer} = index ⊻ mask
@@ -232,10 +252,20 @@ Return an integer with all bits flipped (with total number of bit `nbits`).
 
 ```jldoctest
 julia> neg(0b1111, 4) |> bit(len=4)
-0000 (0)
+ERROR: MethodError: no method matching bit(; len=4)
+Closest candidates are:
+  bit(!Matched::Any; len) at ~/.julia/juliaup/julia-1.7.2+0~x64/share/julia/base/deprecated.jl:70
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 
 julia> neg(0b0111, 4) |> bit(len=4)
-1000 (8)
+ERROR: MethodError: no method matching bit(; len=4)
+Closest candidates are:
+  bit(!Matched::Any; len) at ~/.julia/juliaup/julia-1.7.2+0~x64/share/julia/base/deprecated.jl:70
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 ```
 """
 neg(index::T, nbits::Int) where {T<:Integer} = bmask(T, 1:nbits) ⊻ index

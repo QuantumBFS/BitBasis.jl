@@ -20,8 +20,10 @@ When the input is a vector, the dits are read from left to right.
 
 ```jldoctest
 julia> DitStr{3}([1,2,1,1,0])
+01121 ₍₃₎
 
-julia> DitStr{3}(71)
+julia> DitStr{3, 5}(71)
+02122 ₍₃₎
 ```
 """
 struct DitStr{D,N,T<:Integer} <: Integer
@@ -235,32 +237,36 @@ it like normal strings.
 
 ```jldoctest
 julia> dit"10201;3"
-10001 ₍₂₎
+10201 ₍₃₎
 
 julia> dit"100_121_121;3"
-100111101 ₍₂₎
+100121121 ₍₃₎
 
 julia> join(dit"1021;3", dit"11;3", dit"1210;3")
-1001111110 ₍₂₎
+1021111210 ₍₃₎
 
 julia> onehot(dit"1021;3")
-16-element Array{Float64,1}:
- 0.0
- 0.0
- 0.0
- 0.0
- 0.0
- 0.0
- 0.0
- 0.0
- 0.0
- 1.0
- 0.0
- 0.0
- 0.0
- 0.0
- 0.0
- 0.0
+81-element Vector{ComplexF64}:
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+     ⋮
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
 
 ```
 """

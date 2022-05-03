@@ -10,3 +10,5 @@
 @deprecate to_location(x::Integer) x + 1
 @deprecate to_location(x::BitStr) buffer(x) + 1
 @deprecate bcat join
+@deprecate bit_literal(x::Integer, xs::Integer...) bit_literal((x, xs...))
+@deprecate bit_literal(xs::Tuple{T,Vararg{T,N}}) where {T<:Integer,N} DitStr{2}(xs)

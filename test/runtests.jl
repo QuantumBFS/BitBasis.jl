@@ -1,4 +1,5 @@
 using BitBasis
+using Documenter
 using Test
 using Aqua
 Aqua.test_all(BitBasis)
@@ -28,3 +29,7 @@ end
 @testset "test iterate control" begin
     include("iterate_control.jl")
 end
+
+DocMeta.setdocmeta!(BitBasis, :DocTestSetup, :(using BitBasis); recursive=true)
+
+Documenter.doctest(BitBasis; manual=false, fix=true)
