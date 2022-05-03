@@ -135,14 +135,9 @@ Base.typemin(::DitStr{D,N,T}) where {D,N,T} = DitStr{D,N,T}(0)
 
 Read the dit config at given location.
 """
-function readat(x::DT, loc::Integer) where {D,N,T,DT<:DitStr{D,N,T}}
-    mod(_rshift(Val{D}(), buffer(x), loc-1), D)
-end
-readat(::DT) where {D,N,T,DT<:DitStr{D,N,T}} = zero(T)
-
-@inline @generated function readat(x::DitStr{D}, loc1::Integer, loc2::Integer, locs::Integer...) where {D}
-    _locs = [loc1, loc2, locs...]
-    Expr(:call, :+, [:(_lshift($(Val(D)), readat(x, _locs[$i]), $(i - 1))) for i=1:length(_locs)]...)
+@inline @generated function readat(x::DitStr{D,N,T}, locs::Integer...) where {D,N,T}
+    length(locs) == 0 && return :(zero($T))
+    Expr(:call, :+, [:($_lshift($(Val(D)), mod($_rshift($(Val{D}()), buffer(x), locs[$i]-1), $D), $(i - 1))) for i=1:length(locs)]...)
 end
 
 Base.@propagate_inbounds function Base.getindex(dit::DitStr{D,N}, index::Integer) where {D,N}
@@ -203,12 +198,10 @@ _lshift(::Val{2}, x::Integer, i::Integer) = x << i
 _rshift(::Val{2}, x::Integer, i::Integer) = x >> i
 
 # expand iterator to tuple
-bcat(dits) = bcat(dits...)
-
 sum_length(a::DitStr, dits::DitStr...) = length(a) + sum_length(dits...)
 sum_length(a::DitStr) = length(a)
 
-function bcat(dit::DitStr{D,N,T}, dits::DitStr{D}...) where {D,N,T<:Integer}
+function Base.join(dit::DitStr{D,N,T}, dits::DitStr{D}...) where {D,N,T<:Integer}
     total_dits = sum_length(dit, dits...)
     val, len = zero(T), 0
 
@@ -220,23 +213,22 @@ function bcat(dit::DitStr{D,N,T}, dits::DitStr{D}...) where {D,N,T<:Integer}
     len += length(dit)
     return DitStr{D,total_dits,T}(val)
 end
-Base.repeat(s::DitStr, n::Integer) = bcat(s for i in 1:n)
-Base.join(s0::DitStr{D}, s::DitStr{D}...) where D = bcat(s0, s...)
+Base.repeat(s::DitStr, n::Integer) = join([s for i in 1:n]...)
 
 """
-    onehot(dit_str=>value, [; nbatch])
     onehot([T=Float64], dit_str[; nbatch])
 
 Create an onehot vector in type `Vector{T}` or a batch of onehot vector in type `Matrix{T}`, where index `x + 1` is one.
 One can specify the value of the nonzero entry by inputing a pair.
 """
-onehot(pair::Pair{DitStr{D,N,T},T2}; nbatch=nothing) where {D,N,T,T2} = _onehot(_lshift(Val(D), one(T), N), buffer(pair.first)+1, pair.second; nbatch)
+onehot(::Type{T}, n::DitStr{D,N,T1}; nbatch=nothing) where {D,T, N,T1} = _onehot(T, D^N, buffer(n)+1; nbatch)
+onehot(n::DitStr; nbatch=nothing) = onehot(ComplexF64, n; nbatch)
 
 ########## @dit_str macro ##############
 """
     @dit_str -> DitStr64
 
-Construct a dit string. such as `dit"0201;3"`. The dit strings also supports string `bcat`. Just use
+Construct a dit string. such as `dit"0201;3"`. The dit strings also supports string `join`. Just use
 it like normal strings.
 
 ## Example
@@ -248,7 +240,7 @@ julia> dit"10201;3"
 julia> dit"100_121_121;3"
 100111101 ₍₂₎
 
-julia> bcat(dit"1021;3", dit"11;3", dit"1210;3")
+julia> join(dit"1021;3", dit"11;3", dit"1210;3")
 1001111110 ₍₂₎
 
 julia> onehot(dit"1021;3")
@@ -296,7 +288,9 @@ end
 function _parse_dit(::Val{D}, ::Type{T}, str::AbstractString) where {D, T<:Integer}
     val = zero(T)
     k = 1
-    for each in reverse(filter(x -> x != '_', str))
+    maxk = T <: BigInt ? Inf : log(typemax(T))/log(D)
+    for each in reverse(str)
+        k >= maxk && error("string length is larger than $(maxk), use @ldit_str instead")
         v = each - '0'
         if 0 <= v < D
             val += _lshift(Val(D), v, k-1)
@@ -306,8 +300,6 @@ function _parse_dit(::Val{D}, ::Type{T}, str::AbstractString) where {D, T<:Integ
         else
             error("expect char in range 0-$(D-1), got $each at $k-th dit")
         end
-        (isbitstype(T) && k > bsizeof(T)) &&
-            error("string length is larger than $(bsizeof(T)), use @ldit_str instead")
     end
     return DitStr{D,k-1,T}(val)
 end

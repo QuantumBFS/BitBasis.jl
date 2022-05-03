@@ -9,3 +9,4 @@
 
 @deprecate to_location(x::Integer) x + 1
 @deprecate to_location(x::BitStr) buffer(x) + 1
+@deprecate bcat join

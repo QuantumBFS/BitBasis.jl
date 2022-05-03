@@ -18,8 +18,8 @@ end
     @test (bit"1111" - bit"0101") == bit"1010" == 10
     @test (bit"01010" * 2) == (2 * bit"01010") == bit"10100" == 20
     @test (bit"1010" ÷ 2) == bit"0101" == 5
-    @test bcat(bit"101", bit"100", bit"111") == bit"101100111"
-    @test bcat(bit"101" for k in 1:3) == bit"101101101"
+    @test join(bit"101", bit"100", bit"111") == bit"101100111"
+    @test join([bit"101" for k in 1:3]...) == bit"101101101"
     @test (bit"00101" << 2) == bit"10100"
     @test (bit"1101" >> 2) == bit"0011"
     @test bit"10011" == bit"10011"

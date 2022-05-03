@@ -24,7 +24,7 @@ some frequently used methods for binary basis.
 julia> bit"0101" * 2
 1010 ₍₂₎
 
-julia> bcat(bit"101" for i in 1:10)
+julia> join(bit"101" for i in 1:10)
 101101101101101101101101101101 (766958445)
 
 julia> repeat(bit"101", 2)
@@ -52,7 +52,7 @@ end
 """
     @bit_str -> BitStr64
 
-Construct a bit string. such as `bit"0000"`. The bit strings also supports string `bcat`. Just use
+Construct a bit string. such as `bit"0000"`. The bit strings also supports string `join`. Just use
 it like normal strings.
 
 ## Example
@@ -64,7 +64,7 @@ julia> bit"10001"
 julia> bit"100_111_101"
 100111101 ₍₂₎
 
-julia> bcat(bit"1001", bit"11", bit"1110")
+julia> join(bit"1001", bit"11", bit"1110")
 1001111110 ₍₂₎
 
 julia> onehot(bit"1001")
@@ -100,9 +100,6 @@ Long bit string version of `@bit_str` macro.
 macro lbit_str(str)
     return _parse_dit(Val(2), BigInt, str)
 end
-
-onehot(::Type{T}, n::BitStr{N,T1}; nbatch=nothing) where {N,T1,T} = onehot(n=>one(T); nbatch)
-onehot(n::BitStr{N,T1}; nbatch=nothing) where {N,T1} = onehot(Float64, n; nbatch)
 
 ######## Extra bit string operations #######
 """

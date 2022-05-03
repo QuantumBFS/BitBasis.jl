@@ -1,7 +1,7 @@
 using Test, BitBasis
 
 @test bsizeof(ind) == sizeof(Int) * 8
-@test BitBasis._onehot(4, 3, 1.0) == [0, 0, 1, 0.0]
+@test BitBasis._onehot(Float64, 4, 3) == [0, 0, 1, 0.0]
 @test bdistance(1, 7) == 2
 @test onehot(ComplexF64, bit"01"; nbatch=2) == transpose(ComplexF64[0 1 0 0; 0 1 0 0])
 @test log2dim1(rand(4, 4)) == log2i(4)

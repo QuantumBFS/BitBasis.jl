@@ -16,14 +16,14 @@ Return number of different bits.
 """
 bdistance(i::Ti, j::Ti) where {Ti<:Integer} = count_ones(i ⊻ j)
 
-function _onehot(n::Integer, loc::Integer, val::T; nbatch::Union{Nothing,Int}=nothing) where {T}
+function _onehot(::Type{T}, n::Integer, loc::Integer; nbatch::Union{Nothing,Int}=nothing) where {T}
     if nbatch === nothing
         v = zeros(T, n)
-        v[loc] = val
+        v[loc] = one(T)
         return v
     else
         v = zeros(T, n, nbatch)
-        v[loc, :] .= Ref(val)
+        v[loc, :] .= Ref(one(T))
         return v
     end
 end

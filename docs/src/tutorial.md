@@ -81,7 +81,7 @@ you could use [`@bit_str`](@ref), which looks like the following
 
 ```@repl tutorial
 bit"101" * 2
-bcat(bit"101" for i in 1:10)
+join([bit"101" for i in 1:10]...)
 repeat(bit"101", 2)
 bit"1101"[2]
 ```
