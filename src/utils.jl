@@ -16,27 +16,17 @@ Return number of different bits.
 """
 bdistance(i::Ti, j::Ti) where {Ti<:Integer} = count_ones(i ⊻ j)
 
-"""
-    onehot([T=Float64], nbits, x::Integer; nbatch::Int])
-
-Create an onehot vector in type `Vector{T}` or a batch of onehot vector in type `Matrix{T}`,
-where index `x + 1` is one.
-"""
-function onehot(::Type{T}, nbits::Int, x::Integer) where {T}
-    v = zeros(T, 1 << nbits)
-    v[x+1] = 1
-    return v
+function _onehot(::Type{T}, n::Integer, loc::Integer; nbatch::Union{Nothing,Int}=nothing) where {T}
+    if nbatch === nothing
+        v = zeros(T, n)
+        v[loc] = one(T)
+        return v
+    else
+        v = zeros(T, n, nbatch)
+        v[loc, :] .= Ref(one(T))
+        return v
+    end
 end
-
-onehot(nbits::Int, x::Integer) = onehot(Float64, nbits, x)
-
-function onehot(::Type{T}, nbits::Int, x::Integer, nbatch::Int) where {T}
-    v = zeros(T, 1 << nbits, nbatch)
-    v[x+1, :] .= 1
-    return v
-end
-
-onehot(nbits::Int, x::Integer, nbatch::Int) = onehot(Float64, nbits, x, nbatch)
 
 """
     unsafe_sub(a::UnitRange, b::NTuple{N}) -> NTuple{N}
@@ -106,5 +96,5 @@ Return indices with specific positions `locs` with value `vals` in a hilbert spa
 function indices_with(n::Int, locs::Vector{Int}, vals::Vector{Int})
     mask = bmask(locs)
     onemask = bmask(locs[vals.!=0])
-    return filter(x -> ismatch(x, mask, onemask), basis(n))
+    return filter(x -> ismatch(x, mask, onemask), 0:1<<n-1)
 end

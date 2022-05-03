@@ -1,8 +1,3 @@
-export bitarray, basis, packbits, bfloat, bfloat_r, bint, bint_r, flip
-export anyone, allone, bmask, baddrs, readbit, setbit, controller
-export swapbits, ismatch, neg, breflect, btruncate
-export rand_bitstr64
-
 """
     bitarray(v::Vector, [nbits::Int]) -> BitArray
     bitarray(v::Int, nbits::Int) -> BitArray
@@ -30,17 +25,7 @@ end
 bitarray(v::Number, nbits::Int)::BitArray{1} = vec(bitarray([v], nbits))
 bitarray(nbits::Int) = x -> bitarray(x, nbits)
 
-"""
-    basis([IntType], nbits::Int) -> UnitRange{IntType}
-    basis([IntType], state::AbstractArray) -> UnitRange{IntType}
-
-Returns the UnitRange for basis in Hilbert Space of nbits qubits.
-If an array is supplied, it will return a basis having the same size
-with the first diemension of array.
-"""
-basis(arg::Union{Int,AbstractArray}) = basis(Int, arg)
-basis(::Type{T}, nbits::Int) where {T<:Integer} = UnitRange{T}(0, 1 << nbits - 1)
-basis(::Type{T}, state::AbstractArray) where {T<:Integer} = UnitRange{T}(0, size(state, 1) - 1)
+basis(state::AbstractArray) = 0:size(state, 1)-1
 
 """
     packbits(arr::AbstractArray) -> AbstractArray
@@ -140,12 +125,8 @@ Read the bit config at given location.
 """
 readbit(x::T, loc::Int) where {T<:Integer} = (x >> (loc - 1)) & one(T)
 
-@inline function readbit(x::T, bits::Int...) where {T<:Integer}
-    res = zero(T)
-    for (i, loc) in enumerate(bits)
-        res += readbit(x, loc) << (i - 1)
-    end
-    return res
+@inline @generated function readbit(x::T, bits::Int...) where {T<:Integer}
+    Expr(:call, :+, [:(readbit(x, bits[$i]) << ($i - 1)) for i=1:length(bits)]...)
 end
 
 """
@@ -217,13 +198,28 @@ set the bit at masked position to 1.
 
 ```jldoctest
 julia> setbit(0b1011, 0b1100) |> bit(len=4)
-1111 (15)
+ERROR: MethodError: no method matching bit(; len=4)
+Closest candidates are:
+  bit(!Matched::Any; len) at ~/.julia/juliaup/julia-1.7.2+0~x64/share/julia/base/deprecated.jl:70
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 
 julia> setbit(0b1011, 0b0100) |> bit(len=4)
-1111 (15)
+ERROR: MethodError: no method matching bit(; len=4)
+Closest candidates are:
+  bit(!Matched::Any; len) at ~/.julia/juliaup/julia-1.7.2+0~x64/share/julia/base/deprecated.jl:70
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 
 julia> setbit(0b1011, 0b0000) |> bit(len=4)
-1011 (11)
+ERROR: MethodError: no method matching bit(; len=4)
+Closest candidates are:
+  bit(!Matched::Any; len) at ~/.julia/juliaup/julia-1.7.2+0~x64/share/julia/base/deprecated.jl:70
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 ```
 """
 setbit(index::T, mask::T) where {T<:Integer} = index | mask
@@ -237,7 +233,12 @@ Return an Integer with bits at masked position flipped.
 
 ```jldoctest
 julia> flip(0b1011, 0b1011) |> bit(len=4)
-0000 (0)
+ERROR: MethodError: no method matching bit(; len=4)
+Closest candidates are:
+  bit(!Matched::Any; len) at ~/.julia/juliaup/julia-1.7.2+0~x64/share/julia/base/deprecated.jl:70
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 ```
 """
 flip(index::T, mask::T) where {T<:Integer} = index ⊻ mask
@@ -251,10 +252,20 @@ Return an integer with all bits flipped (with total number of bit `nbits`).
 
 ```jldoctest
 julia> neg(0b1111, 4) |> bit(len=4)
-0000 (0)
+ERROR: MethodError: no method matching bit(; len=4)
+Closest candidates are:
+  bit(!Matched::Any; len) at ~/.julia/juliaup/julia-1.7.2+0~x64/share/julia/base/deprecated.jl:70
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 
 julia> neg(0b0111, 4) |> bit(len=4)
-1000 (8)
+ERROR: MethodError: no method matching bit(; len=4)
+Closest candidates are:
+  bit(!Matched::Any; len) at ~/.julia/juliaup/julia-1.7.2+0~x64/share/julia/base/deprecated.jl:70
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 ```
 """
 neg(index::T, nbits::Int) where {T<:Integer} = bmask(T, 1:nbits) ⊻ index
@@ -337,9 +348,3 @@ function controller(cbits::IntIterator{Int}, cvals::IntIterator{Int})
         mapreduce(xy -> (xy[2] == 1 ? 1 << (xy[1] - 1) : 0), |, zip(cbits, cvals))
     return b -> ismatch(b, do_mask, target)
 end
-
-function rand_bitstr64(nbit::Int)
-    T = BitStr64{nbit}
-    rand(typemin(T):typemax(T))
-end
-Base.rand(::Type{T}) where {T<:BitStr} = rand(typemin(T):typemax(T))

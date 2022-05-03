@@ -5,9 +5,9 @@ using Test, BitBasis
     @test bit"100_111" == 0b100_111
     @test bit"10_100_11" == bit"1010011"
     @test bit"10_100_11" != bit"01010011"
-    @test bit"1011" === bit_literal(1, 1, 0, 1)
-    @test BitBasis.parse_bit(BigInt, "10101010101010101010101010101010010101010101"^10) isa LongBitStr
-    @test_throws ErrorException BitBasis.parse_bit(
+    @test bit"1011" === bit_literal(Int64.((1, 1, 0, 1))...)
+    @test BitBasis._parse_dit(Val(2), BigInt, "10101010101010101010101010101010010101010101"^10) isa LongBitStr
+    @test_throws ErrorException BitBasis._parse_dit(Val(2),
         Int64,
         "10101010101010101010101010101010010101010101"^10,
     )
@@ -18,8 +18,8 @@ end
     @test (bit"1111" - bit"0101") == bit"1010" == 10
     @test (bit"01010" * 2) == (2 * bit"01010") == bit"10100" == 20
     @test (bit"1010" ÷ 2) == bit"0101" == 5
-    @test bcat(bit"101", bit"100", bit"111") == bit"101100111"
-    @test bcat(bit"101" for k in 1:3) == bit"101101101"
+    @test join(bit"101", bit"100", bit"111") == bit"101100111"
+    @test join([bit"101" for k in 1:3]...) == bit"101101101"
     @test (bit"00101" << 2) == bit"10100"
     @test (bit"1101" >> 2) == bit"0011"
     @test bit"10011" == bit"10011"
@@ -29,7 +29,7 @@ end
     v = zeros(8)
     v[buffer(bit"101")+1] = 1
     @test onehot(bit"101") == v
-    @test onehot(bit"101", 2) == [v v]
+    @test onehot(bit"101"; nbatch=2) == [v v]
 
     @test repeat(bit"101", 3) == bit"101101101"
 end
@@ -106,10 +106,10 @@ end
     x = BitStr64{8}(99)
     y = BitStr64{8}(UInt64(7))
     @test zero(BitStr64{8}) == zero(BitStr64{8}(5)) == BitStr64{8}(0)
-    @test reinterpret(BitStr{8,UInt64}, 99) === BitStr{8,UInt64}(99)
+    @test reinterpret(BitStr{8,UInt64}, Int64(99)) === BitStr{8,UInt64}(99)
     @test reinterpret(Int64, BitStr64{8}(99)) === Int64(99)
     @test all(reinterpret(BitStr64{8}, [Int64(99)]) .=== [BitStr64{8}(99)])
-    @test reinterpret(BitStr{8,Int}, bit"1100") === bit"00001100"
+    @test reinterpret(BitStr{8,Int64}, bit"1100") === bit"00001100"
     @test x == 99
     @test y == 7
     @test y != BitStr64{4}(7)
