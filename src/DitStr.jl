@@ -3,7 +3,7 @@ const IntStorage = Union{Int8,Int16,Int32,Int64,Int128,BigInt,UIntStorage}
 
 ########## DitStr #########
 """
-    DitStr{N,T} <: Integer
+    DitStr{D,N,T<:Integer} <: Integer
 
 The struct for dit string with fixed length `N` and storage type `T`,
 where `dit` is a extension of `dit` from binary system to a d-ary system.
