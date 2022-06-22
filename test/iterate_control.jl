@@ -21,6 +21,10 @@ mulrow!(v::AbstractVector, i::Int, f) = (v[i] *= f; v)
     @test group_shift!(5, [1, 2, 5]) == ([3, 28], [4, 8])
     @test group_shift!(5, [2, 3]) == ([1, 30], [1, 4])
     @test group_shift!(5, [1, 3, 5]) == ([1, 2, 28], [2, 4, 8])
+    @test group_shift!(3, [1, 2, 3]) == ([7], [8])
+    @test group_shift!(3, Int[]) == (Int[7], Int[1])
+    @test [itercontrol(3, [1, 2, 3], [0,1,0])...] == [2]
+    @test [itercontrol(3, Int[], Int[])...] == [0,1,2,3,4,5,6,7]
 end
 
 @testset "test IterControl" begin
