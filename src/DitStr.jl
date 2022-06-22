@@ -190,7 +190,7 @@ basis(b::DitStr) = typemin(b):typemax(b)
 basis(::Type{DitStr{D,N,T}}) where {D,N,T} = UnitRange(typemin(DitStr{D,N,T}), typemax(DitStr{D,N,T}))
 
 function Base.rand(::Type{T}) where {D,N,Ti,T<:DitStr{D,N,Ti}}
-    return rand(typemin(T):typemax(T))
+    return T(rand(typemin(T).buf:typemax(T).buf))
 end
 
 ######################### Operations #####################

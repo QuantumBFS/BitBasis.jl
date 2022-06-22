@@ -110,7 +110,6 @@ function group_shift!(nbits::Int, positions::AbstractVector{Int})
     factors = Int[]
     k_prv = 0
     i = 0
-    # 2 456 9 ...
     for k in positions
         if k != k_prv + 1
             push!(factors, 1<<(k_prv-i))
