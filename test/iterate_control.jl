@@ -34,6 +34,7 @@ end
         push!(vec, i)
     end
     @test vec == [0, 1, 2, 3]
+    @test it2[end] == 3
 
     vec = Int[]
     it4 = itercontrol(4, [4, 2, 1], [1, 1, 1])
