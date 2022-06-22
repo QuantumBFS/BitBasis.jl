@@ -1,26 +1,26 @@
 using StaticArrays
-export IterControl, itercontrol, controldo, group_shift!, lmove
+export IterControl, itercontrol, controldo, group_shift!
 
 # NOTE: use SortedVector in Blocks would help benchmarks
 
 """
     IterControl{S}
-    IterControl(n::Int, base::Int, masks, ks) -> IterControl
+    IterControl(n::Int, base::Int, masks, factors) -> IterControl
 
 Iterator to iterate through controlled subspace. See also [`itercontrol`](@ref).
- `S` is the number of shifts,
+ `S` is the number of chunks,
  `n` is the size of Hilbert space,
  `base` is the base of counter,
- `masks` and `ks` are helpers for enumerating over the target Hilbert Space.
+ `masks` and `factors` are helpers for enumerating over the target Hilbert Space.
 """
 struct IterControl{S}
     n::Int
     base::Int
     masks::NTuple{S,Int}
-    ks::NTuple{S,Int}
+    factors::NTuple{S,Int}
 
-    function IterControl(n::Int, base::Int, masks::NTuple{S,Int}, ks::NTuple{S,Int}) where {S}
-        new{S}(n, base, masks, ks)
+    function IterControl(n::Int, base::Int, masks::NTuple{S,Int}, factors::NTuple{S,Int}) where {S}
+        new{S}(n, base, masks, factors)
     end
 end
 
@@ -52,9 +52,9 @@ julia> for each in itercontrol(7, [1, 3, 4, 7], (1, 0, 1, 0))
 #       do not use Tuple, or other immutables, it increases the sorting time.
 function itercontrol(nbits::Int, positions::AbstractVector, bit_configs)
     base = bmask(Int, positions[i] for (i, u) in enumerate(bit_configs) if u != 0)
-    masks, ks = group_shift!(nbits, positions)
+    masks, factors = group_shift!(nbits, positions)
     S = length(masks)
-    return IterControl(1 << (nbits - length(positions)), base, Tuple(masks), Tuple(ks))
+    return IterControl(1 << (nbits - length(positions)), base, Tuple(masks), Tuple(factors))
 end
 
 """
@@ -69,10 +69,11 @@ Execute `f` while iterating `itr`.
 """
 function controldo(f::Base.Callable, ic::IterControl{S}) where {S}
     for i in 0:ic.n-1
-        @simd for s in 1:S
-            @inbounds i = lmove(i, ic.masks[s], ic.ks[s])
+        out = 0
+        for s in 1:S
+            @inbounds out += (i & ic.masks[s]) * ic.factors[s]
         end
-        f(i + ic.base)
+        f(out + ic.base)
     end
     return nothing
 end
@@ -81,12 +82,14 @@ Base.length(it::IterControl) = it.n
 Base.eltype(it::IterControl) = Int
 
 function Base.getindex(it::IterControl{S}, k::Int) where {S}
-    out = k - 1
-    @simd for s in 1:S
-        @inbounds out = lmove(out, it.masks[s], it.ks[s])
+    out = 0
+    k -= 1
+    for s in 1:S
+        @inbounds out += (k & it.masks[s]) * it.factors[s]
     end
     return out + it.base
 end
+Base.lastindex(it) = it.n
 
 function Base.iterate(it::IterControl{S}, state = 1) where {S}
     if state > length(it)
@@ -96,8 +99,6 @@ function Base.iterate(it::IterControl{S}, state = 1) where {S}
     end
 end
 
-lmove(b::Int, mask::Int, k::Int)::Int = (b & ~mask) << k + (b & mask)
-
 """
     group_shift!(nbits, positions)
 
@@ -106,16 +107,24 @@ Shift bits on `positions` together.
 function group_shift!(nbits::Int, positions::AbstractVector{Int})
     sort!(positions)
     masks = Int[]
-    ns = Int[]
-    k_prv = -1
-    for k in positions
-        if k == k_prv + 1
-            ns[end] += 1
-        else
-            push!(masks, bmask(0:k-1))
-            push!(ns, 1)
+    factors = Int[]
+    k_prv = 0
+    i = 0
+    m = length(positions)
+    # 2 456 9 ...
+    for (l,k) in enumerate(positions)
+        if k != k_prv + 1
+            push!(factors, 1<<(k_prv-i))
+            gap = k - k_prv-1
+            push!(masks, bmask(i+1:i+gap))
+            i += gap
         end
         k_prv = k
+        # the last block
+        if l == m && m != nbits
+            push!(factors, 1<<(k-i))
+            push!(masks, bmask(i+1:nbits))
+        end
     end
-    return masks, ns
+    return masks, factors
 end

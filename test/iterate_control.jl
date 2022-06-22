@@ -17,12 +17,10 @@ end
 
 mulrow!(v::AbstractVector, i::Int, f) = (v[i] *= f; v)
 
-@testset "test group_shift! and lmove" begin
-    @test group_shift!(5, [1, 2, 5]) == ([0, 15], [2, 1])
-    @test group_shift!(5, [2, 3]) == ([1], [2])
-    @test group_shift!(5, [1, 3, 5]) == ([0, 3, 15], [1, 1, 1])
-
-    @test string(lmove(5, 1, 2), base = 2) == "10001"
+@testset "test group_shift!" begin
+    @test group_shift!(5, [1, 2, 5]) == ([3, 28], [4, 8])
+    @test group_shift!(5, [2, 3]) == ([1, 30], [1, 4])
+    @test group_shift!(5, [1, 3, 5]) == ([1, 2, 28], [2, 4, 8])
 end
 
 @testset "test IterControl" begin
@@ -34,6 +32,7 @@ end
         push!(vec, i)
     end
     @test vec == [0, 1, 2, 3]
+    @test it2[end] == 3
 
     vec = Int[]
     it4 = itercontrol(4, [4, 2, 1], [1, 1, 1])
