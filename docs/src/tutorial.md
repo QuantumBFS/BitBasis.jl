@@ -109,7 +109,7 @@ Masking technic provides faster binary operations, to generate a mask with speci
 
 ```@repl tutorial
 mask = bmask(UInt8, 1,3,4)
-bit(mask; len=4)
+BitStr{4}(mask)
 ```
 
 #### [`allone`](@ref) and [`anyone`](@ref)
@@ -133,7 +133,7 @@ ismatch(0b1011, mask, 0b1001) == true  # true if masked part matches `0b1001`
 ![1011_1101](assets/flip.png)
 
 ```@repl tutorial
-bit(flip(0b1011, mask); len=4)  # flip masked positions
+BitStr{4}(flip(0b1011, mask))  # flip masked positions
 ```
 
 #### [`setbit`](@ref)
