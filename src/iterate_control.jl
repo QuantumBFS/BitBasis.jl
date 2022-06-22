@@ -70,8 +70,8 @@ Execute `f` while iterating `itr`.
 function controldo(f::Base.Callable, ic::IterControl{S}) where {S}
     for i in 0:ic.n-1
         out = 0
-        @simd for s in 1:S
-            @inbounds out += lmove(i, ic.masks[s], ic.factors[s])
+        for s in 1:S
+            @inbounds out += (i & ic.masks[s]) * ic.factors[s]
         end
         f(out + ic.base)
     end
@@ -84,8 +84,8 @@ Base.eltype(it::IterControl) = Int
 function Base.getindex(it::IterControl{S}, k::Int) where {S}
     out = 0
     k -= 1
-    @simd for s in 1:S
-        @inbounds out += lmove(k, it.masks[s], it.factors[s])
+    for s in 1:S
+        @inbounds out += (k & it.masks[s]) * it.factors[s]
     end
     return out + it.base
 end
@@ -98,8 +98,6 @@ function Base.iterate(it::IterControl{S}, state = 1) where {S}
         return it[state], state + 1
     end
 end
-
-lmove(b::Int, mask::Int, K::Int)::Int = (b & mask) * K
 
 """
     group_shift!(nbits, positions)
