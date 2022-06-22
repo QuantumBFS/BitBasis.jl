@@ -110,9 +110,7 @@ function group_shift!(nbits::Int, positions::AbstractVector{Int})
     factors = Int[]
     k_prv = 0
     i = 0
-    m = length(positions)
-    # 2 456 9 ...
-    for (l,k) in enumerate(positions)
+    for k in positions
         if k != k_prv + 1
             push!(factors, 1<<(k_prv-i))
             gap = k - k_prv-1
@@ -120,11 +118,11 @@ function group_shift!(nbits::Int, positions::AbstractVector{Int})
             i += gap
         end
         k_prv = k
-        # the last block
-        if l == m && m != nbits
-            push!(factors, 1<<(k-i))
-            push!(masks, bmask(i+1:nbits))
-        end
+    end
+    # the last block
+    if i != nbits
+        push!(factors, 1<<(k_prv-i))
+        push!(masks, bmask(i+1:nbits))
     end
     return masks, factors
 end
