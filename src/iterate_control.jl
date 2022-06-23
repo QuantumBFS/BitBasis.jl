@@ -51,6 +51,7 @@ julia> for each in itercontrol(7, [1, 3, 4, 7], (1, 0, 1, 0))
 # NOTE: positions should be vector (MVector is the best), since it need to be sorted
 #       do not use Tuple, or other immutables, it increases the sorting time.
 function itercontrol(nbits::Int, positions::AbstractVector, bit_configs)
+    @assert all(x->iszero(x) || isone(x), bit_configs) "Bit configurations should be 0 or 1"
     base = bmask(Int, positions[i] for (i, u) in enumerate(bit_configs) if u != 0)
     masks, factors = group_shift!(nbits, positions)
     S = length(masks)
@@ -111,6 +112,7 @@ function group_shift!(nbits::Int, positions::AbstractVector{Int})
     k_prv = 0
     i = 0
     for k in positions
+        @assert k > k_prv "Conflict at location: $k"
         if k != k_prv + 1
             push!(factors, 1<<(k_prv-i))
             gap = k - k_prv-1

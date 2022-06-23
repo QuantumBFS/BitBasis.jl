@@ -81,3 +81,8 @@ end
         @test [ic...] == [ic[k] for k in 1:4]
     end
 end
+
+@testset "regression test" begin
+    @test_throws AssertionError itercontrol(8, [8, 8], [1, 1])
+    @test_throws AssertionError itercontrol(8, [8], [-1])
+end
