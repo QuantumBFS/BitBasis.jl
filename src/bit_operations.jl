@@ -307,14 +307,17 @@ end
 const IntIterator{T} = Union{NTuple{<:Any,T},Vector{T},T,UnitRange{T}} where {T<:Integer}
 
 """
-    controller(cbits, cvals) -> Function
+    controller([T=Int, ]cbits, cvals) -> Function
 
 Return a function that checks whether a basis at `cbits` takes specific value `cvals`.
 """
-function controller(cbits::IntIterator{Int}, cvals::IntIterator{Int})
-    do_mask = bmask(cbits)
+function controller(cbits::IntIterator, cvals::IntIterator)
+    controller(Int, cbits, cvals)
+end
+function controller(::Type{T}, cbits::IntIterator, cvals::IntIterator) where T
+    do_mask = bmask(T, cbits...)
     target =
-        length(cvals) == 0 ? 0 :
-        mapreduce(xy -> (xy[2] == 1 ? 1 << (xy[1] - 1) : 0), |, zip(cbits, cvals))
+        length(cvals) == 0 ? zero(T) :
+        mapreduce(xy -> (xy[2] == 1 ? one(T) << T(xy[1] - 1) : zero(T)), |, zip(cbits, cvals))
     return b -> ismatch(b, do_mask, target)
 end
