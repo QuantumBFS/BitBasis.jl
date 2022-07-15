@@ -38,6 +38,7 @@ const BitStr{N,T} = DitStr{2,N,T}
 const BitStr64{N} = BitStr{N,Int64}
 const LongBitStr{N} = BitStr{N,BigInt}
 const BitStr{N}(x::T) where {N,T<:IntStorage} = DitStr{2,N}(x)
+const BitStr(x::Union{Vector,Tuple}) = DitStr{2}(x)
 
 # only for bitstr
 for op in [:(>>), :(<<)]

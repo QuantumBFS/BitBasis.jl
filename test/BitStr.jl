@@ -11,6 +11,7 @@ using Test, BitBasis
         Int64,
         "10101010101010101010101010101010010101010101"^10,
     )
+    @test BitStr([0, 0, 1, 1]) == bit"1100"
 end
 
 @testset "operations" begin
