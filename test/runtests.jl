@@ -32,4 +32,4 @@ end
 
 DocMeta.setdocmeta!(BitBasis, :DocTestSetup, :(using BitBasis); recursive=true)
 
-Documenter.doctest(BitBasis; manual=false, fix=true)
+Documenter.doctest(BitBasis; manual=false)
