@@ -60,3 +60,9 @@ end
 @testset "random" begin
     @test rand(BitStr64{5}) isa BitStr64{5}
 end
+
+@testset "controller" begin
+    c = controller(Int128, [2,3], [0, 1])
+    @test c(Int128(3)) == false
+    @test c(Int128(0b101)) == true
+end
