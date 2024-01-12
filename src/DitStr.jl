@@ -60,6 +60,7 @@ Base.zero(::Type{DitStr{D,N,T}}) where {D,N,T} = DitStr{D,N,T}(zero(T))
 Base.zero(::DitStr{D,N,T}) where {D,N,T} = DitStr{D,N,T}(zero(T))
 
 buffer(b::DitStr) = b.buf
+Base.hash(d::DitStr) = hash(buffer(d))
 Base.reinterpret(::Type{DitStr{D,N,T}}, x::Integer) where {D,N,T} = DitStr{D,N,T}(reinterpret(T, x))
 Base.reinterpret(::Type{T}, x::DitStr) where {T} = reinterpret(T, buffer(x))
 Base.reinterpret(::Type{DitStr{D,N,T}}, x::DitStr) where {D,N,T} = DitStr{D,N,T}(x)
@@ -106,8 +107,8 @@ Base.:(==)(a::DitStr{D,N}, b::DitStr{D,N}) where {D,N} = Base.:(==)(buffer(a), b
 
 # Note: the transitivity of == is not satisfied here.
 Base.:(==)(lhs::DitStr, rhs::DitStr) = false
-Base.isapprox(a::DitStr, b::Number; kwargs...) = Base.isapprox(buffer(a), b; kwargs...)
-Base.isapprox(a::Number, b::DitStr; kwargs...) = Base.isapprox(a, buffer(b); kwargs...)
+Base.isapprox(a::DitStr, b::Integer; kwargs...) = Base.isapprox(buffer(a), b; kwargs...)
+Base.isapprox(a::Integer, b::DitStr; kwargs...) = Base.isapprox(a, buffer(b); kwargs...)
 Base.isapprox(lhs::DitStr, rhs::DitStr; kwargs...) = false
 Base.isapprox(a::T, b::T; kwargs...) where {T<:DitStr} =
     Base.isapprox(buffer(a), buffer(b); kwargs...)
@@ -123,6 +124,8 @@ Base.to_index(x::UnitRange{<:DitStr}) = error(
 
 # NOTE: maybe this is wrong?
 Base.checkindex(::Type{Bool}, inds::AbstractUnitRange, i::DitStr) =
+    checkindex(Bool, inds, Base.to_index(i))
+Base.checkindex(::Type{Bool}, inds::Base.IdentityUnitRange, i::DitStr) =
     checkindex(Bool, inds, Base.to_index(i))
 Base.length(::DitStr{D,N,T}) where {D,N,T} = N
 Base.lastindex(dits::DitStr) = length(dits)

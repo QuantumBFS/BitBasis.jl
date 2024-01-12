@@ -1,22 +1,12 @@
 name = "BitBasis"
 uuid = "50ba71b6-fa0f-514d-ae9a-0916efc90dcf"
-version = "0.8.1"
+version = "0.9"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [compat]
+LinearAlgebra = "1"
 StaticArrays = "1"
-julia = "1"
-
-[extras]
-Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
-Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
-SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-
-[targets]
-test = ["Test", "Aqua", "Random", "SparseArrays", "LinearAlgebra", "Documenter"]
+julia = "1.6"
