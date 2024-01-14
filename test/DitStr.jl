@@ -22,4 +22,6 @@ using BitBasis, Test
     @test BitBasis.readat(dit"001;3") == 0
     @test BitBasis.readat(dit"001;3", 1, 2, 3) == 1
     @test_throws ErrorException BitBasis.parse_dit(Int64, "12341111111111111111111111111111111111111111111111111111111;5")
+
+    @test hash(x) isa UInt64
 end

@@ -90,9 +90,9 @@ function Base.getindex(it::IterControl{S}, k::Int) where {S}
     end
     return out + it.base
 end
-Base.lastindex(it) = it.n
+Base.lastindex(it::IterControl) = it.n
 
-function Base.iterate(it::IterControl{S}, state = 1) where {S}
+function Base.iterate(it::IterControl, state = 1)
     if state > length(it)
         return nothing
     else
