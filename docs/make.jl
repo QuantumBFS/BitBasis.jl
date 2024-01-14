@@ -1,4 +1,3 @@
-
 using BitBasis
 using Documenter
 using DocThemeIndigo
@@ -16,6 +15,7 @@ makedocs(
     sitename = "BitBasis.jl",
     linkcheck = !("skiplinks" in ARGS),
     pages = ["Home" => "index.md", "Tutorial" => "tutorial.md", "Manual" => "man.md"],
+    doctest=false,  # already tested in runtests.jl
 )
 
 deploydocs(repo = "github.com/QuantumBFS/BitBasis.jl.git")
