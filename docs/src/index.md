@@ -6,7 +6,7 @@ end
 
 # BitBasis
 
-Types and operations for basis represented by bits in linear algebra.
+Manipulate binary (and nary) basis in an elegant efficient way in Julia.
 
 ```@eval
 using Markdown, Dates
@@ -15,10 +15,7 @@ Markdown.parse("*Documentation built* **$(Dates.now())** *with Julia* **$(VERSIO
 
 ## Introduction
 
-The basis of linear spaces can be marked by a set of symbols, for concrete physical systems, this can be binary spins, bits, qubits, etc. They can be in general represented as binary basis, e.g `00101`, `10101`....
-
-This package provides tools for manipulating such basis in an elegant efficient way in Julia.
-
+This package provides tools for manipulating binary basis in an elegant efficient way in Julia. Binary basis are used to represent states of spins, qubits, qudits, etc. It stores the basis as an integer with little-endian ordering, e.g `5` for `00101`, `6` for `00110`, etc.
 
 ## Contents
 ```@contents

@@ -6,218 +6,160 @@ CurrentModule = BitBasis
 using BitBasis
 ```
 
-## Conventions
+## Bit strings
 
-We use ``σ`` to represent a binary digit, its subtitle usually refers to the
-position of a given binary digit inside a number (bit string).
+This package provides a [string literal](https://docs.julialang.org/en/v1/manual/strings/#non-standard-string-literals) `@bit_str` to represent bit strings.
+```@repl tutorial
+b = bit"11100"
+BitStr{5}(0b11100)  # convert from integer
+bit_literal(0, 0, 1, 1, 1)  # from bit literals
 
-In computing, bit numbering (or sometimes bit endianness) is the convention used to identify the bit positions in a binary number or a container of such a value. The bit number starts with zero and is incremented by one for each subsequent bit position. See also [Bit numbering](https://en.wikipedia.org/wiki/Bit_numbering)(**(Bit endianness)**).
+[b...]  # convert to a vector of bits
+b[2]  # indexing the 2nd bit
+b.buf  # the storage type is `Int64` by default
+typeof(b)
+bit_length(b)  # the length of bit string
+```
+The type of `b` is `DitStr{2, 5, Int64}`, which means it is a bit string with 5 bits and the storage type is `Int64`. The `buf` field is the integer representation of the bit string.
+Bit strings are represented as integers in the little-endian order, e.g. integer `28` represents the bit string `11100`.
+```@raw html
+<img src="assets/bitbasic.png" alt="11100" width="400"/>
+```
+The `bit_literal` function uses the array order to represent the bit string, which is different from the bit string literal, i.e. the leftmost bit is the least significant bit in the `bit_literal` function.
 
-There are two different representation orders of a bit string:
-
-- **Least significant bit 0 bit  numbering**
-- **Most significant bit 0 bit numbering**
-
-### [**LSB 0 bit numbering**](@id array_order)
-
-This follows the order of `BitArray` or other array representation of bits, e.g
-
-For number `0b011101` (`29`)
-
-```math
-\sigma_1=1, \sigma_2=0, \sigma_3=1, \sigma_4=1, \sigma_5=1, \sigma_6=0
+To represent bit strings with more than 64 bits, one can specify the storage type as `Int128` or `BigInt`.
+```@repl tutorial
+b = bit_literal(rand(BigInt[0, 1], 200)...)
+typeof(b)
 ```
 
-See also [LSB 0 bit numbering](https://en.wikipedia.org/wiki/Bit_numbering#LSB_0_bit_numbering)
+## Dit Strings
+A nary basis is a generalization of a binary basis by changing the base from 2 to n.
+. A dit string is a nary basis with a given base. The `@dit_str` string literal is used to represent dit strings.
+For example, to represent a dit string with base 3, one can use the following code.
+```@repl tutorial
+d = dit"12210;3"
+typeof(d)
+```
+The operations on dit strings are similar to those on bit strings.
 
-### [**MSB 0 bit numbering**](@id literal_order)
-
-This follows the order of binary literal `0bxxxx`, e.g
-
-For number `0b011101` (`29`)
-
-```math
-\sigma_1=0, \sigma_2=1, \sigma_3=1, \sigma_4=1, \sigma_5=0, \sigma_6=1
+## Concatenation and Repetition
+To concatenate and repeat bit strings, one can use `join` and `repeat` functions.
+```@repl tutorial
+join([bit"101" for i in 1:10]...)  # concatenate bit strings
+repeat(bit"101", 2)  # repeat bit string
 ```
 
-See also [MSB 0 bit numbering](https://en.wikipedia.org/wiki/Bit_numbering#MSB_0_bit_numbering).
-
-## Integer Representations
-
-We use an `Int` type to store bit-wise (spin) configurations, e.g. `0b011101` (`29`) represents the configuration
-
-```math
-\sigma_1=1, \sigma_2=0, \sigma_3=1, \sigma_4=1, \sigma_5=1, \sigma_6=0
+## Readout
+To readout bits, one can use [`readbit`](@ref) and [`baddrs`](@ref) functions.
+```@raw html
+<img src="assets/11100.png" alt="11100" width="400"/>
 ```
-
-so we annotate the configurations ``\vec σ`` with integer $b$ by ``b = \sum\limits_i 2^{i-1}σ_i``.
-![11100](assets/bitbasic.png)
-e.g. we can use a number `28` to represent bit configuration `0b11100`
 
 ```@repl tutorial
-bdistance(0b11100, 0b10101) == 2  # Hamming distance
-bit_length(0b11100) == 5
+readbit(bit"11100", 2, 3)  # read the 2nd and 3rd bits as `x₃x₂`
+baddrs(bit"11100")  # locations of one bits
 ```
 
-In `BitBasis`, we also provide a more readable way to define these kind of objects, which is called [the bit string literal](@ref bit_literal), most of the integer operations and `BitBasis` functions are overloaded for [the bit string literal](@ref bit_literal).
-
-We can switch between binary and digital representations with
-* `bitarray(integers, nbits)`, transform integers to bistrings of type `BitArray`.
-* `packabits(bitstring)`, transform bitstrings to integers.
-* `baddrs(integer)`, get the locations of nonzero qubits.
-
-```@repl tutorial
-bitarray(4, 5)
-bitarray([4, 5, 6], 5)
-packbits([1, 1, 0])
-bitarray([4, 5, 6], 5) |> packbits;
-```
-
-A curried version of the above function is also provided. See also [`bitarray`](@ref).
-
-## [Bit String Literal](@id bit_literal)
-bit strings are literals for bits, it provides better view on binary basis.
-you could use [`@bit_str`](@ref), which looks like the following
-
-```@repl tutorial
-bit"101" * 2
-join([bit"101" for i in 1:10]...)
-repeat(bit"101", 2)
-bit"1101"[2]
-```
-
-to define a bit string with length. `bit"10101"` is equivalent to `0b10101` on both performance and functionality but it store the length of given bits statically.
-The bit string literal offers a more readable syntax for these kind of objects.
-
-Besides bit literal, you can convert a string or an integer to bit literal by [`BitStr`](@ref), e.g
-
-```@repl tutorial
-BitStr{5}(0b00101)
-```
-
-## Bit Manipulations
-#### [`readbit`](@ref) and [`baddrs`](@ref)
-![11100](assets/11100.png)
-
-```@repl tutorial
-readbit(0b11100, 2, 3) == 0b10  # read the 2nd and 3rd bits as `x₃x₂`
-baddrs(0b11100) == [3,4,5]  # locations of one bits
-```
-
-#### [`bmask`](@ref)
-Masking technic provides faster binary operations, to generate a mask with specific position masked, e.g. we want to mask qubits `1, 3, 4`
-
-```@repl tutorial
-mask = bmask(UInt8, 1,3,4)
-BitStr{4}(mask)
-```
-
-#### [`allone`](@ref) and [`anyone`](@ref)
-with this mask (masked positions are colored light blue), we have
-![1011_1101](assets/1011_1101.png)
-
-```@repl tutorial
-allone(0b1011, mask) == false # true if all masked positions are 1
-anyone(0b1011, mask) == true # true if any masked positions is 1
-```
-
-#### [`ismatch`](@ref)
-![ismatch](assets/ismatch.png)
-
-```@repl tutorial
-ismatch(0b1011, mask, 0b1001) == true  # true if masked part matches `0b1001`
-```
-
-
-#### [`flip`](@ref)
-![1011_1101](assets/flip.png)
-
-```@repl tutorial
-BitStr{4}(flip(0b1011, mask))  # flip masked positions
-```
-
-#### [`setbit`](@ref)
-![setbit](assets/setbit.png)
-
-```@repl tutorial
-setbit(0b1011, 0b1100) == 0b1111 # set masked positions 1
-```
-
-#### [`swapbits`](@ref)
-![swapbits](assets/swapbits.png)
-
-```@repl tutorial
-swapbits(0b1011, 0b1100) == 0b0111  # swap masked positions
-```
-
-#### [`neg`](@ref)
-
-```@repl tutorial
-neg(0b1011, 2) == 0b1000
-```
-
-#### [`btruncate`](@ref) and [`breflect`](@ref)
-![btruncate](assets/btruncate.png)
-
-```@repl tutorial
-btruncate(0b1011, 2) == 0b0011  # only the first two qubits are retained
-```
-
-#### [`breflect`](@ref)
-![breflect](assets/breflect.png)
-
-```@repl tutorial
-breflect(4, 0b1011) == 0b1101  # reflect little end and big end
-```
-
-
-For more detailed bitwise operations, see manual page [BitBasis](@ref BitBasis).
-
-## Number Readouts
-In phase estimation and HHL algorithms, one need to read out qubits as integer or float point numbers.
-A register can be read out in different ways, like
+A bit string can be read out as numbers in the following ways:
 * [`bint`](@ref), the integer itself
 * [`bint_r`](@ref), the integer with bits small-big end reflected.
 * [`bfloat`](@ref), the float point number ``0.σ₁σ₂ \cdots σ_n``.
 * [`bfloat_r`](@ref), the float point number ``0.σ_n \cdots σ₂σ₁``.
+These functions are useful in quantum computing algorithms such as phase estimation and HHL.
 
-![010101](assets/010101.png)
-
-
-```@repl tutorial
-bint(0b010101)
-bint_r(0b010101, nbits=6)
-bfloat(0b010101)
-bfloat_r(0b010101, nbits=6);
+```@raw html
+<img src = "assets/010101.png" alt="010101" width="400"/>
 ```
 
-Notice the functions with `_r` as postfix always require `nbits` as an additional input parameter to help reading, which is regarded as less natural way of expressing numbers.
-
-## Iterating over Bases
-Counting from `0` is very natural way of iterating quantum registers, very pity for `Julia`
-
 
 ```@repl tutorial
-itr = basis(4)
+bint(bit"010101")
+bint_r(bit"010101")
+bfloat(bit"010101")
+bfloat_r(bit"010101")
+```
+
+
+## Modification
+To flip all bits, one can use the [`neg`](@ref) function.
+```@repl tutorial
+neg(bit"1011")  # flip all bits
+```
+
+To truncate bits, one can use the [`btruncate`](@ref) function.
+```@repl tutorial
+btruncate(bit"1011", 2)  # only keep the first 2 qubits
+```
+
+To change the order of bits, one can use [`breflect`](@ref) function.
+```@raw html
+<img src="assets/breflect.png" alt="1011_1101" width="200"/>
+```
+
+```@repl tutorial
+breflect(bit"1011")  # reflect little end and big end
+```
+
+## Masked Operations
+One can use [`bmask`](@ref) to generate a mask for bit strings, and then use the mask to perform operations like [`allone`](@ref), [`anyone`](@ref), [`ismatch`](@ref), [`flip`](@ref), [`setbit`](@ref), [`swapbits`](@ref), etc.
+
+```@repl tutorial
+mask = bmask(BitStr{4, Int}, 1,3,4)  # mask bits 1, 3, 4
+```
+By coloring the masked positions in light blue, we have
+```@raw html
+<img src="assets/1011_1101.png" alt="1011_1101" width="400"/>
+```
+
+```@repl tutorial
+allone(bit"1011", mask)  # true if all masked positions are 1
+anyone(bit"1011", mask)  # true if any masked positions is 1
+ismatch(bit"1011", mask, bit"1001")  # true if masked part matches `1001`
+flip(bit"1011", mask)  # flip masked positions: 1, 3, 4
+setbit(bit"1011", bit"1100") # set masked positions to 1
+swapbits(bit"1011", bit"1100")  # swap masked positions
+```
+
+## Hamming Distance
+
+One can calculate the Hamming distance between two bit strings by [`bdistance`](@ref) function.
+```@repl tutorial
+bdistance(bit"11100", bit"10101")  # Hamming distance
+```
+
+## Hilbert Space
+
+The [`basis`](@ref) function is used to iterate over the basis of a given number of bits.
+
+```@repl tutorial
+itr = basis(BitStr{4, Int})
 collect(itr)
 ```
 
-
-[`itercontrol`](@ref) is a complicated API, but it plays an fundamental role in high performance quantum simulation of `Yao`. It is used for iterating over basis in controlled way, its interface looks like
-
+Iterating over basis in a controlled way plays an important role in quantum simulation. The [`itercontrol`](@ref) function is used to iterate over basis in a controlled way.
+For example, if we want to iterate over the basis of 7 qubits, and we only want to iterate over the basis with the 1st, 3rd, 4th, and 7th qubits being 1, 0, 1, and 0, respectively, we can use the following code.
 ```@repl tutorial
 for each in itercontrol(7, [1, 3, 4, 7], (1, 0, 1, 0))
     println(string(each, base=2, pad=7))
 end
 ```
 
-## Reordering Basis
-We store the wave function as $v[b+1] := \langle b|\psi\rangle$.
-We are able to reorder the basis as
-
 
 ```@repl tutorial
-v = onehot(5, 0b11100)  # the one hot vector representation of given bits
-reorder(v, (3,2,1,5,4)) ≈ onehot(5, 0b11001)
-invorder(v) ≈ onehot(5, 0b00111)  # breflect for each basis
+v = onehot(bit"11100")  # the one hot vector representation of given bits
+reorder(v, (3,2,1,5,4)) ≈ onehot(bit"11001")  # change the order of bits
+invorder(v) ≈ onehot(bit"00111")  # change the order of bits
+```
+
+## BitArray Utilities
+Utilities are provided to cast between integers and the `BitArray` type in Julia standard library.
+* `bitarray(integers, nbits)`, transform integers to `BitArray`.
+* `packabits(bitstring)`, transform `BitArray` to integers.
+
+```@repl tutorial
+barr = bitarray(28, 5)
+packbits(barr)
+barr_mult = bitarray([4, 5, 6], 5)
+packbits(barr_mult)
 ```
