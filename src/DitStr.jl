@@ -1,4 +1,4 @@
-const UIntStorage = Union{UInt8,UInt16,UInt32,UInt64,UInt128}
+const UIntStorage = Union{UInt8,UInt16,UInt32,UInt64,UInt128,LongLongUInt}
 const IntStorage = Union{Int8,Int16,Int32,Int64,Int128,BigInt,UIntStorage}
 
 ########## DitStr #########
@@ -49,11 +49,11 @@ DitStr{D,N,T}(val::DitStr) where {D,N,T<:Integer} = convert(DitStr{D,N,T}, val)
 DitStr{D,N,T}(val::DitStr{D,N,T}) where {D,N,T<:Integer} = val
 
 const DitStr64{D,N} = DitStr{D,N,Int64}
-const LongDitStr{D,N} = DitStr{D,N,BigInt}
+const LongDitStr{D,N} = DitStr{D,N,LongLongUInt{N, C}} where C
 
 Base.show(io::IO, ditstr::DitStr{D,N,<:Integer}) where {D,N} =
     print(io, string(buffer(ditstr), base = D, pad = N), " ₍$('₀'+D)₎")
-Base.show(io::IO, ditstr::DitStr{D,N,<:BigInt}) where {D,N} =
+Base.show(io::IO, ditstr::DitStr{D,N,<:LongLongUInt{N}}) where {D,N} =
     print(io, join(map(string, [ditstr[end:-1:1]...])), " ₍$('₀'+D)₎")
 
 Base.zero(::Type{DitStr{D,N,T}}) where {D,N,T} = DitStr{D,N,T}(zero(T))
@@ -295,20 +295,35 @@ function parse_dit(::Type{T}, str::String) where {T<:Integer}
 end
 
 function _parse_dit(::Val{D}, ::Type{T}, str::AbstractString) where {D, T<:Integer}
+    TT = if T <: LongLongUInt
+        N = ceil(Int, count(isdigit, str) * log2(D))
+        C = (N-1) ÷ bsizeof(UInt) + 1
+        LongLongUInt{N, C}
+    else
+        T
+    end
+    _parse_dit_safe(Val(D), TT, str)
+end
+
+function _parse_dit_safe(::Val{D}, ::Type{T}, str::AbstractString) where {D, T<:Integer}
     val = zero(T)
-    k = 1
-    maxk = T <: BigInt ? Inf : log(typemax(T))/log(D)
+    k = 0
+    maxk = max_num_elements(T, D)
     for each in reverse(str)
-        k >= maxk && error("string length is larger than $(maxk), use @ldit_str instead")
+        k >= maxk-1 && error("string length is larger than $(maxk), use @ldit_str instead")
         v = each - '0'
         if 0 <= v < D
-            val += _lshift(Val(D), v, k-1)
+            val += _lshift(Val(D), T(v), k)
             k += 1
         elseif each == '_'
             continue
         else
-            error("expect char in range 0-$(D-1), got $each at $k-th dit")
+            error("expect char in range 0-$(D-1), got $each at $(k+1)-th dit")
         end
     end
-    return DitStr{D,k-1,T}(val)
+    return DitStr{D,k,T}(val)
 end
+
+max_num_elements(::Type{T}, D::Int) where T<:Integer = floor(Int, log(typemax(T))/log(D))
+max_num_elements(::Type{BigInt}, D::Int) = typemax(Int)
+max_num_elements(::Type{LongLongUInt{N, C}}, D::Int) where {N, C} = floor(Int, N / log2(D))+1

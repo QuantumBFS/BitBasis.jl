@@ -6,7 +6,8 @@ using Test, BitBasis
     @test bit"10_100_11" == bit"1010011"
     @test bit"10_100_11" != bit"01010011"
     @test bit"1011" === bit_literal(Int64.((1, 1, 0, 1))...)
-    @test BitBasis._parse_dit(Val(2), BigInt, "10101010101010101010101010101010010101010101"^10) isa LongBitStr
+    @test BitBasis._parse_dit(Val(2), BigInt, "10101010101010101010101010101010010101010101"^10) isa BitStr
+    @test BitBasis._parse_dit(Val(2), LongLongUInt, "10101010101010101010101010101010010101010101"^10) isa LongBitStr
     @test_throws ErrorException BitBasis._parse_dit(Val(2),
         Int64,
         "10101010101010101010101010101010010101010101"^10,
@@ -44,7 +45,7 @@ end
         @test res == 2
         @test typeof(res) == T
 
-        @test convert(BitStr{2,BigInt}, convert(T, bit"10")) == lbit"10"
+        @test convert(BitStr{2,LongLongUInt{2, 1}}, convert(T, bit"10")) == lbit"10"
         @test convert(BitStr{2,Int64}, convert(T, bit"10")) === bit"10"
     end
 end
