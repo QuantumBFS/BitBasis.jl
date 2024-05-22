@@ -5,8 +5,10 @@ export onehot, buffer
 export bitarray, basis, packbits, bfloat, bfloat_r, bint, bint_r, flip
 export anyone, allone, bmask, baddrs, readbit, setbit, controller
 export swapbits, ismatch, neg, breflect, btruncate
+export LongLongUInt
 
 include("utils.jl")
+include("longlonguint.jl")
 include("DitStr.jl")
 include("BitStr.jl")
 include("bit_operations.jl")
