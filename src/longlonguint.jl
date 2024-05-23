@@ -19,10 +19,10 @@ bsizeof(::LongLongUInt{C}) where C = bsizeof(UInt64) * C
 nint(::LongLongUInt{C}) where {C} = C
 Base.Int(x::LongLongUInt{1}) = Int(x.content[1])
 Base.UInt(x::LongLongUInt{1}) = x.content[1]
-Base.zero(::Type{LongLongUInt{C}}) where {C} = LongLongUInt{C}(ntuple(_->UInt(0), C))
+Base.zero(::Type{LongLongUInt{C}}) where {C} = LongLongUInt{C}(ntuple(_->UInt(0), Val{C}()))
 Base.zero(::LongLongUInt{C}) where {C} = zero(LongLongUInt{C})
 # convert from integers
-LongLongUInt{C}(x::T) where {C, T<:Integer} = LongLongUInt{C}(ntuple(i->i==1 ? UInt(x) : zero(UInt), C))
+LongLongUInt{C}(x::T) where {C, T<:Integer} = LongLongUInt{C}(ntuple(i->i==1 ? UInt(x) : zero(UInt), Val{C}()))
 Base.promote_type(::Type{LongLongUInt{C}}, ::Type{Int}) where {C} = LongLongUInt{C}
 Base.promote_type(::Type{LongLongUInt{C}}, ::Type{UInt}) where {C} = LongLongUInt{C}
 function Base.mod(x::LongLongUInt{C}, D::Int) where {C}
@@ -33,7 +33,7 @@ function Base.:(>>)(x::LongLongUInt{C}, y::Int) where {C}
     y < 0 && return x << -y
     nshift = y ÷ bsizeof(UInt)
     nshift_inner = y % bsizeof(UInt)
-    LongLongUInt(ntuple(C) do k
+    LongLongUInt(ntuple(Val{C}()) do k
             right = k<=nshift ? zero(UInt) : x.content[k-nshift]
             left = k<=(nshift+1) ? zero(UInt) : x.content[k-nshift-1]
             (right >> nshift_inner) | (left << (bsizeof(UInt) - nshift_inner))
@@ -44,7 +44,7 @@ function Base.:(<<)(x::LongLongUInt{C}, y::Int) where C
     y < 0 && return x >> -y
     nshift = y ÷ bsizeof(UInt)
     nshift_inner = y % bsizeof(UInt)
-    LongLongUInt(ntuple(C) do k
+    LongLongUInt(ntuple(Val{C}()) do k
             left = k>C-nshift ? zero(UInt) : x.content[k+nshift]
             right = k>C-nshift-1 ? zero(UInt) : x.content[k+nshift+1]
             (left << nshift_inner) | (right >> (bsizeof(UInt) - nshift_inner))
@@ -53,7 +53,7 @@ function Base.:(<<)(x::LongLongUInt{C}, y::Int) where C
 end
 function indicator(::Type{LongLongUInt{C}}, i::Int) where C
     k = (i-1) ÷ bsizeof(UInt)
-    LongLongUInt{C}(ntuple(j->j==C-k ? indicator(UInt, i-k*bsizeof(UInt)) : zero(UInt), C))
+    LongLongUInt{C}(ntuple(j->j==C-k ? indicator(UInt, i-k*bsizeof(UInt)) : zero(UInt), Val{C}()))
 end
 for OP in [:&, :|, :xor]
     @eval Base.$OP(x::LongLongUInt{C}, y::LongLongUInt{C}) where {C} = LongLongUInt{C}($OP.(x.content, y.content))
