@@ -45,7 +45,7 @@ end
         @test res == 2
         @test typeof(res) == T
 
-        @test convert(BitStr{2,LongLongUInt{2, 1}}, convert(T, bit"10")) == lbit"10"
+        @test convert(BitStr{2,LongLongUInt{1}}, convert(T, bit"10")) == lbit"10"
         @test convert(BitStr{2,Int64}, convert(T, bit"10")) === bit"10"
     end
 end

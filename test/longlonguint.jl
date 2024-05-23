@@ -30,3 +30,18 @@ using Test, BitBasis
     BitBasis.max_num_elements(UInt, 2) == 64
     BitBasis.max_num_elements(Int, 2) == 63
 end
+
+@testset "shift" begin
+    x = LongLongUInt((3, 6))
+    @test x << 0 == LongLongUInt((3, 6))
+    @test x << 64 == LongLongUInt((6, 0))
+    @test x << 65 == LongLongUInt((6<<1, 0))
+    @test x >> 64 == LongLongUInt((0, 3))
+    @test x >> 65 == LongLongUInt((0, 1))
+    @test x << -65 == LongLongUInt((0, 1))
+    @test x >> -65 == LongLongUInt((6<<1, 0))
+
+    x = LongLongUInt((3, 6, 7))
+    @test x >> 66 == LongLongUInt((UInt(0), UInt(0), UInt(3) << 62 + UInt(1)))
+    @test x << 63 == LongLongUInt((UInt(1) << 63 + UInt(6) >> 1, UInt(7) >> 1, UInt(1)<<63))
+end
