@@ -37,12 +37,15 @@ function DitStr{D,T}(vector::Union{AbstractVector,Tuple}) where {D,T}
     val = zero(T)
     D_power_k = one(T)
     for k in 1:length(vector)
-        0 <= vector[k] <= D-1 || error("expect 0 or 1, got $(vector[k])")
-        val += vector[k] * D_power_k
-        D_power_k *= D
+        0 <= vector[k] <= D-1 || error("expect 0-$(D-1), got $(vector[k])")
+        val = accum(Val{D}(), val, vector[k], D_power_k)
+        D_power_k = _lshift(Val{D}(), D_power_k, 1)
     end
     return DitStr{D,length(vector),T}(val)
 end
+# val += x * y
+accum(::Val{D}, val, x, y) where D = val + x * y
+accum(::Val{2}, val, x, y) = iszero(x) ? val : val ⊻ y
 DitStr{D}(vector::Tuple{T,Vararg{T,N}}) where {N,T,D} = DitStr{D,T}(vector)
 DitStr{D}(vector::AbstractVector{T}) where {D,T} = DitStr{D,T}(vector)
 DitStr{D,N,T}(val::DitStr) where {D,N,T<:Integer} = convert(DitStr{D,N,T}, val)
@@ -50,6 +53,7 @@ DitStr{D,N,T}(val::DitStr{D,N,T}) where {D,N,T<:Integer} = val
 
 const DitStr64{D,N} = DitStr{D,N,Int64}
 const LongDitStr{D,N} = DitStr{D,N,LongLongUInt{C}} where C
+LongDitStr{D}(vector::AbstractVector{T}) where {D,T} = DitStr{D,longinttype(length(vector), D)}(vector)
 
 Base.show(io::IO, ditstr::DitStr{D,N,<:Integer}) where {D,N} =
     print(io, string(buffer(ditstr), base = D, pad = N), " ₍$('₀'+D)₎")
@@ -295,13 +299,7 @@ function parse_dit(::Type{T}, str::String) where {T<:Integer}
 end
 
 function _parse_dit(::Val{D}, ::Type{T}, str::AbstractString) where {D, T<:Integer}
-    TT = if T <: LongLongUInt
-        N = ceil(Int, count(isdigit, str) * log2(D))
-        C = (N-1) ÷ bsizeof(UInt) + 1
-        LongLongUInt{C}
-    else
-        T
-    end
+    TT = T <: LongLongUInt ? longinttype(count(isdigit, str), D) : T
     _parse_dit_safe(Val(D), TT, str)
 end
 

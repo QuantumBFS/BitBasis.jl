@@ -38,11 +38,18 @@ _packbits(arr) =
     selectdim(sum(mapslices(x -> x .* (1 .<< (0:size(arr, 1)-1)), arr, dims = 1), dims = 1), 1, 1)
 
 """
+    indicator(::Type{T}, k) -> T
+
+Return an integer with `k`-th bit set to 1.
+"""
+indicator(::Type{T}, k::Int) where T<:Integer = one(T) << (k-1)
+
+"""
     btruncate(b, n)
 
 Truncate bits `b` to given length `n`.
 """
-btruncate(b::Integer, n) = b & (1 << n - 1)
+btruncate(b::T, n) where T<:Integer = b & (one(T) << n - 1)
 
 """
     bfloat(b::Integer; nbits::Int=bit_length(b)) -> Float64
@@ -93,7 +100,7 @@ bmask(args...) = bmask(Int, args...)
 bmask(::Type{T}) where {T<:Integer} = zero(T)
 bmask(::Type{T}, positions::Int...) where {T<:Integer} = bmask(T, positions)
 bmask(::Type{T}, itr) where {T<:Integer} =
-    isempty(itr) ? 0 : reduce(+, one(T) << (b - 1) for b in itr)
+    isempty(itr) ? 0 : reduce(+, indicator(T, b) for b in itr)
 
 @inline function bmask(::Type{T}, range::UnitRange{Int})::T where {T<:Integer}
     ((one(T) << (range.stop - range.start + 1)) - one(T)) << (range.start - 1)
@@ -318,6 +325,6 @@ function controller(::Type{T}, cbits::IntIterator, cvals::IntIterator) where T
     do_mask = bmask(T, cbits...)
     target =
         length(cvals) == 0 ? zero(T) :
-        mapreduce(xy -> (xy[2] == 1 ? one(T) << T(xy[1] - 1) : zero(T)), |, zip(cbits, cvals))
+        mapreduce(xy -> (xy[2] == 1 ? indicator(T, xy[1]) : zero(T)), |, zip(cbits, cvals))
     return b -> ismatch(b, do_mask, target)
 end

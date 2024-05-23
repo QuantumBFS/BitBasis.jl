@@ -45,3 +45,21 @@ end
     @test x >> 66 == LongLongUInt((UInt(0), UInt(0), UInt(3) << 62 + UInt(1)))
     @test x << 63 == LongLongUInt((UInt(1) << 63 + UInt(6) >> 1, UInt(7) >> 1, UInt(1)<<63))
 end
+
+@testset "longinttype" begin
+    @test BitBasis.longinttype(1, 2) == LongLongUInt{1}
+    @test BitBasis.longinttype(64, 2) == LongLongUInt{1}
+    @test BitBasis.longinttype(65, 2) == LongLongUInt{2}
+end
+
+@testset "hash" begin
+    @test hash(LongLongUInt((3, 6))) == hash(LongLongUInt((3, 6)))
+    @test hash(LongLongUInt((3, 6))) != hash(LongLongUInt((6, 3)))
+end
+
+@testset "indicator" begin
+    @test indicator(LongLongUInt{1}, 1) == LongLongUInt((1,))
+    @test indicator(LongLongUInt{1}, 64) == LongLongUInt((UInt(1)<<63,))
+    @test indicator(LongLongUInt{2}, 64) == LongLongUInt((zero(UInt), UInt(1)<<63))
+    @test indicator(LongLongUInt{2}, 65) == LongLongUInt((1, 0))
+end

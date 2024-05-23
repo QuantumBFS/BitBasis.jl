@@ -176,3 +176,10 @@ end
     @test bfloat_r(x) === 14 / 2^6
     @test btruncate(x, 3) === bit"000110"
 end
+
+@testset "LongDitStr" begin
+    x = LongBitStr(rand(0:1, 64 * 3))
+    @test bsizeof(x.buf) == 64 * 3
+    x = LongBitStr(rand(0:1, 64 * 3+1))
+    @test bsizeof(x.buf) == 64 * 4
+end

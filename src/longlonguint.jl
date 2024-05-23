@@ -51,6 +51,10 @@ function Base.:(<<)(x::LongLongUInt{C}, y::Int) where C
         end
     )
 end
+function indicator(::Type{LongLongUInt{C}}, i::Int) where C
+    k = (i-1) ÷ bsizeof(UInt)
+    LongLongUInt{C}(ntuple(j->j==C-k ? indicator(UInt, i-k*bsizeof(UInt)) : zero(UInt), C))
+end
 for OP in [:&, :|, :xor]
     @eval Base.$OP(x::LongLongUInt{C}, y::LongLongUInt{C}) where {C} = LongLongUInt{C}($OP.(x.content, y.content))
 end
@@ -72,3 +76,10 @@ function _sadd(x::NTuple{C,UInt}, y::NTuple{C,UInt}, c::Bool) where {C}
     end
 end
 Base.count_ones(x::LongLongUInt) = sum(count_ones, x.content)
+
+function longinttype(n::Int, D::Int)
+    N = ceil(Int, n * log2(D))
+    C = (N-1) ÷ bsizeof(UInt) + 1
+    return LongLongUInt{C}
+end
+Base.hash(x::LongLongUInt) = hash(x.content)
