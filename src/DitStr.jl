@@ -49,11 +49,11 @@ DitStr{D,N,T}(val::DitStr) where {D,N,T<:Integer} = convert(DitStr{D,N,T}, val)
 DitStr{D,N,T}(val::DitStr{D,N,T}) where {D,N,T<:Integer} = val
 
 const DitStr64{D,N} = DitStr{D,N,Int64}
-const LongDitStr{D,N} = DitStr{D,N,LongLongUInt{N, C}} where C
+const LongDitStr{D,N} = DitStr{D,N,LongLongUInt{C}} where C
 
 Base.show(io::IO, ditstr::DitStr{D,N,<:Integer}) where {D,N} =
     print(io, string(buffer(ditstr), base = D, pad = N), " ₍$('₀'+D)₎")
-Base.show(io::IO, ditstr::DitStr{D,N,<:LongLongUInt{N}}) where {D,N} =
+Base.show(io::IO, ditstr::DitStr{D,N,<:LongLongUInt}) where {D,N} =
     print(io, join(map(string, [ditstr[end:-1:1]...])), " ₍$('₀'+D)₎")
 
 Base.zero(::Type{DitStr{D,N,T}}) where {D,N,T} = DitStr{D,N,T}(zero(T))
@@ -298,7 +298,7 @@ function _parse_dit(::Val{D}, ::Type{T}, str::AbstractString) where {D, T<:Integ
     TT = if T <: LongLongUInt
         N = ceil(Int, count(isdigit, str) * log2(D))
         C = (N-1) ÷ bsizeof(UInt) + 1
-        LongLongUInt{N, C}
+        LongLongUInt{C}
     else
         T
     end
@@ -326,4 +326,4 @@ end
 
 max_num_elements(::Type{T}, D::Int) where T<:Integer = floor(Int, log(typemax(T))/log(D))
 max_num_elements(::Type{BigInt}, D::Int) = typemax(Int)
-max_num_elements(::Type{LongLongUInt{N, C}}, D::Int) where {N, C} = floor(Int, N / log2(D))+1
+max_num_elements(::Type{LongLongUInt{C}}, D::Int) where {C} = max_num_elements(UInt, D) * C

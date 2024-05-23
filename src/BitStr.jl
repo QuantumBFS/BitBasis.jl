@@ -36,7 +36,7 @@ julia> bit"1101"[2]
 """
 const BitStr{N,T} = DitStr{2,N,T}
 const BitStr64{N} = BitStr{N,Int64}
-const LongBitStr{N} = BitStr{N,LongLongUInt{N, C}} where C
+const LongBitStr{N} = BitStr{N,LongLongUInt{C}} where C
 const BitStr{N}(x::T) where {N,T<:IntStorage} = DitStr{2,N}(x)
 const BitStr(x::Union{Vector,Tuple}) = DitStr{2}(x)
 
