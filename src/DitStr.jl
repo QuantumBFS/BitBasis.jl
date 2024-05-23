@@ -1,4 +1,4 @@
-const UIntStorage = Union{UInt8,UInt16,UInt32,UInt64,UInt128}
+const UIntStorage = Union{UInt8,UInt16,UInt32,UInt64,UInt128,LongLongUInt}
 const IntStorage = Union{Int8,Int16,Int32,Int64,Int128,BigInt,UIntStorage}
 
 ########## DitStr #########
@@ -37,23 +37,27 @@ function DitStr{D,T}(vector::Union{AbstractVector,Tuple}) where {D,T}
     val = zero(T)
     D_power_k = one(T)
     for k in 1:length(vector)
-        0 <= vector[k] <= D-1 || error("expect 0 or 1, got $(vector[k])")
-        val += vector[k] * D_power_k
-        D_power_k *= D
+        0 <= vector[k] <= D-1 || error("expect 0-$(D-1), got $(vector[k])")
+        val = accum(Val{D}(), val, vector[k], D_power_k)
+        D_power_k = _lshift(Val{D}(), D_power_k, 1)
     end
     return DitStr{D,length(vector),T}(val)
 end
+# val += x * y
+accum(::Val{D}, val, x, y) where D = val + x * y
+accum(::Val{2}, val, x, y) = iszero(x) ? val : val ⊻ y
 DitStr{D}(vector::Tuple{T,Vararg{T,N}}) where {N,T,D} = DitStr{D,T}(vector)
 DitStr{D}(vector::AbstractVector{T}) where {D,T} = DitStr{D,T}(vector)
 DitStr{D,N,T}(val::DitStr) where {D,N,T<:Integer} = convert(DitStr{D,N,T}, val)
 DitStr{D,N,T}(val::DitStr{D,N,T}) where {D,N,T<:Integer} = val
 
 const DitStr64{D,N} = DitStr{D,N,Int64}
-const LongDitStr{D,N} = DitStr{D,N,BigInt}
+const LongDitStr{D,N} = DitStr{D,N,LongLongUInt{C}} where C
+LongDitStr{D}(vector::AbstractVector{T}) where {D,T} = DitStr{D,longinttype(length(vector), D)}(vector)
 
 Base.show(io::IO, ditstr::DitStr{D,N,<:Integer}) where {D,N} =
     print(io, string(buffer(ditstr), base = D, pad = N), " ₍$('₀'+D)₎")
-Base.show(io::IO, ditstr::DitStr{D,N,<:BigInt}) where {D,N} =
+Base.show(io::IO, ditstr::DitStr{D,N,<:LongLongUInt}) where {D,N} =
     print(io, join(map(string, [ditstr[end:-1:1]...])), " ₍$('₀'+D)₎")
 
 Base.zero(::Type{DitStr{D,N,T}}) where {D,N,T} = DitStr{D,N,T}(zero(T))
@@ -295,20 +299,29 @@ function parse_dit(::Type{T}, str::String) where {T<:Integer}
 end
 
 function _parse_dit(::Val{D}, ::Type{T}, str::AbstractString) where {D, T<:Integer}
+    TT = T <: LongLongUInt ? longinttype(count(isdigit, str), D) : T
+    _parse_dit_safe(Val(D), TT, str)
+end
+
+function _parse_dit_safe(::Val{D}, ::Type{T}, str::AbstractString) where {D, T<:Integer}
     val = zero(T)
-    k = 1
-    maxk = T <: BigInt ? Inf : log(typemax(T))/log(D)
+    k = 0
+    maxk = max_num_elements(T, D)
     for each in reverse(str)
-        k >= maxk && error("string length is larger than $(maxk), use @ldit_str instead")
+        k >= maxk-1 && error("string length is larger than $(maxk), use @ldit_str instead")
         v = each - '0'
         if 0 <= v < D
-            val += _lshift(Val(D), v, k-1)
+            val += _lshift(Val(D), T(v), k)
             k += 1
         elseif each == '_'
             continue
         else
-            error("expect char in range 0-$(D-1), got $each at $k-th dit")
+            error("expect char in range 0-$(D-1), got $each at $(k+1)-th dit")
         end
     end
-    return DitStr{D,k-1,T}(val)
+    return DitStr{D,k,T}(val)
 end
+
+max_num_elements(::Type{T}, D::Int) where T<:Integer = floor(Int, log(typemax(T))/log(D))
+max_num_elements(::Type{BigInt}, D::Int) = typemax(Int)
+max_num_elements(::Type{LongLongUInt{C}}, D::Int) where {C} = max_num_elements(UInt, D) * C

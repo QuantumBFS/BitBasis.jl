@@ -30,5 +30,9 @@ end
     include("iterate_control.jl")
 end
 
+@testset "longlonguint" begin
+    include("longlonguint.jl")
+end
+
 DocMeta.setdocmeta!(BitBasis, :DocTestSetup, :(using BitBasis); recursive=true)
 Documenter.doctest(BitBasis; manual=false)
