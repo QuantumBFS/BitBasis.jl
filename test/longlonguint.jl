@@ -14,6 +14,7 @@ using Test, BitBasis
     @test ~x == LongLongUInt((~UInt(3), ~UInt(6)))
 
     y = LongLongUInt((5, 7))
+    @test one(y) == LongLongUInt((0, 1))
     @test x & y == LongLongUInt((1, 6))
     @test x | y == LongLongUInt((7, 7))
     @test x ⊻ y == LongLongUInt((6, 1))
@@ -62,4 +63,18 @@ end
     @test indicator(LongLongUInt{1}, 64) == LongLongUInt((UInt(1)<<63,))
     @test indicator(LongLongUInt{2}, 64) == LongLongUInt((zero(UInt), UInt(1)<<63))
     @test indicator(LongLongUInt{2}, 65) == LongLongUInt((1, 0))
+end
+
+@testset "takebit" begin
+    x = LongLongUInt((3, 6))
+    @test readbit(x, 1) == 0
+    @test readbit(x, 2) == 1
+    @test readbit(x, 3) == 1
+    @test readbit(x, 4) == 0
+
+    @test readbit(x, 64) == 0
+    @test readbit(x, 65) == 1
+    @test readbit(x, 66) == 1
+    @test readbit(x, 67) == 0
+    @test readbit(BitStr{78}(x), 66) == 1
 end

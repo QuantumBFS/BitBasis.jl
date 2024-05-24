@@ -22,7 +22,7 @@ Base.UInt(x::LongLongUInt{1}) = x.content[1]
 Base.zero(::Type{LongLongUInt{C}}) where {C} = LongLongUInt{C}(ntuple(_->UInt(0), Val{C}()))
 Base.zero(::LongLongUInt{C}) where {C} = zero(LongLongUInt{C})
 # convert from integers
-LongLongUInt{C}(x::T) where {C, T<:Integer} = LongLongUInt{C}(ntuple(i->i==1 ? UInt(x) : zero(UInt), Val{C}()))
+LongLongUInt{C}(x::T) where {C, T<:Integer} = LongLongUInt{C}(ntuple(i->i==C ? UInt(x) : zero(UInt), Val{C}()))
 Base.promote_type(::Type{LongLongUInt{C}}, ::Type{Int}) where {C} = LongLongUInt{C}
 Base.promote_type(::Type{LongLongUInt{C}}, ::Type{UInt}) where {C} = LongLongUInt{C}
 function Base.mod(x::LongLongUInt{C}, D::Int) where {C}
@@ -51,6 +51,11 @@ function Base.:(<<)(x::LongLongUInt{C}, y::Int) where C
         end
     )
 end
+function readbit(x::LongLongUInt{C}, loc::Int) where {C}
+    k = (loc-1) ÷ bsizeof(UInt)
+    return readbit(x.content[C-k], loc - k*bsizeof(UInt))
+end
+readbit(x::DitStr{D, N, LongLongUInt{C}}, loc::Int) where {D, N, C} = readbit(x.buf, loc)
 function indicator(::Type{LongLongUInt{C}}, i::Int) where C
     k = (i-1) ÷ bsizeof(UInt)
     LongLongUInt{C}(ntuple(j->j==C-k ? indicator(UInt, i-k*bsizeof(UInt)) : zero(UInt), Val{C}()))
