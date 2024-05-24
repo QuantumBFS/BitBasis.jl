@@ -233,6 +233,8 @@ One can specify the value of the nonzero entry by inputing a pair.
 onehot(::Type{T}, n::DitStr{D,N,T1}; nbatch=nothing) where {D,T, N,T1} = _onehot(T, D^N, buffer(n)+1; nbatch)
 onehot(n::DitStr; nbatch=nothing) = onehot(ComplexF64, n; nbatch)
 
+readbit(x::DitStr{D, N, LongLongUInt{C}}, loc::Int) where {D, N, C} = readbit(x.buf, loc)
+
 ########## @dit_str macro ##############
 """
     @dit_str -> DitStr64

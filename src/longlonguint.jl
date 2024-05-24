@@ -55,7 +55,6 @@ function readbit(x::LongLongUInt{C}, loc::Int) where {C}
     k = (loc-1) ÷ bsizeof(UInt)
     return readbit(x.content[C-k], loc - k*bsizeof(UInt))
 end
-readbit(x::DitStr{D, N, LongLongUInt{C}}, loc::Int) where {D, N, C} = readbit(x.buf, loc)
 function indicator(::Type{LongLongUInt{C}}, i::Int) where C
     k = (i-1) ÷ bsizeof(UInt)
     LongLongUInt{C}(ntuple(j->j==C-k ? indicator(UInt, i-k*bsizeof(UInt)) : zero(UInt), Val{C}()))
