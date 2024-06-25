@@ -6,6 +6,7 @@ export bitarray, basis, packbits, bfloat, bfloat_r, bint, bint_r, flip
 export anyone, allone, bmask, baddrs, readbit, setbit, controller
 export swapbits, ismatch, neg, breflect, btruncate
 export LongLongUInt
+export SubDitStr
 
 include("utils.jl")
 include("longlonguint.jl")
