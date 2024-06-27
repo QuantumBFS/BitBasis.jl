@@ -159,12 +159,38 @@ Base.@propagate_inbounds function Base.getindex(dit::DitStr{D,N,T}, itr::Abstrac
     return map(x -> readat(dit, x), itr)
 end
 
-struct SubDitStr{D,N,T} <: Integer
+
+"""
+    SubDitStr{D,N,T<:Integer} <: Integer
+
+The struct as a `SubString`-like object for `DitStr`(`SubString` is an official implementation of sliced strings, see [String](https://docs.julialang.org/en/v1/base/strings/#Base.SubString) for reference). This slicing returns a view into the parent `DitStr` instead of making a copy (similar to the `@views` macro for strings).
+
+`SubDitStr` can be used to describe the qubit configuration within the subspace of the entire Hilbert space.It provides similar `getindex`, `length` functions as `DitStr`. 
+
+    SubDitStr(dit::DitStr{D,N,T}, i::Int, j::Int)
+    SubDitStr(dit::DitStr{D,N,T}, r::AbstractUnitRange{<:Integer})
+
+Returns a `SubDitStr`.
+
+### Examples
+
+```jldoctest
+julia> x = DitStr{3, 5}(71)
+02122 ₍₃₎
+
+julia> sx =  SubDitStr(x, 2, 4) 
+SubDitStr{3, 5, Int64}(02122 ₍₃₎, 1, 3)
+
+julia> sx == dit"212;3"
+true
+```
+"""
+struct SubDitStr{D,N,T<:Integer} <: Integer
     dit::DitStr{D,N,T}
     offset::Int
     ncodeunits::Int
 
-    function SubDitStr{D,N,T}(dit::DitStr{D,N,T}, i::Int, j::Int) where {D,N,T}
+    function SubDitStr(dit::DitStr{D,N,T}, i::Int, j::Int) where {D,N,T}
         i ≤ j || return new{D,N,T}(dit, 0, 0)
         @boundscheck begin
             1 ≤ i ≤ length(dit) || throw(BoundsError(dit, i))
@@ -172,6 +198,31 @@ struct SubDitStr{D,N,T} <: Integer
         end
         return new{D,N,T}(dit, i - 1, j - i + 1)
     end
+end
+
+"""
+    DitStr(dit::SubDitStr{D,N,T}) -> DitStr{D,N,T}
+Raise type `SubDitStr` to `DitStr`.
+```jldoctest
+julia> x = DitStr{3, 5}(71)
+02122 ₍₃₎
+
+julia> sx =  SubDitStr(x, 2, 4)
+SubDitStr{3, 5, Int64}(02122 ₍₃₎, 1, 3)
+
+julia> DitStr(sx)
+212 ₍₃₎
+```
+"""
+function DitStr(dit::SubDitStr{D,N,T}) where {D,N,T}
+    val = zero(T)
+    D_power_k = one(T)
+    len = ncodeunits(dit)
+    for k in 1:len
+        val = accum(Val{D}(), val, readat(dit.dit, dit.offset + k), D_power_k)
+        D_power_k = _lshift(Val{D}(), D_power_k, 1)
+    end
+    return DitStr{D,len,T}(val)
 end
 
 ncodeunits(dit::SubDitStr{D,N,T}) where {D,N,T} = dit.ncodeunits
@@ -194,17 +245,23 @@ Base.@propagate_inbounds function SubDitStr(dit::SubDitStr{D,N,T}, i::Int, j::In
 end
 
 Base.length(dit::SubDitStr{D,N,T}) where {D,N,T} = ncodeunits(dit)
-# overload == to check the equality of SubDitStr and DitStr, this check is time consuming since each bit is compared
+
+"""
+    ==(lhs::SubDitStr{D,N,T}, rhs::DitStr{D,N,T}) -> Bool
+    ==(lhs::DitStr{D,N,T}, rhs::SubDitStr{D,N,T}) -> Bool
+    ==(lhs::SubDitStr{D,N,T}, rhs::SubDitStr{D,N,T}) -> Bool
+Compare the equality between `SubDitStr` and `DitStr`. 
+"""
 function Base.:(==)(lhs::SubDitStr{D,N1}, rhs::DitStr{D,N2}) where {D,N1,N2}
-    length(lhs) == length(rhs) && all(i -> lhs[i] == rhs[i], 1:length(lhs))
+    length(lhs) == length(rhs) && @inbounds all(i -> lhs[i] == rhs[i], 1:length(lhs))
 end
 
 function Base.:(==)(lhs::SubDitStr{D,N1}, rhs::SubDitStr{D,N2}) where {D,N1,N2}
-    length(lhs) == length(rhs) && all(i -> lhs[i] == rhs[i], 1:length(lhs))
+    length(lhs) == length(rhs) && @inbounds all(i -> lhs[i] == rhs[i], 1:length(lhs))
 end
 
 function Base.:(==)(lhs::DitStr{D,N1}, rhs::SubDitStr{D,N2}) where {D,N1,N2}
-    length(lhs) == length(rhs) && all(i -> lhs[i] == rhs[i], 1:length(lhs))
+    length(lhs) == length(rhs) && @inbounds all(i -> lhs[i] == rhs[i], 1:length(lhs))
 end
 
 function Base.getindex(dit::SubDitStr{D,N,T}, i::Integer) where {D,N,T}

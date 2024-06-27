@@ -39,5 +39,6 @@ end
     @test length(sx) == 3
     @test sx == dit"210;3"
     @test dit"210;3" == sx
+    @test DitStr(sx) == dit"210;3"
     @test SubDitStr(dit"210;3",1,length(dit"210;3")) == sx
 end
