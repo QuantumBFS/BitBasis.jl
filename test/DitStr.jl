@@ -41,4 +41,16 @@ end
     @test dit"210;3" == sx
     @test DitStr(sx) == dit"210;3"
     @test SubDitStr(dit"210;3",1,length(dit"210;3")) == sx
+    @test (@views x[4:end]) == dit"112;3"
+    @test (@views x[begin:3]) == dit"100;3"   
+end
+
+using BenchmarkTools
+
+function bm()
+    # test performance in slicing
+    a = LongBitStr(ones(Bool, 200))
+    @btime LongBitStr($a[1:100]) # 3.925 μs (14 allocations: 1.42 KiB)
+    @btime SubDitStr($a, 1, 100) # 1.600 ns (0 allocations: 0 bytes) 
+    @btime DitStr(SubDitStr($a, 1, 100)) # 2.722 μs (4 allocations: 192 bytes)
 end

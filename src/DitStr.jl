@@ -1,5 +1,5 @@
-const UIntStorage = Union{UInt8,UInt16,UInt32,UInt64,UInt128,LongLongUInt}
-const IntStorage = Union{Int8,Int16,Int32,Int64,Int128,BigInt,UIntStorage}
+const UIntStorage = Union{UInt8, UInt16, UInt32, UInt64, UInt128, LongLongUInt}
+const IntStorage = Union{Int8, Int16, Int32,Int64,Int128,BigInt,UIntStorage}
 
 ########## DitStr #########
 """
@@ -170,6 +170,10 @@ The struct as a `SubString`-like object for `DitStr`(`SubString` is an official 
     SubDitStr(dit::DitStr{D,N,T}, i::Int, j::Int)
     SubDitStr(dit::DitStr{D,N,T}, r::AbstractUnitRange{<:Integer})
 
+Or by `@views` macro for `DitStr` (this macro makes your life easier by supporting `begin` and `end` syntax):
+
+    @views dit[i:j]
+
 Returns a `SubDitStr`.
 
 ### Examples
@@ -180,6 +184,9 @@ julia> x = DitStr{3, 5}(71)
 
 julia> sx =  SubDitStr(x, 2, 4) 
 SubDitStr{3, 5, Int64}(02122 ₍₃₎, 1, 3)
+
+julia> @views x[2:end] 
+SubDitStr{3, 5, Int64}(02122 ₍₃₎, 1, 4)
 
 julia> sx == dit"212;3"
 true
@@ -199,6 +206,10 @@ struct SubDitStr{D,N,T<:Integer} <: Integer
         return new{D,N,T}(dit, i - 1, j - i + 1)
     end
 end
+
+Base.@propagate_inbounds Base.view(dit::DitStr{D,N,T}, i::Integer, j::Integer) where {D,N,T} = SubDitStr(dit, i, j)
+Base.@propagate_inbounds Base.view(dit::DitStr{D,N,T}, r::AbstractUnitRange{<:Integer}) where {D,N,T} = SubDitStr(dit, first(r), last(r))
+Base.@propagate_inbounds Base.maybeview(dit::DitStr{D,N,T}, r::AbstractUnitRange{<:Integer}) where {D,N,T} = view(dit,r) 
 
 """
     DitStr(dit::SubDitStr{D,N,T}) -> DitStr{D,N,T}
