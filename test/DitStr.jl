@@ -45,7 +45,6 @@ end
     @test (@views x[begin:3]) == dit"100;3"   
 end
 
-using BenchmarkTools
 
 function bm()
     # test performance in slicing
