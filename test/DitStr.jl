@@ -5,14 +5,14 @@ using BitBasis, Test
     @test x isa DitStr
     @test x |> length == 6
     println(x)
-    @test buffer(x) === Int64(3^5 + 3^4 + 2*3^3 + 3^2)
+    @test buffer(x) === Int64(3^5 + 3^4 + 2 * 3^3 + 3^2)
     @test_throws ErrorException randn(100)[x]
     @test BitBasis.readat(x, 2) == Int64(0)
     @test x[2] == Int64(0)
     @test x[3] == Int64(1)
     @test x[4] == Int64(2)
-    @test [x...] == Int64[0,0,1,2,1,1]
-    @test [DitStr{3}(Int64[0,0,1,2,1,1])...] == Int64[0,0,1,2,1,1]
+    @test [x...] == Int64[0, 0, 1, 2, 1, 1]
+    @test [DitStr{3}(Int64[0, 0, 1, 2, 1, 1])...] == Int64[0, 0, 1, 2, 1, 1]
     @test_throws ErrorException BitBasis.parse_dit(Int64, "112103;3")
     @test_throws ErrorException BitBasis.parse_dit(Int64, "112101;")
 
@@ -24,4 +24,23 @@ using BitBasis, Test
     @test_throws ErrorException BitBasis.parse_dit(Int64, "12341111111111111111111111111111111111111111111111111111111;5")
 
     @test hash(x) isa UInt64
+end
+
+@testset "SubDitStr" begin
+    x = dit"112100;3"
+    sx = SubDitStr(x, 2, 4) # bit"210"
+    @test_throws BoundsError SubDitStr(x, 2, 7)
+    @test checkbounds(sx, 1) == nothing
+    @test getindex(sx, 1) == 0
+    @test getindex(sx, 2) == 1
+    @test getindex(sx, 3) == 2
+    @test_throws BoundsError getindex(sx, 4)
+    @test_throws BoundsError getindex(sx, 0)
+    @test length(sx) == 3
+    @test sx == dit"210;3"
+    @test dit"210;3" == sx
+    @test DitStr(sx) == dit"210;3"
+    @test SubDitStr(dit"210;3",1,length(dit"210;3")) == sx
+    @test (@views x[4:end]) == dit"112;3"
+    @test (@views x[begin:3]) == dit"100;3"   
 end
