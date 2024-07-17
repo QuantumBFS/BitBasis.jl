@@ -5,8 +5,10 @@ using Test, BitBasis
     @test Int(x) === 3
     @test bsizeof(x) == 64
     @test BitBasis.nint(x) == 1
+    @test bitstring(x) == "0000000000000000000000000000000000000000000000000000000000000011"
 
     x = LongLongUInt((3, 6))
+    @test bitstring(x) == "00000000000000000000000000000000000000000000000000000000000000110000000000000000000000000000000000000000000000000000000000000110"
     @test zero(x) == LongLongUInt((0, 0))
     @test x << 1 == LongLongUInt((6, 12))
     @test x >> 1 == LongLongUInt((UInt(1), UInt(3) + UInt(1)<<63))
@@ -19,6 +21,8 @@ using Test, BitBasis
     @test x | y == LongLongUInt((7, 7))
     @test x ⊻ y == LongLongUInt((6, 1))
     @test x + y == LongLongUInt((8, 13))
+    z = LongLongUInt((5, 4))
+    @test z - x == LongLongUInt((UInt64(1), typemax(UInt64)-1))
 
     # add with overflow
     z = LongLongUInt((UInt(17), typemax(UInt)-1))
@@ -77,4 +81,9 @@ end
     @test readbit(x, 66) == 1
     @test readbit(x, 67) == 0
     @test readbit(BitStr{78}(x), 66) == 1
+end
+
+@testset "bmask" begin
+    @test bmask(LongLongUInt{1}, 1:1) == LongLongUInt((UInt64(1),))
+    @test bmask(LongLongUInt{2}, 1:65) == LongLongUInt((UInt64(1), typemax(UInt64)))
 end

@@ -79,7 +79,24 @@ function _sadd(x::NTuple{C,UInt}, y::NTuple{C,UInt}, c::Bool) where {C}
         return (_sadd(x[1:C-1], y[1:C-1], c1)..., v1)
     end
 end
+function Base.:(-)(x::LongLongUInt{C}, y::LongLongUInt{C}) where {C}
+    return LongLongUInt(_ssub(x.content, y.content, false))
+end
+function _ssub(x::NTuple{1,UInt}, y::NTuple{1,UInt}, c::Bool)
+    return (x[1] - y[1] - c,)
+end
+function _ssub(x::NTuple{C,UInt}, y::NTuple{C,UInt}, c::Bool) where {C}
+    v1, c1 = Base.sub_with_overflow(x[C], y[C])
+    if c
+        v2, c2 = Base.sub_with_overflow(v1, c)
+        c = c1 || c2
+        return (_ssub(x[1:C-1], y[1:C-1], c)..., v2)
+    else
+        return (_ssub(x[1:C-1], y[1:C-1], c1)..., v1)
+    end
+end
 Base.count_ones(x::LongLongUInt) = sum(count_ones, x.content)
+Base.bitstring(x::LongLongUInt) = join(bitstring.(x.content), "")
 
 function longinttype(n::Int, D::Int)
     N = ceil(Int, n * log2(D))
