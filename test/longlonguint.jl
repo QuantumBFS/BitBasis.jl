@@ -37,6 +37,11 @@ using Test, BitBasis
 end
 
 @testset "shift" begin
+    x = LongLongUInt((3, ))
+    @test x << 0 == LongLongUInt((3, ))
+    @test x << 1 == LongLongUInt((3 << 1, ))
+    @test x >> 1 == LongLongUInt((3 >> 1, ))
+
     x = LongLongUInt((3, 6))
     @test x << 0 == LongLongUInt((3, 6))
     @test x << 64 == LongLongUInt((6, 0))
@@ -70,6 +75,12 @@ end
 end
 
 @testset "takebit" begin
+    x = LongLongUInt((3,))
+    @test readbit(x, 1) == 1
+    @test readbit(x, 2) == 1
+    @test readbit(x, 3) == 0
+    @test readbit(x, 4) == 0
+
     x = LongLongUInt((3, 6))
     @test readbit(x, 1) == 0
     @test readbit(x, 2) == 1
@@ -86,4 +97,27 @@ end
 @testset "bmask" begin
     @test bmask(LongLongUInt{1}, 1:1) == LongLongUInt((UInt64(1),))
     @test bmask(LongLongUInt{2}, 1:65) == LongLongUInt((UInt64(1), typemax(UInt64)))
+end
+
+@testset "isless" begin
+    x = LongLongUInt((3,))
+    y = LongLongUInt((5,))
+    @test x < y
+    @test y > x
+
+    x = LongLongUInt((3, 6))
+    y = LongLongUInt((3, 7))
+    @test x < y
+    @test y > x
+
+    x = LongLongUInt((3, 6))
+    y = LongLongUInt((3, 6))
+    @test !(x < y)
+    @test !(y < x)
+    @test x ≥ y
+    @test y ≥ x
+
+    xs = [LongLongUInt((3, 6)), LongLongUInt((3, 7)), LongLongUInt((2, 4))]
+    sorted_xs = sort(xs)
+    @test sorted_xs == [LongLongUInt((2, 4)), LongLongUInt((3, 6)), LongLongUInt((3, 7))]
 end

@@ -29,6 +29,35 @@ function Base.mod(x::LongLongUInt{C}, D::Int) where {C}
     D == 2 ? mod(x.content[end], 2) : error("mod only supports 2")
 end
 
+function Base.:(>>)(x::LongLongUInt{1}, y::Int)
+    return LongLongUInt{1}(x.content[1] >> y)
+end
+function Base.:(<<)(x::LongLongUInt{1}, y::Int)
+    return LongLongUInt{1}(x.content[1] << y)
+end
+
+function readbit(x::LongLongUInt{1}, loc::Int)
+    return readbit(x.content[1], loc)
+end
+function indicator(::Type{LongLongUInt{1}}, i::Int)
+    return LongLongUInt{1}(indicator(UInt, i))
+end
+
+function Base.:(<)(val1::LongLongUInt{1}, val2::LongLongUInt{1})
+    return val1.content[1] < val2.content[1]
+end
+
+function Base.:(<)(val1::LongLongUInt{C}, val2::LongLongUInt{C}) where{C}
+    for i in 1:C
+        if val1.content[i] < val2.content[i]
+            return true
+        elseif val1.content[i] > val2.content[i]
+            return false
+        end
+    end
+    return false
+end
+
 function Base.:(>>)(x::LongLongUInt{C}, y::Int) where {C}
     y < 0 && return x << -y
     nshift = y ÷ bsizeof(UInt)
@@ -103,4 +132,6 @@ function longinttype(n::Int, D::Int)
     C = (N-1) ÷ bsizeof(UInt) + 1
     return LongLongUInt{C}
 end
-Base.hash(x::LongLongUInt) = hash(x.content)
+
+Base.hash(x::LongLongUInt{1}) = hash(x.content[1])
+Base.hash(x::LongLongUInt{C}) where{C} = hash(x.content)
