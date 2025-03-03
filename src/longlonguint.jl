@@ -23,8 +23,8 @@ Base.zero(::Type{LongLongUInt{C}}) where {C} = LongLongUInt{C}(ntuple(_->UInt(0)
 Base.zero(::LongLongUInt{C}) where {C} = zero(LongLongUInt{C})
 # convert from integers
 LongLongUInt{C}(x::T) where {C, T<:Integer} = LongLongUInt{C}(ntuple(i->i==C ? UInt(x) : zero(UInt), Val{C}()))
-Base.promote_type(::Type{LongLongUInt{C}}, ::Type{Int}) where {C} = LongLongUInt{C}
-Base.promote_type(::Type{LongLongUInt{C}}, ::Type{UInt}) where {C} = LongLongUInt{C}
+Base.promote_rule(::Type{LongLongUInt{C}}, ::Type{Int}) where {C} = LongLongUInt{C}
+Base.promote_rule(::Type{LongLongUInt{C}}, ::Type{UInt}) where {C} = LongLongUInt{C}
 function Base.mod(x::LongLongUInt{C}, D::Int) where {C}
     D == 2 ? mod(x.content[end], 2) : error("mod only supports 2")
 end

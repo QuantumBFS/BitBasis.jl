@@ -14,6 +14,7 @@ using Test, BitBasis
     @test x >> 1 == LongLongUInt((UInt(1), UInt(3) + UInt(1)<<63))
     @test count_ones(x) == 4
     @test ~x == LongLongUInt((~UInt(3), ~UInt(6)))
+    @test promote(UInt(1), LongLongUInt((3, 4))) == (LongLongUInt((0, 1)), LongLongUInt((3, 4)))
 
     y = LongLongUInt((5, 7))
     @test one(y) == LongLongUInt((0, 1))
