@@ -35,6 +35,8 @@ using Test, BitBasis
     BitBasis.max_num_elements(LongLongUInt{2}, 4) == 40
     BitBasis.max_num_elements(UInt, 2) == 64
     BitBasis.max_num_elements(Int, 2) == 63
+
+    @test count_ones(bmask(LongLongUInt{50}, 1:3000)) == 3000
 end
 
 @testset "shift" begin
