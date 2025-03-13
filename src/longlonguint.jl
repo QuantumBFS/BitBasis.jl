@@ -117,7 +117,7 @@ end
 function _ssub(x::NTuple{C,UInt}, y::NTuple{C,UInt}, c::Bool) where {C}
     v1, c1 = Base.sub_with_overflow(x[C], y[C])
     if c
-        v2, c2 = Base.sub_with_overflow(v1, c)
+        v2, c2 = Base.sub_with_overflow(v1, one(UInt))
         c = c1 || c2
         return (_ssub(x[1:C-1], y[1:C-1], c)..., v2)
     else
