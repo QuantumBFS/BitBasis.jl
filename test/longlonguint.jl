@@ -2,6 +2,7 @@ using Test, BitBasis
 
 @testset "longlonguint" begin
     x = LongLongUInt((3,))
+    @test LongLongUInt{1}(x) == x
     @test Int(x) === 3
     @test bsizeof(x) == 64
     @test BitBasis.nint(x) == 1
@@ -123,4 +124,15 @@ end
     xs = [LongLongUInt((3, 6)), LongLongUInt((3, 7)), LongLongUInt((2, 4))]
     sorted_xs = sort(xs)
     @test sorted_xs == [LongLongUInt((2, 4)), LongLongUInt((3, 6)), LongLongUInt((3, 7))]
+end
+
+@testset "patch" begin
+    @test BigInt(LongLongUInt((3,))) == 3
+    @test BigInt(LongLongUInt((3, 0))) == BigInt(3) << 64
+    @test BigInt(LongLongUInt((0, 3))) == 3
+    @test BigInt(LongLongUInt((1,2))) == (BigInt(1) << 64) + BigInt(2)
+    @test log2i(LongLongUInt((3,))) == 1
+    @test log2i(LongLongUInt((1,2))) == 64
+    @test log2i(LongLongUInt((0,2))) == 1
+    @test log2i(LongLongUInt((1,0))) == 64
 end
