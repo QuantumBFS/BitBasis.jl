@@ -150,6 +150,48 @@ function Base.:(*)(x::LongLongUInt{C}, y::LongLongUInt{C}) where {C}
     return result
 end
 
+function Base.div(x::LongLongUInt{C}, y::LongLongUInt{C}) where {C}
+    y == zero(LongLongUInt{C}) && throw(DivideError())
+    x < y && return zero(LongLongUInt{C})
+    x == y && return one(LongLongUInt{C})
+    
+    # Initialize quotient and remainder
+    quotient = zero(LongLongUInt{C})
+    remainder = x
+    
+    # Find the highest bit position in y
+    y_highest_bit = 0
+    for i in 1:C
+        if y.content[i] != 0
+            y_highest_bit = (C - i) * 64 + (64 - leading_zeros(y.content[i]))
+            break
+        end
+    end
+    
+    # Find the highest bit position in x
+    x_highest_bit = 0
+    for i in 1:C
+        if x.content[i] != 0
+            x_highest_bit = (C - i) * 64 + (64 - leading_zeros(x.content[i]))
+            break
+        end
+    end
+    
+    # Long division algorithm
+    for i in (x_highest_bit - y_highest_bit + 1):-1:1
+        # Shift y left by i-1 bits
+        shifted_y = y << (i - 1)
+        
+        # If remainder >= shifted_y, subtract and set bit in quotient
+        if remainder >= shifted_y
+            remainder = remainder - shifted_y
+            quotient = quotient | (one(LongLongUInt{C}) << (i - 1))
+        end
+    end
+    
+    return quotient
+end
+
 Base.count_ones(x::LongLongUInt) = sum(count_ones, x.content)
 Base.bitstring(x::LongLongUInt) = join(bitstring.(x.content), "")
 
