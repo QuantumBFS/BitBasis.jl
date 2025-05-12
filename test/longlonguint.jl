@@ -246,3 +246,10 @@ end
 
     @test hash((b1, b2, b3)) == hash((b1, b2, b3))
 end
+
+@testset "LongLongUInt rem and mod" begin
+    x = LongLongUInt((1234, 213))
+    y = LongLongUInt((0, 17))
+    @test rem(x, y) == rem(BigInt(x), BigInt(y))
+    @test mod(x, y) == mod(BigInt(x), BigInt(y))
+end
