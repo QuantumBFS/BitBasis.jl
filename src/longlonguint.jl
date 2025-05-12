@@ -191,6 +191,17 @@ function Base.div(x::LongLongUInt{C}, y::LongLongUInt{C}) where {C}
     
     return quotient
 end
+function Base.rem(x::LongLongUInt{C}, y::LongLongUInt{C}) where {C}
+    y == zero(LongLongUInt{C}) && throw(DivideError())
+    x < y && return x
+    x == y && return zero(LongLongUInt{C})
+    
+    # Calculate remainder using the relationship: rem(x, y) = x - div(x, y) * y
+    quotient = div(x, y)
+    remainder = x - quotient * y
+    
+    return remainder
+end
 
 Base.count_ones(x::LongLongUInt) = sum(count_ones, x.content)
 Base.bitstring(x::LongLongUInt) = join(bitstring.(x.content), "")
