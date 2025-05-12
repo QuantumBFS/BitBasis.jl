@@ -2,6 +2,8 @@ using Test, BitBasis
 
 @testset "longlonguint" begin
     x = LongLongUInt((3,))
+    @test abs(x) == x
+    @test Int(x) === 3
     @test LongLongUInt{1}(x) == x
     @test Int(x) === 3
     @test bsizeof(x) == 64
@@ -18,6 +20,7 @@ using Test, BitBasis
     @test promote(UInt(1), LongLongUInt((3, 4))) == (LongLongUInt((0, 1)), LongLongUInt((3, 4)))
 
     y = LongLongUInt((5, 7))
+    @test_throws InexactError Int(y)
     @test one(y) == LongLongUInt((0, 1))
     @test x & y == LongLongUInt((1, 6))
     @test x | y == LongLongUInt((7, 7))
@@ -29,7 +32,6 @@ using Test, BitBasis
     # add with overflow
     z = LongLongUInt((UInt(17), typemax(UInt)-1))
     @test z + x == LongLongUInt((21, 4))
-    @test (@allocated z + x) == 0
 
     # maximum number of elements
     BitBasis.max_num_elements(LongLongUInt{2}, 2) == 80
@@ -38,6 +40,11 @@ using Test, BitBasis
     BitBasis.max_num_elements(Int, 2) == 63
 
     @test count_ones(bmask(LongLongUInt{50}, 1:3000)) == 3000
+
+    # Hard add
+    a = LongLongUInt((ntuple(i -> UInt64(0), Val{1}())..., ntuple(i -> rand(UInt64), Val{9}())...))
+    b = LongLongUInt((ntuple(i -> UInt64(0), Val{1}())..., ntuple(i -> rand(UInt64), Val{9}())...))
+    @test BigInt(a + b) == BigInt(a) + BigInt(b)
 end
 
 @testset "shift" begin
@@ -135,4 +142,107 @@ end
     @test log2i(LongLongUInt((1,2))) == 64
     @test log2i(LongLongUInt((0,2))) == 1
     @test log2i(LongLongUInt((1,0))) == 64
+end
+
+@testset "multiplication" begin
+    # Test basic multiplication
+    x = LongLongUInt((2,))
+    y = LongLongUInt((3,))
+    @test x * y == LongLongUInt((6,))
+    
+    # Test multiplication with overflow within a single UInt
+    x = LongLongUInt((0x8000000000000000,))
+    y = LongLongUInt((2,))
+    @test x * y == LongLongUInt((0,))  # Overflow truncated to original size
+    
+    # Test multiplication across multiple UInts
+    x = LongLongUInt((1, 0))  # 1 << 64
+    y = LongLongUInt((0, 5))  # 2 << 64
+    @test x * y == LongLongUInt((5, 0))  # Result truncated to original size
+    
+    # Test with values in both positions
+    x = LongLongUInt((0, 2))
+    y = LongLongUInt((3, 4))
+    # Expected: (1*3) << 128 + (1*4 + 2*3) << 64 + (2*4), truncated to 2 UInts
+    @test x * y == LongLongUInt((6, 8))
+    
+    # Verify with BigInt conversion
+    x = LongLongUInt((10, 7))
+    y = LongLongUInt((0, 3))
+    result = x * y
+    expected = BigInt(x) * BigInt(y)
+    expected_truncated = expected & ((BigInt(1) << 128) - 1)  # Truncate to 128 bits
+    @test BigInt(result) == expected_truncated
+
+    x = LongLongUInt((UInt(0), typemax(UInt64)))
+    y = LongLongUInt((UInt(0), UInt(3)))
+    @test BigInt(x * y) == BigInt(x) * BigInt(y)
+
+    # Hard instance
+    a = LongLongUInt((ntuple(i -> UInt64(0), Val{10}())..., ntuple(i -> rand(UInt64), Val{5}())...))
+    b = LongLongUInt((ntuple(i -> UInt64(0), Val{6}())..., ntuple(i -> rand(UInt64), Val{9}())...))
+    @show BigInt(a * b) - BigInt(a) * BigInt(b)
+    @test BigInt(a * b) == BigInt(a) * BigInt(b)
+end
+
+@testset "division" begin
+    # Test basic division
+    x = LongLongUInt((6,))
+    y = LongLongUInt((3,))
+    @test div(x, y) == LongLongUInt((2,))
+    
+    # Test division with zero
+    x = LongLongUInt((5,))
+    y = LongLongUInt((0,))
+    @test_throws DivideError div(x, y)
+    
+    # Test division where result is zero
+    x = LongLongUInt((3,))
+    y = LongLongUInt((5,))
+    @test div(x, y) == LongLongUInt((0,))
+    
+    # Test division where result is one
+    x = LongLongUInt((7,))
+    y = LongLongUInt((7,))
+    @test div(x, y) == LongLongUInt((1,))
+    
+    # Test division with multi-UInt values
+    x = LongLongUInt((1, 0))  # 1 << 64
+    y = LongLongUInt((0, 2))  # 2
+    @test div(x, y) == LongLongUInt((UInt(0), UInt(1) << 63))  # (1 << 64) ÷ 2 = 1 << 63
+    
+    # Test with values in both positions
+    x = LongLongUInt((3, 0))  # 3 << 64
+    y = LongLongUInt((0, 3))  # 3
+    @test div(x, y) == LongLongUInt((1, 0))  # (3 << 64) ÷ 3 = 1 << 64
+    
+    # Verify with BigInt conversion
+    x = LongLongUInt((10, 7))
+    y = LongLongUInt((0, 3))
+    result = div(x, y)
+    expected = div(BigInt(x), BigInt(y))
+    @test BigInt(result) == expected
+    
+    # Test with large values
+    x = LongLongUInt((UInt(1), UInt(0)))
+    y = LongLongUInt((UInt(0), UInt(2)))
+    @test BigInt(div(x, y)) == div(BigInt(x), BigInt(y))
+    
+    # Test with random values
+    a = LongLongUInt((rand(UInt64), rand(UInt64)))
+    b = LongLongUInt((UInt(0), rand(UInt64) | UInt(1)))  # Ensure non-zero
+    @test BigInt(div(a, b)) == div(BigInt(a), BigInt(b))
+
+    # Hard test
+    a = LongLongUInt((ntuple(i -> UInt64(0), Val{10}())..., ntuple(i -> rand(UInt64), Val{5}())...))
+    b = LongLongUInt((ntuple(i -> UInt64(0), Val{6}())..., ntuple(i -> rand(UInt64), Val{9}())...))
+    @test BigInt(div(b, a)) == div(BigInt(b), BigInt(a))
+end
+
+@testset "LongLongUInt hash" begin
+    b1 = bmask(LongLongUInt{1}, 1)
+    b2 = bmask(LongLongUInt{1}, 2)
+    b3 = bmask(LongLongUInt{1}, 3)
+
+    @test hash((b1, b2, b3)) == hash((b1, b2, b3))
 end

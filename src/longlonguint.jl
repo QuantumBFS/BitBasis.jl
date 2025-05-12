@@ -3,7 +3,7 @@
 
 A `LongLongUInt{C}` is an integer with `C` `UInt` numbers to store the value.
 """
-struct LongLongUInt{C} <: Integer
+struct LongLongUInt{C} <: Unsigned
     content::NTuple{C, UInt}
     function LongLongUInt{C}(content::NTuple{C, UInt}) where {C}
         new{C}(content)
@@ -15,6 +15,9 @@ struct LongLongUInt{C} <: Integer
         LongLongUInt{C}(content)
     end
 end
+Base.string(x::LongLongUInt{C}) where {C} = "LongLongUInt{$C}(" * join(bitstring.(x.content), "") * ")"
+Base.show(io::IO, x::LongLongUInt{C}) where {C} = print(io, string(x))
+Base.show(io::IO, ::MIME"text/plain", x::LongLongUInt{C}) where {C} = print(io, string(x))
 bsizeof(::LongLongUInt{C}) where C = bsizeof(UInt64) * C
 nint(::LongLongUInt{C}) where {C} = C
 Base.Int(x::LongLongUInt{1}) = Int(x.content[1])
@@ -102,7 +105,7 @@ end
 function _sadd(x::NTuple{C,UInt}, y::NTuple{C,UInt}, c::Bool) where {C}
     v1, c1 = Base.add_with_overflow(x[C], y[C])
     if c
-        v2, c2 = Base.add_with_overflow(v1, c)
+        v2, c2 = Base.add_with_overflow(v1, UInt(c))
         c = c1 || c2
         return (_sadd(x[1:C-1], y[1:C-1], c)..., v2)
     else
@@ -125,6 +128,70 @@ function _ssub(x::NTuple{C,UInt}, y::NTuple{C,UInt}, c::Bool) where {C}
         return (_ssub(x[1:C-1], y[1:C-1], c1)..., v1)
     end
 end
+
+function Base.:(*)(x::LongLongUInt{C}, y::LongLongUInt{C}) where {C}
+    result = zero(LongLongUInt{C})
+    for i in 1:C
+        x.content[C-i+1] == 0 && continue
+        for j in 1:C
+            y.content[C-j+1] == 0 && continue
+            # Skip if either position is out of bounds for the result
+            pos = i + j - 1
+            pos > C && continue
+            
+            # Multiply the corresponding elements
+            mres = Base.widemul(x.content[C-i+1], y.content[C-j+1])
+            
+            # Add the low part to the result at position pos
+            partial = LongLongUInt(ntuple(k -> (k == C-pos+1 ? UInt(mres & typemax(UInt)) : (k == C-pos ? UInt(mres >> bsizeof(UInt)) : zero(UInt))), Val{C}()))
+            result = result + partial
+        end
+    end
+    return result
+end
+
+function Base.div(x::LongLongUInt{C}, y::LongLongUInt{C}) where {C}
+    y == zero(LongLongUInt{C}) && throw(DivideError())
+    x < y && return zero(LongLongUInt{C})
+    x == y && return one(LongLongUInt{C})
+    
+    # Initialize quotient and remainder
+    quotient = zero(LongLongUInt{C})
+    remainder = x
+    
+    # Find the highest bit position in y
+    y_highest_bit = 0
+    for i in 1:C
+        if y.content[i] != 0
+            y_highest_bit = (C - i) * 64 + (64 - leading_zeros(y.content[i]))
+            break
+        end
+    end
+    
+    # Find the highest bit position in x
+    x_highest_bit = 0
+    for i in 1:C
+        if x.content[i] != 0
+            x_highest_bit = (C - i) * 64 + (64 - leading_zeros(x.content[i]))
+            break
+        end
+    end
+    
+    # Long division algorithm
+    for i in (x_highest_bit - y_highest_bit + 1):-1:1
+        # Shift y left by i-1 bits
+        shifted_y = y << (i - 1)
+        
+        # If remainder >= shifted_y, subtract and set bit in quotient
+        if remainder >= shifted_y
+            remainder = remainder - shifted_y
+            quotient = quotient | (one(LongLongUInt{C}) << (i - 1))
+        end
+    end
+    
+    return quotient
+end
+
 Base.count_ones(x::LongLongUInt) = sum(count_ones, x.content)
 Base.bitstring(x::LongLongUInt) = join(bitstring.(x.content), "")
 
@@ -140,3 +207,20 @@ Base.hash(x::LongLongUInt{C}) where{C} = hash(x.content)
 # these APIs will are used in SparseTN
 BitBasis.log2i(x::LongLongUInt{C}) where C = floor(Int, log2(Float64(BigInt(x))))
 Base.BigInt(x::LongLongUInt{C}) where C = mapfoldl(x -> BigInt(x), (x, y) -> ((x << 64) | y), x.content)
+
+function Base.Int(x::LongLongUInt)
+    if all(iszero, x.content[2:end]) && x.content[1] < typemax(Int)
+        return Int(x.content[1])
+    else
+        throw(InexactError(:Int, x))
+    end
+end
+
+function Base.hash(bits_tuple::Tuple{LongLongUInt{C}, Vararg{LongLongUInt{C}, M}}) where{M, C}
+    N = M + 1
+    hash0 = Base.hash(bits_tuple[1].content)
+    for i in 2:N
+        hash0 = Base.hash(bits_tuple[i].content, hash0)
+    end
+    return hash0
+end
