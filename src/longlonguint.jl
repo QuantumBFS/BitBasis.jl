@@ -102,7 +102,7 @@ end
 function _sadd(x::NTuple{C,UInt}, y::NTuple{C,UInt}, c::Bool) where {C}
     v1, c1 = Base.add_with_overflow(x[C], y[C])
     if c
-        v2, c2 = Base.add_with_overflow(v1, c)
+        v2, c2 = Base.add_with_overflow(v1, UInt(c))
         c = c1 || c2
         return (_sadd(x[1:C-1], y[1:C-1], c)..., v2)
     else
@@ -124,6 +124,36 @@ function _ssub(x::NTuple{C,UInt}, y::NTuple{C,UInt}, c::Bool) where {C}
     else
         return (_ssub(x[1:C-1], y[1:C-1], c1)..., v1)
     end
+end
+
+function Base.:(*)(x::LongLongUInt{C}, y::LongLongUInt{C}) where {C}
+    result = zero(LongLongUInt{C})
+    for i in 1:C
+        x.content[C-i+1] == 0 && continue
+        for j in 1:C
+            y.content[C-j+1] == 0 && continue
+            # Skip if either position is out of bounds for the result
+            pos = i + j - 1
+            pos > C && continue
+            
+            # Multiply the corresponding elements
+            mres = Base.widemul(x.content[C-i+1], y.content[C-j+1])
+            
+            # Add the low part to the result at position pos
+            partial = LongLongUInt(ntuple(k -> (k == C-pos+1 ? UInt(mres & typemax(UInt)) : (k == C-pos ? UInt(mres >> bsizeof(UInt)) : zero(UInt))), Val{C}()))
+            result = result + partial
+            
+            # # Add the high part to the result at position pos-1 if there's overflow
+            # if overflow && pos-1 >= 1
+            #     hi = x.content[C-i+1] >> (sizeof(UInt) * 4)
+            #     hi = hi * (y.content[C-j+1] >> (sizeof(UInt) * 4))
+            #     partial = LongLongUInt(ntuple(k -> (k == C-(pos-1)+1 ? hi : zero(UInt)), Val{C}()))
+            #     result = result + partial
+            # end
+        end
+    end
+    
+    return result
 end
 Base.count_ones(x::LongLongUInt) = sum(count_ones, x.content)
 Base.bitstring(x::LongLongUInt) = join(bitstring.(x.content), "")

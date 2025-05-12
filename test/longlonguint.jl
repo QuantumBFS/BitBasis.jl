@@ -38,6 +38,11 @@ using Test, BitBasis
     BitBasis.max_num_elements(Int, 2) == 63
 
     @test count_ones(bmask(LongLongUInt{50}, 1:3000)) == 3000
+
+    # Hard add
+    a = LongLongUInt((ntuple(i -> UInt64(0), Val{1}())..., ntuple(i -> rand(UInt64), Val{9}())...))
+    b = LongLongUInt((ntuple(i -> UInt64(0), Val{1}())..., ntuple(i -> rand(UInt64), Val{9}())...))
+    @test BigInt(a + b) == BigInt(a) + BigInt(b)
 end
 
 @testset "shift" begin
@@ -135,4 +140,45 @@ end
     @test log2i(LongLongUInt((1,2))) == 64
     @test log2i(LongLongUInt((0,2))) == 1
     @test log2i(LongLongUInt((1,0))) == 64
+end
+
+@testset "multiplication" begin
+    # Test basic multiplication
+    x = LongLongUInt((2,))
+    y = LongLongUInt((3,))
+    @test x * y == LongLongUInt((6,))
+    
+    # Test multiplication with overflow within a single UInt
+    x = LongLongUInt((0x8000000000000000,))
+    y = LongLongUInt((2,))
+    @test x * y == LongLongUInt((0,))  # Overflow truncated to original size
+    
+    # Test multiplication across multiple UInts
+    x = LongLongUInt((1, 0))  # 1 << 64
+    y = LongLongUInt((0, 5))  # 2 << 64
+    @test x * y == LongLongUInt((5, 0))  # Result truncated to original size
+    
+    # Test with values in both positions
+    x = LongLongUInt((0, 2))
+    y = LongLongUInt((3, 4))
+    # Expected: (1*3) << 128 + (1*4 + 2*3) << 64 + (2*4), truncated to 2 UInts
+    @test x * y == LongLongUInt((6, 8))
+    
+    # Verify with BigInt conversion
+    x = LongLongUInt((10, 7))
+    y = LongLongUInt((0, 3))
+    result = x * y
+    expected = BigInt(x) * BigInt(y)
+    expected_truncated = expected & ((BigInt(1) << 128) - 1)  # Truncate to 128 bits
+    @test BigInt(result) == expected_truncated
+
+    x = LongLongUInt((UInt(0), typemax(UInt64)))
+    y = LongLongUInt((UInt(0), UInt(3)))
+    @test BigInt(x * y) == BigInt(x) * BigInt(y)
+
+    # Hard instance
+    a = LongLongUInt((ntuple(i -> UInt64(0), Val{10}())..., ntuple(i -> rand(UInt64), Val{5}())...))
+    b = LongLongUInt((ntuple(i -> UInt64(0), Val{6}())..., ntuple(i -> rand(UInt64), Val{9}())...))
+    @show BigInt(a * b) - BigInt(a) * BigInt(b)
+    @test BigInt(a * b) == BigInt(a) * BigInt(b)
 end
