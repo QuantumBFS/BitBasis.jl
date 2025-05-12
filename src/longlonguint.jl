@@ -23,6 +23,7 @@ Base.zero(::Type{LongLongUInt{C}}) where {C} = LongLongUInt{C}(ntuple(_->UInt(0)
 Base.zero(::LongLongUInt{C}) where {C} = zero(LongLongUInt{C})
 # convert from integers
 LongLongUInt{C}(x::T) where {C, T<:Integer} = LongLongUInt{C}(ntuple(i->i==C ? UInt(x) : zero(UInt), Val{C}()))
+LongLongUInt{C}(x::LongLongUInt{C}) where {C} = x
 Base.promote_rule(::Type{LongLongUInt{C}}, ::Type{Int}) where {C} = LongLongUInt{C}
 Base.promote_rule(::Type{LongLongUInt{C}}, ::Type{UInt}) where {C} = LongLongUInt{C}
 function Base.mod(x::LongLongUInt{C}, D::Int) where {C}
@@ -135,3 +136,7 @@ end
 
 Base.hash(x::LongLongUInt{1}) = hash(x.content[1])
 Base.hash(x::LongLongUInt{C}) where{C} = hash(x.content)
+
+# these APIs will are used in SparseTN
+BitBasis.log2i(x::LongLongUInt{C}) where C = floor(Int, log2(Float64(BigInt(x))))
+Base.BigInt(x::LongLongUInt{C}) where C = mapfoldl(x -> BigInt(x), (x, y) -> ((x << 64) | y), x.content)
