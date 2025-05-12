@@ -3,7 +3,7 @@
 
 A `LongLongUInt{C}` is an integer with `C` `UInt` numbers to store the value.
 """
-struct LongLongUInt{C} <: Integer
+struct LongLongUInt{C} <: Unsigned
     content::NTuple{C, UInt}
     function LongLongUInt{C}(content::NTuple{C, UInt}) where {C}
         new{C}(content)
@@ -15,6 +15,9 @@ struct LongLongUInt{C} <: Integer
         LongLongUInt{C}(content)
     end
 end
+Base.string(x::LongLongUInt{C}) where {C} = "LongLongUInt{$C}(" * join(bitstring.(x.content), "") * ")"
+Base.show(io::IO, x::LongLongUInt{C}) where {C} = print(io, string(x))
+Base.show(io::IO, ::MIME"text/plain", x::LongLongUInt{C}) where {C} = print(io, string(x))
 bsizeof(::LongLongUInt{C}) where C = bsizeof(UInt64) * C
 nint(::LongLongUInt{C}) where {C} = C
 Base.Int(x::LongLongUInt{1}) = Int(x.content[1])
@@ -142,19 +145,11 @@ function Base.:(*)(x::LongLongUInt{C}, y::LongLongUInt{C}) where {C}
             # Add the low part to the result at position pos
             partial = LongLongUInt(ntuple(k -> (k == C-pos+1 ? UInt(mres & typemax(UInt)) : (k == C-pos ? UInt(mres >> bsizeof(UInt)) : zero(UInt))), Val{C}()))
             result = result + partial
-            
-            # # Add the high part to the result at position pos-1 if there's overflow
-            # if overflow && pos-1 >= 1
-            #     hi = x.content[C-i+1] >> (sizeof(UInt) * 4)
-            #     hi = hi * (y.content[C-j+1] >> (sizeof(UInt) * 4))
-            #     partial = LongLongUInt(ntuple(k -> (k == C-(pos-1)+1 ? hi : zero(UInt)), Val{C}()))
-            #     result = result + partial
-            # end
         end
     end
-    
     return result
 end
+
 Base.count_ones(x::LongLongUInt) = sum(count_ones, x.content)
 Base.bitstring(x::LongLongUInt) = join(bitstring.(x.content), "")
 
@@ -170,3 +165,20 @@ Base.hash(x::LongLongUInt{C}) where{C} = hash(x.content)
 # these APIs will are used in SparseTN
 BitBasis.log2i(x::LongLongUInt{C}) where C = floor(Int, log2(Float64(BigInt(x))))
 Base.BigInt(x::LongLongUInt{C}) where C = mapfoldl(x -> BigInt(x), (x, y) -> ((x << 64) | y), x.content)
+
+function Base.Int(x::LongLongUInt)
+    if all(iszero, x.content[2:end]) && x.content[1] < typemax(Int)
+        return Int(x.content[1])
+    else
+        throw(InexactError(:Int, x))
+    end
+end
+
+function Base.hash(bits_tuple::Tuple{LongLongUInt{C}, Vararg{LongLongUInt{C}, M}}) where{M, C}
+    N = M + 1
+    hash0 = Base.hash(bits_tuple[1].content)
+    for i in 2:N
+        hash0 = Base.hash(bits_tuple[i].content, hash0)
+    end
+    return hash0
+end

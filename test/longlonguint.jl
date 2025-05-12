@@ -2,6 +2,8 @@ using Test, BitBasis
 
 @testset "longlonguint" begin
     x = LongLongUInt((3,))
+    @test abs(x) == x
+    @test Int(x) === 3
     @test LongLongUInt{1}(x) == x
     @test Int(x) === 3
     @test bsizeof(x) == 64
@@ -18,6 +20,7 @@ using Test, BitBasis
     @test promote(UInt(1), LongLongUInt((3, 4))) == (LongLongUInt((0, 1)), LongLongUInt((3, 4)))
 
     y = LongLongUInt((5, 7))
+    @test_throws InexactError Int(y)
     @test one(y) == LongLongUInt((0, 1))
     @test x & y == LongLongUInt((1, 6))
     @test x | y == LongLongUInt((7, 7))
@@ -181,4 +184,12 @@ end
     b = LongLongUInt((ntuple(i -> UInt64(0), Val{6}())..., ntuple(i -> rand(UInt64), Val{9}())...))
     @show BigInt(a * b) - BigInt(a) * BigInt(b)
     @test BigInt(a * b) == BigInt(a) * BigInt(b)
+end
+
+@testset "LongLongUInt hash" begin
+    b1 = bmask(LongLongUInt{1}, 1)
+    b2 = bmask(LongLongUInt{1}, 2)
+    b3 = bmask(LongLongUInt{1}, 3)
+
+    @test hash((b1, b2, b3)) == hash((b1, b2, b3))
 end
