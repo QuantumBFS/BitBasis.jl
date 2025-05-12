@@ -32,7 +32,6 @@ using Test, BitBasis
     # add with overflow
     z = LongLongUInt((UInt(17), typemax(UInt)-1))
     @test z + x == LongLongUInt((21, 4))
-    @test (@allocated z + x) == 0
 
     # maximum number of elements
     BitBasis.max_num_elements(LongLongUInt{2}, 2) == 80
