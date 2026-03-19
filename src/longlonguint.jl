@@ -212,8 +212,8 @@ function longinttype(n::Int, D::Int)
     return LongLongUInt{C}
 end
 
-Base.hash(x::LongLongUInt{1}) = hash(x.content[1])
-Base.hash(x::LongLongUInt{C}) where{C} = hash(x.content)
+Base.hash(x::LongLongUInt{1}, h::UInt) = hash(x.content[1], h)
+Base.hash(x::LongLongUInt{C}, h::UInt) where{C} = hash(x.content, h)
 
 # these APIs will are used in SparseTN
 BitBasis.log2i(x::LongLongUInt{C}) where C = floor(Int, log2(Float64(BigInt(x))))
