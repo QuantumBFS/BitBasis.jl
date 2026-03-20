@@ -64,7 +64,7 @@ Base.zero(::Type{DitStr{D,N,T}}) where {D,N,T} = DitStr{D,N,T}(zero(T))
 Base.zero(::DitStr{D,N,T}) where {D,N,T} = DitStr{D,N,T}(zero(T))
 
 buffer(b::DitStr) = b.buf
-Base.hash(d::DitStr) = hash(buffer(d))
+Base.hash(d::DitStr, h::UInt) = hash(buffer(d), h)
 Base.reinterpret(::Type{DitStr{D,N,T}}, x::Integer) where {D,N,T} = DitStr{D,N,T}(reinterpret(T, x))
 Base.reinterpret(::Type{T}, x::DitStr) where {T} = reinterpret(T, buffer(x))
 Base.reinterpret(::Type{DitStr{D,N,T}}, x::DitStr) where {D,N,T} = DitStr{D,N,T}(x)
