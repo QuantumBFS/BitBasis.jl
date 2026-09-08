@@ -1,7 +1,29 @@
 """
-    LongLongUInt{C} <: Integer
+    LongLongUInt{C} <: Unsigned
 
-A `LongLongUInt{C}` is an integer with `C` `UInt` numbers to store the value.
+A fixed-width unsigned integer stored in `C` machine-word-sized `UInt` values.
+The first element of `content` is the most significant word and the last is the
+least significant word, so the width is `C * sizeof(UInt) * 8` bits. Arithmetic
+is fixed-width and discards overflow beyond that width.
+
+Construct a value from a tuple of words or convert an integer to an explicitly
+sized value. `LongLongUInt` supports comparisons, bitwise operations, shifts,
+addition, subtraction, multiplication, division, and conversion to `BigInt`.
+
+# Examples
+
+```jldoctest
+julia> x = LongLongUInt((0x0000000000000001, 0x0000000000000002));
+
+julia> BigInt(x) == (big(1) << 64) + 2
+true
+
+julia> x >> 64 == LongLongUInt((0x0000000000000000, 0x0000000000000001))
+true
+
+julia> typemax(UInt) * LongLongUInt{1}(2) == LongLongUInt{1}(typemax(UInt) - 1)
+true
+```
 """
 struct LongLongUInt{C} <: Unsigned
     content::NTuple{C, UInt}
